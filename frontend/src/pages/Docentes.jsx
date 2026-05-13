@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { API, UPLOADS_URL } from '../services/api';
 import {
   GraduationCap, BookOpen, Award, Star, Users,
   UserX, RefreshCw, Zap, ArrowRight, Shield, Search
@@ -35,7 +35,7 @@ function DocenteCard({ doc, index }) {
       {/* Imagen con overlay en hover */}
       <div className="aspect-[3/4] overflow-hidden bg-slate-50 relative">
         <img
-          src={doc.imagen_url?.startsWith('http') ? doc.imagen_url : `http://localhost:3000/uploads/${doc.imagen_url}`}
+          src={doc.imagen_url?.startsWith('http') ? doc.imagen_url : `${UPLOADS_URL}/${doc.imagen_url}`}
           alt={doc.nombre}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           onError={(e) => {
@@ -96,7 +96,7 @@ const Docentes = () => {
   const cargar = () => {
     setCargando(true);
     setError(false);
-    axios.get('http://localhost:3000/api/docentes')
+    API.get('/docentes')
       .then(res => { setDocentes(res.data); setCargando(false); })
       .catch(() => { setCargando(false); setError(true); });
   };

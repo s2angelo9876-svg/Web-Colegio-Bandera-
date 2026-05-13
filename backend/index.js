@@ -6,6 +6,10 @@ const rateLimit = require('express-rate-limit');
 require('dotenv').config()
 
 const db = require('./config/db') 
+const initDb = require('./config/initDb')
+
+// Inicializar esquemas de base de datos
+initDb();
 
 // Rutas
 const noticiaRoutes = require('./routes/noticiaRoutes')

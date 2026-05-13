@@ -3,15 +3,6 @@ const db = require('../config/db');
 // Obtener todas las configuraciones
 exports.getConfig = async (req, res) => {
     try {
-        // Asegurar que la tabla existe con una sintaxis más compatible
-        await db.query(`
-            CREATE TABLE IF NOT EXISTS configuracion (
-                clave VARCHAR(191) PRIMARY KEY,
-                valor TEXT,
-                updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-        
         const [rows] = await db.query('SELECT clave, valor FROM configuracion');
         
         // Convertir array de {clave, valor} a un objeto simple

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getNoticias } from '../services/api';
+import { getNoticias, UPLOADS_URL } from '../services/api';
 import { 
   Newspaper, Zap, ArrowRight, Calendar, 
   FileX, RefreshCw, Search, Shield, Info 
@@ -33,7 +33,7 @@ function NoticiaCard({ n, index }) {
         <img
           src={
             n.imagen
-              ? `http://localhost:3000/uploads/${n.imagen}`
+              ? `${UPLOADS_URL}/${n.imagen}`
               : 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=1000'
           }
           alt={n.titulo}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import { API } from '../services/api';
 import {
   User, Phone, BookOpen, ClipboardList, ChevronRight,
   CheckCircle2, AlertCircle, Loader2, Send, Zap,
@@ -39,7 +39,7 @@ const Admision = () => {
     setEnviando(true);
     setStatus(null);
     try {
-      await axios.post('http://localhost:3000/api/admision', formData);
+      await API.post('/admision', formData);
       setStatus('success');
       setFormData({ nombre_padre: '', nombre_student: '', grado: '1er Grado Primaria', telefono: '' });
     } catch {

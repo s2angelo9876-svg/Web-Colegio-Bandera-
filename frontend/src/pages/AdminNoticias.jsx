@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
-import { getNoticias, API } from '../services/api' 
+import { getNoticias, API, UPLOADS_URL } from '../services/api' 
 import Swal from 'sweetalert2'
 import { 
   Plus, X, Trash2, Image as ImageIcon, Search, 
@@ -53,7 +53,7 @@ function AdminNoticias() {
     setEditMode(n.id)
     setTitulo(n.titulo)
     setContenido(n.contenido)
-    setPreview(`http://localhost:3000/uploads/${n.imagen}`)
+    setPreview(`${UPLOADS_URL}/${n.imagen}`)
     setShowForm(true)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -291,7 +291,7 @@ function AdminNoticias() {
                   <td className="px-6 py-4 first:rounded-l-[2rem]">
                     <div className="relative w-24 h-16 rounded-2xl overflow-hidden shadow-sm">
                         <img 
-                          src={`http://localhost:3000/uploads/${n.imagen}`} 
+                          src={`${UPLOADS_URL}/${n.imagen}`} 
                           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                           alt="" 
                         />

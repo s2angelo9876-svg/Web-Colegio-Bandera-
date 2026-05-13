@@ -6,6 +6,8 @@ import {
   getNoticias,
   getEventos,
   getComunicados,
+  getDocentes,
+  getGaleria,
   API
 } from '../services/api'
 
@@ -63,6 +65,8 @@ function Admin() {
     noticias: 0,
     eventos: 0,
     comunicados: 0,
+    docentes: 0,
+    galeria: 0,
     cargando: true
   })
 
@@ -77,15 +81,19 @@ function Admin() {
         const resultados = await Promise.allSettled([
           getNoticias(),
           getEventos(),
-          getComunicados()
+          getComunicados(),
+          getDocentes(),
+          getGaleria()
         ]);
 
-        const [resNoticias, resEventos, resComunicados] = resultados;
+        const [resNoticias, resEventos, resComunicados, resDocentes, resGaleria] = resultados;
 
         setStats({
           noticias: resNoticias.status === 'fulfilled' ? (resNoticias.value.data?.length || 0) : 0,
           eventos: resEventos.status === 'fulfilled' ? (resEventos.value.data?.length || 0) : 0,
           comunicados: resComunicados.status === 'fulfilled' ? (resComunicados.value.data?.length || 0) : 0,
+          docentes: resDocentes.status === 'fulfilled' ? (resDocentes.value.data?.length || 0) : 0,
+          galeria: resGaleria.status === 'fulfilled' ? (resGaleria.value.data?.length || 0) : 0,
           cargando: false
         });
 
@@ -194,22 +202,20 @@ function Admin() {
         </header>
 
         {/* Grid de Stats MEJORADAS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 relative z-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6 mb-12 relative z-10">
           <StatCard
-            label="Noticias Publicadas"
+            label="Noticias"
             count={stats.noticias}
             loading={stats.cargando}
-            icon={<Newspaper size={26} />}
-            color="text-blue-600"
+            icon={<Newspaper size={22} />}
             bg="bg-blue-600"
             footer="Tendencia Mensual"
           />
           <StatCard
-            label="Próximos Eventos"
+            label="Eventos"
             count={stats.eventos}
             loading={stats.cargando}
-            icon={<Calendar size={26} />}
-            color="text-red-600"
+            icon={<Calendar size={22} />}
             bg="bg-red-600"
             footer="Calendario Escolar"
           />
@@ -217,10 +223,25 @@ function Admin() {
             label="Comunicados"
             count={stats.comunicados}
             loading={stats.cargando}
-            icon={<Megaphone size={26} />}
-            color="text-yellow-500"
+            icon={<Megaphone size={22} />}
             bg="bg-yellow-500"
-            footer="Avisos a la comunidad"
+            footer="Avisos comunidad"
+          />
+          <StatCard
+            label="Docentes"
+            count={stats.docentes}
+            loading={stats.cargando}
+            icon={<Users size={22} />}
+            bg="bg-emerald-600"
+            footer="Staff Académico"
+          />
+          <StatCard
+            label="Galería"
+            count={stats.galeria}
+            loading={stats.cargando}
+            icon={<ImageIcon size={22} />}
+            bg="bg-indigo-600"
+            footer="Archivo Visual"
           />
         </div>
 

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/authContext';
-import axios from 'axios';
+import { API } from '../services/api';
 import {
   School, User, Lock, Eye, EyeOff,
   Loader2, AlertTriangle, ShieldCheck, ArrowLeft
@@ -21,7 +21,7 @@ function Login() {
     setError('');
     setCargando(true);
     try {
-      const res = await axios.post('http://localhost:3000/api/auth/login', { username, password });
+      const res = await API.post('/auth/login', { username, password });
       login(res.data.token, res.data.usuario);
       navigate('/admin');
     } catch (err) {

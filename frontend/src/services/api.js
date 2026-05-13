@@ -1,8 +1,12 @@
 import axios from 'axios'
 
+// URL base centralizada
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+export const UPLOADS_URL = import.meta.env.VITE_UPLOADS_URL || 'http://localhost:3000/uploads';
+
 // Se añade 'export' para permitir el uso de la instancia API en otros archivos
 export const API = axios.create({
-  baseURL: 'http://localhost:3000/api'
+  baseURL: API_URL
 })
 
 // Interceptor: agrega el token automáticamente si existe

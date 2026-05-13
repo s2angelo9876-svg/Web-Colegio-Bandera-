@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { API } from '../services/api'
+import { API, UPLOADS_URL } from '../services/api'
 import Swal from 'sweetalert2'
 import { 
   Image as ImageIcon, 
@@ -10,6 +10,14 @@ import {
   Calendar,
   Upload
 } from 'lucide-react'
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true
+});
 
 function AdminGaleria() {
     const [fotos, setFotos] = useState([])
@@ -47,11 +55,10 @@ function AdminGaleria() {
 
             await API.post('/galeria', formData)
 
-            Swal.fire({
-                title: '¡Imagen Agregada!',
-                text: `La fotografía se ha publicado en la galería ${form.anio}.`,
-                icon: 'success',
-                confirmButtonColor: '#003087'
+            Toast.fire({
+                title: 'Imagen Agregada',
+                text: `Publicada en la galería ${form.anio}`,
+                icon: 'success'
             })
             setForm({ 
                 titulo: '', 
@@ -93,6 +100,10 @@ function AdminGaleria() {
         })
         if (result.isConfirmed) {
             await API.delete(`/galeria/${id}`)
+            Toast.fire({
+                title: 'Imagen eliminada',
+                icon: 'success'
+            })
             cargarGaleria()
         }
     }
@@ -225,7 +236,7 @@ function AdminGaleria() {
                                 </span>
                             </div>
                             {foto.imagen_url ? (
-                                <img src={foto.imagen_url?.startsWith('http') ? foto.imagen_url : `http://localhost:3000/uploads/${foto.imagen_url}`} alt={foto.titulo} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" />
+                                <img src={foto.imagen_url?.startsWith('http') ? foto.imagen_url : `${UPLOADS_URL}/${foto.imagen_url}`} alt={foto.titulo} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000 ease-out" />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-slate-200">
                                     <ImageIcon size={64} className="opacity-20" />

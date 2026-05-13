@@ -1,23 +1,9 @@
 const express = require('express')
 const router = express.Router()
+const { body, validationResult } = require('express-validator');
 const noticiaController = require('../controllers/noticiaController')
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware')
-const multer = require('multer')
-const path = require('path')
-
-// Configuración de Multer
-const { body, validationResult } = require('express-validator');
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/')
-  },
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname))
-  }
-})
-
-const upload = multer({ storage: storage })
+const upload = require('../middleware/uploadMiddleware')
 
 // Middleware para manejar errores de validación
 const handleValidationErrors = (req, res, next) => {

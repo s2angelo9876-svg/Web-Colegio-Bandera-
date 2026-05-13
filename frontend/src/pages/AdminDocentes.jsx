@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { API } from '../services/api'
+import { API, UPLOADS_URL } from '../services/api'
 import Swal from 'sweetalert2'
 import { 
   GraduationCap, 
@@ -11,6 +11,14 @@ import {
   Info,
   Edit3
 } from 'lucide-react'
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true
+});
 
 function AdminDocentes() {
     const [docentes, setDocentes] = useState([])
@@ -40,19 +48,15 @@ function AdminDocentes() {
         try {
             if (editMode) {
                 await API.put(`/docentes/${editMode}`, form)
-                Swal.fire({
-                    title: '¡Actualizado!',
-                    text: 'La información del docente se ha actualizado.',
-                    icon: 'success',
-                    confirmButtonColor: '#003087'
+                Toast.fire({
+                    title: 'Docente Actualizado',
+                    icon: 'success'
                 })
             } else {
                 await API.post('/docentes', form)
-                Swal.fire({
-                    title: '¡Docente Registrado!',
-                    text: 'La información se ha guardado correctamente',
-                    icon: 'success',
-                    confirmButtonColor: '#003087'
+                Toast.fire({
+                    title: 'Docente Registrado',
+                    icon: 'success'
                 })
             }
             setForm({ nombre: '', cargo: '', especialidad: '', imagen_url: '', orden: 0 })
@@ -88,6 +92,10 @@ function AdminDocentes() {
         })
         if (result.isConfirmed) {
             await API.delete(`/docentes/${id}`)
+            Toast.fire({
+                title: 'Eliminado',
+                icon: 'success'
+            })
             cargarDocentes()
         }
     }
@@ -181,7 +189,7 @@ function AdminDocentes() {
                         <div className="aspect-[4/5] bg-slate-100 overflow-hidden relative">
                             {d.imagen_url ? (
                                 <img 
-                                    src={d.imagen_url?.startsWith('http') ? d.imagen_url : `http://localhost:3000/uploads/${d.imagen_url}`} 
+                                    src={d.imagen_url?.startsWith('http') ? d.imagen_url : `${UPLOADS_URL}/${d.imagen_url}`} 
                                     alt={d.nombre} 
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                                 />

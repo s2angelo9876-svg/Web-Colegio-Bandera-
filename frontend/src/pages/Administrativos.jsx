@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { API } from '../services/api'
+import { API, UPLOADS_URL } from '../services/api'
 import { Briefcase, Users } from 'lucide-react'
 
 function Administrativos() {
@@ -43,7 +43,7 @@ function Administrativos() {
                             <div key={p.id} className="bg-white rounded-[2.5rem] overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 group border border-gray-100 transform hover:-translate-y-2">
                                 <div className="aspect-[4/5] relative overflow-hidden">
                                     <img 
-                                        src={p.imagen_url?.startsWith('http') ? p.imagen_url : (p.imagen_url ? `http://localhost:3000/uploads/${p.imagen_url}` : 'https://via.placeholder.com/400x500?text=Personal')} 
+                                        src={p.imagen_url?.startsWith('http') ? p.imagen_url : (p.imagen_url ? `${UPLOADS_URL}/${p.imagen_url}` : 'https://via.placeholder.com/400x500?text=Personal')} 
                                         alt={p.nombre}
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                     />

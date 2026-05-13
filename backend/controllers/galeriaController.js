@@ -25,53 +25,11 @@ const createFoto = async (req, res) => {
         const [result] = await db.query(sql, [titulo, imagen_url, finalAnio, finalDia, finalMes]);
         res.status(201).json({ message: 'Imagen añadida a la galería', id: result.insertId });
     } catch (err) {
-        console.error("Error inicial en createFoto:", err.message);
-        
-        // Si el error es por columnas faltantes o tabla inexistente, intentamos repararlo
-        if (err.message.includes("Unknown column") || err.message.includes("doesn't exist")) {
-            try {
-                // 1. Asegurar que la tabla existe
-                await db.query(`
-                    CREATE TABLE IF NOT EXISTS galeria (
-                        id INT AUTO_INCREMENT PRIMARY KEY,
-                        titulo VARCHAR(255),
-                        imagen_url VARCHAR(255),
-                        anio VARCHAR(10),
-                        dia VARCHAR(10),
-                        mes VARCHAR(20),
-                        fecha_publicacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                    )
-                `);
-                console.log("Tabla galeria verificada/creada.");
-
-                // 2. Asegurar que las columnas individuales existen (por si la tabla ya existía pero era antigua)
-                const columns = [
-                    { name: 'anio', type: 'VARCHAR(10)' },
-                    { name: 'dia', type: 'VARCHAR(10)' },
-                    { name: 'mes', type: 'VARCHAR(20)' }
-                ];
-
-                for (const col of columns) {
-                    try {
-                        await db.query(`ALTER TABLE galeria ADD COLUMN ${col.name} ${col.type}`);
-                    } catch (colErr) {
-                        if (!colErr.message.includes("Duplicate column name")) {
-                            console.error(`Error al añadir columna ${col.name}:`, colErr.message);
-                        }
-                    }
-                }
-                
-                // 3. Reintento final de inserción
-                const sqlRetry = 'INSERT INTO galeria (titulo, imagen_url, anio, dia, mes) VALUES (?, ?, ?, ?, ?)';
-                const [result] = await db.query(sqlRetry, [titulo, imagen_url, finalAnio, finalDia, finalMes]);
-                return res.status(201).json({ message: 'Imagen añadida y esquema actualizado', id: result.insertId });
-            } catch (retryErr) {
-                console.error("Error crítico reparando esquema:", retryErr.message);
-                return res.status(500).json({ error: "Error crítico de base de datos: " + retryErr.message });
-            }
-        }
-        
-        return res.status(500).json({ error: "Error en el servidor: " + err.message });
+        console.error("Error en createFoto:", err.message);
+        return res.status(500).json({ 
+            error: "Error al guardar en la base de datos",
+            detalle: err.message 
+        });
     }
 };
 

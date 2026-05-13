@@ -2,22 +2,8 @@ const express = require('express');
 const router = express.Router();
 const { getGaleria, createFoto, deleteFoto } = require('../controllers/galeriaController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
-const multer = require('multer');
-const path = require('path');
-
-// Configuración de Multer
+const upload = require('../middleware/uploadMiddleware');
 const { body, validationResult } = require('express-validator');
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/')
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname))
-    }
-})
-
-const upload = multer({ storage: storage })
 
 // Middleware de validación
 const handleValidation = (req, res, next) => {

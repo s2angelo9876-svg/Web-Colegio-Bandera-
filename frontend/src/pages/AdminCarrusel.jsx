@@ -1,10 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import { API, UPLOADS_URL } from '../services/api';
 import Swal from 'sweetalert2';
 import { 
     Plus, Trash2, Image as ImageIcon, Save, 
     Type, AlignLeft, Layers, Monitor, PlayCircle 
 } from 'lucide-react';
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true
+});
 
 const AdminCarrusel = () => {
     const [slides, setSlides] = useState([]);
@@ -22,7 +30,7 @@ const AdminCarrusel = () => {
 
     const fetchSlides = async () => {
         try {
-            const res = await axios.get('http://localhost:3000/api/carrusel');
+            const res = await API.get('/carrusel');
             setSlides(res.data);
         } catch (error) {
             console.error('Error:', error);
@@ -41,13 +49,8 @@ const AdminCarrusel = () => {
         if (form.imagen) formData.append('imagen', form.imagen);
 
         try {
-            await axios.post('http://localhost:3000/api/carrusel', formData, {
-                headers: { 
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data'
-                }
-            });
-            Swal.fire('¡Éxito!', 'Slide añadido correctamente', 'success');
+            await API.post('/carrusel', formData);
+            Toast.fire({ title: 'Slide añadido', icon: 'success' });
             setForm({ titulo: '', subtitulo: '', orden: 0, imagen: null });
             fetchSlides();
         } catch (error) {
@@ -71,11 +74,8 @@ const AdminCarrusel = () => {
 
         if (result.isConfirmed) {
             try {
-                const token = localStorage.getItem('token');
-                await axios.delete(`http://localhost:3000/api/carrusel/${id}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                Swal.fire('Eliminado', 'El slide ha sido borrado', 'success');
+                await API.delete(`/carrusel/${id}`);
+                Toast.fire({ title: 'Slide borrado', icon: 'success' });
                 fetchSlides();
             } catch (error) {
                 Swal.fire('Error', 'Hubo un problema al eliminar', 'error');
@@ -170,7 +170,7 @@ const AdminCarrusel = () => {
                                 <div key={slide.id} className="bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100 flex flex-col md:flex-row gap-6 group hover:shadow-2xl transition-all">
                                     <div className="w-full md:w-60 h-40 rounded-3xl overflow-hidden bg-slate-100 flex-shrink-0">
                                         <img 
-                                            src={`http://localhost:3000/uploads/${slide.imagen_url}`} 
+                                            src={`${UPLOADS_URL}/${slide.imagen_url}`} 
                                             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                             alt={slide.titulo}
                                         />

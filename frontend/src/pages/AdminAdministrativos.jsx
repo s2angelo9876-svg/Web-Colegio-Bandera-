@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react'
-import { API } from '../services/api'
+import { API, UPLOADS_URL } from '../services/api'
 import Swal from 'sweetalert2'
 import { UserPlus, Trash2, Briefcase, Image as ImageIcon, X, Info } from 'lucide-react'
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true
+});
 
 function AdminAdministrativos() {
     const [personal, setPersonal] = useState([])
@@ -23,7 +31,7 @@ function AdminAdministrativos() {
         e.preventDefault()
         try {
             await API.post('/administrativos', form)
-            Swal.fire({ title: '¡Registrado!', text: 'Personal administrativo agregado', icon: 'success', confirmButtonColor: '#003087' })
+            Toast.fire({ title: 'Personal Registrado', icon: 'success' })
             setForm({ nombre: '', cargo: '', area: '', imagen_url: '' })
             setShowForm(false)
             cargarPersonal()
@@ -43,6 +51,7 @@ function AdminAdministrativos() {
         })
         if (res.isConfirmed) {
             await API.delete(`/administrativos/${id}`)
+            Toast.fire({ title: 'Registro eliminado', icon: 'success' })
             cargarPersonal()
         }
     }
@@ -124,7 +133,7 @@ function AdminAdministrativos() {
                         </div>
                         <div className="w-32 h-32 rounded-[2.5rem] bg-slate-50 overflow-hidden shrink-0 shadow-2xl border-4 border-white relative group">
                             {p.imagen_url ? (
-                                <img src={p.imagen_url?.startsWith('http') ? p.imagen_url : `http://localhost:3000/uploads/${p.imagen_url}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={p.nombre} />
+                                <img src={p.imagen_url?.startsWith('http') ? p.imagen_url : `${UPLOADS_URL}/${p.imagen_url}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={p.nombre} />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center text-slate-200">
                                     <ImageIcon size={40} className="opacity-20" />

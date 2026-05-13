@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { API, UPLOADS_URL } from '../services/api';
 import { Image, Zap, X, ZoomIn, RefreshCw, Images } from 'lucide-react';
 import Footer from '../components/Footer';
 
@@ -14,7 +14,7 @@ const Galeria = () => {
   const [lightbox, setLightbox] = useState(null); // foto seleccionada
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/galeria')
+    API.get('/galeria')
       .then(res => setFotos(res.data))
       .catch(err => console.error('Error al cargar galería', err))
       .finally(() => setLoading(false));
@@ -102,7 +102,7 @@ const Galeria = () => {
                 style={{ animationDelay: `${i * 0.04}s` }}
               >
                 <img
-                  src={foto.imagen_url?.startsWith('http') ? foto.imagen_url : `http://localhost:3000/uploads/${foto.imagen_url}`}
+                  src={foto.imagen_url?.startsWith('http') ? foto.imagen_url : `${UPLOADS_URL}/${foto.imagen_url}`}
                   alt={foto.titulo}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-600"
                   loading="lazy"
@@ -153,7 +153,7 @@ const Galeria = () => {
             onClick={e => e.stopPropagation()}
           >
             <img
-              src={lightbox.imagen_url?.startsWith('http') ? lightbox.imagen_url : `http://localhost:3000/uploads/${lightbox.imagen_url}`}
+              src={lightbox.imagen_url?.startsWith('http') ? lightbox.imagen_url : `${UPLOADS_URL}/${lightbox.imagen_url}`}
               alt={lightbox.titulo}
               className="w-full h-full object-contain rounded-2xl shadow-2xl"
               style={{ maxHeight: '75vh' }}

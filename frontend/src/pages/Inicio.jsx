@@ -8,6 +8,7 @@ import {
   ChevronLeft, Monitor, Smartphone, Cpu
 } from 'lucide-react';
 import Footer from '../components/Footer';
+import { API } from '../services/api';
 
 function Inicio() {
   const [config, setConfig] = useState({
@@ -29,8 +30,8 @@ function Inicio() {
   useEffect(() => {
     const fetchConfig = async () => {
       try {
-        const res = await fetch('http://localhost:3000/api/configuracion');
-        const data = await res.json();
+        const res = await API.get('/configuracion');
+        const data = res.data;
         if (Object.keys(data).length > 0) {
           setConfig(prev => ({ ...prev, ...data }));
         }

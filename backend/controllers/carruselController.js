@@ -2,16 +2,6 @@ const db = require('../config/db');
 
 exports.getSlides = async (req, res) => {
     try {
-        await db.query(`
-            CREATE TABLE IF NOT EXISTS carrusel (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                titulo VARCHAR(255),
-                subtitulo TEXT,
-                imagen_url VARCHAR(255),
-                orden INT DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
         const [rows] = await db.query('SELECT * FROM carrusel ORDER BY orden ASC');
         res.json(rows);
     } catch (error) {
@@ -25,18 +15,6 @@ exports.createSlide = async (req, res) => {
     const imagen_url = req.file ? req.file.filename : null;
 
     try {
-        // Crear tabla si no existe
-        await db.query(`
-            CREATE TABLE IF NOT EXISTS carrusel (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                titulo VARCHAR(255),
-                subtitulo TEXT,
-                imagen_url VARCHAR(255),
-                orden INT DEFAULT 0,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        `);
-
         const [result] = await db.query(
             'INSERT INTO carrusel (titulo, subtitulo, imagen_url, orden) VALUES (?, ?, ?, ?)',
             [titulo, subtitulo, imagen_url, orden || 0]
