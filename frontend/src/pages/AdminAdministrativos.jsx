@@ -57,7 +57,7 @@ function AdminAdministrativos() {
     }
 
     return (
-        <div className="p-8 lg:p-12 bg-[#F8FAFC] min-h-screen relative overflow-hidden">
+        <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-slate-900 min-h-screen transition-colors duration-300 relative overflow-hidden">
             {/* Decorative background mesh */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/30 rounded-full blur-[120px] -z-10 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-red-50/50 rounded-full blur-[120px] -z-10 pointer-events-none" />
@@ -65,19 +65,19 @@ function AdminAdministrativos() {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16 relative z-10">
                 <div className="animate-in fade-in slide-in-from-left duration-700">
-                    <div className="flex items-center gap-2 text-[#003087] font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 w-fit px-4 py-2 rounded-full border border-blue-100/50">
+                    <div className="flex items-center gap-2 text-[#003087] dark:text-blue-300 font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-blue-900/30 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-blue-800/50">
                         <Briefcase size={14} className="animate-pulse" />
                         Operaciones Institucionales
                     </div>
-                    <h2 className="text-5xl font-black text-gray-900 tracking-tight leading-none mb-4">
-                        Gestión <span className="text-[#003087]">Administrativa</span>
+                    <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">
+                        Gestión <span className="text-[#003087] dark:text-blue-400">Administrativa</span>
                     </h2>
-                    <p className="text-gray-400 font-bold text-lg">Administra el personal no docente y áreas de soporte.</p>
+                    <p className="text-gray-400 dark:text-slate-400 font-bold text-lg">Administra el personal no docente y áreas de soporte.</p>
                 </div>
                 <button
                     onClick={() => setShowForm(!showForm)}
                     className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl transition-all active:scale-95 group ${showForm
-                            ? 'bg-white text-gray-700 border border-gray-100 hover:bg-gray-50'
+                            ? 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border border-gray-100 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700'
                             : 'bg-[#003087] text-white shadow-blue-900/30 hover:bg-blue-900'
                         }`}
                 >
@@ -88,7 +88,7 @@ function AdminAdministrativos() {
             {/* Formulario Animado */}
             {showForm && (
                 <div className="animate-in fade-in slide-in-from-top-6 duration-500 mb-12 relative z-10">
-                    <form onSubmit={handleSubmit} className="p-10 bg-white/80 backdrop-blur-xl rounded-[3.5rem] shadow-2xl shadow-blue-900/10 border border-white flex flex-col gap-8">
+                    <form onSubmit={handleSubmit} className="p-10 bg-white/80 dark:bg-slate-800/90 backdrop-blur-xl rounded-[3.5rem] shadow-2xl shadow-blue-900/10 dark:shadow-none border border-white dark:border-slate-700 flex flex-col gap-8">
                         <div className="flex items-center justify-between border-b border-gray-100 pb-6">
                             <div className="flex items-center gap-3 text-[#003087] font-black uppercase text-xs tracking-[0.2em]">
                                 <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
@@ -125,9 +125,9 @@ function AdminAdministrativos() {
             {/* Listado de Personal Premium */}
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 relative z-10">
                 {personal.map(p => (
-                    <div key={p.id} className="bg-white/70 backdrop-blur-sm p-8 rounded-[3.5rem] shadow-xl shadow-blue-900/5 flex flex-col items-center gap-6 relative group border border-white hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full">
+                    <div key={p.id} className="bg-white/70 dark:bg-slate-800/80 backdrop-blur-sm p-8 rounded-[3.5rem] shadow-xl shadow-blue-900/5 flex flex-col items-center gap-6 relative group border border-white hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full">
                         <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                            <button onClick={() => handleEliminar(p.id)} className="bg-white text-red-500 p-4 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-xl shadow-red-900/10 border border-red-50">
+                            <button onClick={() => handleEliminar(p.id)} className="bg-white dark:bg-slate-700 text-red-500 p-4 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-xl shadow-red-900/10 dark:shadow-none border border-red-50 dark:border-slate-600">
                                 <Trash2 size={20} />
                             </button>
                         </div>
@@ -142,7 +142,7 @@ function AdminAdministrativos() {
                         </div>
                         <div className="text-center w-full">
                             <span className="bg-blue-50 text-[#003087] text-[9px] font-black uppercase px-4 py-1.5 rounded-xl mb-4 inline-block tracking-[0.2em] border border-blue-100/50 group-hover:bg-white transition-colors">{p.area || 'Administración'}</span>
-                            <h4 className="font-black text-gray-900 text-xl leading-tight mb-2 group-hover:text-[#003087] transition-colors line-clamp-2 tracking-tight">{p.nombre}</h4>
+                            <h4 className="font-black text-gray-900 dark:text-white text-xl leading-tight mb-2 group-hover:text-[#003087] transition-colors line-clamp-2 tracking-tight">{p.nombre}</h4>
                             <p className="text-gray-400 font-bold text-[10px] uppercase tracking-[0.1em]">{p.cargo}</p>
                         </div>
                         <div className="mt-auto pt-6 w-full flex justify-center">
@@ -157,11 +157,11 @@ function AdminAdministrativos() {
             </div>
 
             {personal.length === 0 && (
-                <div className="text-center py-24 bg-white/50 backdrop-blur-sm rounded-[4rem] border border-dashed border-gray-200 shadow-sm flex flex-col items-center">
+                <div className="text-center py-24 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm rounded-[4rem] border border-dashed border-gray-200 dark:border-slate-700 shadow-sm flex flex-col items-center">
                     <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-gray-200 shadow-inner mb-6">
                         <Briefcase size={48} />
                     </div>
-                    <p className="text-gray-400 font-black text-xl tracking-tight">No hay personal administrativo.</p>
+                    <p className="text-gray-400 dark:text-slate-400 font-black text-xl tracking-tight">No hay personal administrativo.</p>
                     <button onClick={() => setShowForm(true)} className="text-[#003087] font-black text-xs uppercase tracking-widest mt-4 hover:underline">Registrar primer ingreso</button>
                 </div>
             )}

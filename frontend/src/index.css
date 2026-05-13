@@ -36,6 +36,66 @@ body {
   color: #1e293b;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* ============================================================
+   DARK MODE — Global Rules
+   ============================================================ */
+html.dark body {
+  background-color: #0f172a;
+  color: #e2e8f0;
+}
+
+/* Scrollbar en Dark Mode */
+html.dark ::-webkit-scrollbar-track { background: #1e293b; }
+html.dark ::-webkit-scrollbar-thumb { background: #3b82f6; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
+
+/* Page header wave */
+html.dark .page-header::after { background: #0f172a; }
+
+/* Card estándar */
+html.dark .card {
+  background: #1e293b;
+  border-color: #334155;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+html.dark .card:hover {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+/* Botones */
+html.dark .btn-outline {
+  color: #93c5fd;
+  border-color: #3b82f6;
+}
+html.dark .btn-outline:hover {
+  background: #3b82f6;
+  color: #fff;
+}
+
+/* Form inputs */
+html.dark .input-field {
+  background: #1e293b;
+  border-color: #334155;
+  color: #e2e8f0;
+}
+html.dark .input-field:focus {
+  background: #0f172a;
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+}
+html.dark .input-icon { color: #64748b; }
+html.dark .input-wrapper:focus-within .input-icon { color: #60a5fa; }
+
+/* Nav active */
+html.dark .nav-link-active { color: #93c5fd !important; }
+
+/* Skeleton */
+html.dark .skeleton {
+  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background-size: 200% 100%;
 }
 
 /* ============================================================

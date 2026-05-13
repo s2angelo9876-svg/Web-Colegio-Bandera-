@@ -80,28 +80,28 @@ function AdminConfigInicio() {
     );
 
     return (
-        <div className="p-8 lg:p-12 bg-[#F8FAFC] min-h-screen">
+        <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-slate-900 min-h-screen transition-colors duration-300">
             <div className="max-w-5xl mx-auto">
                 <header className="mb-12 animate-in fade-in slide-in-from-left duration-700">
-                    <div className="flex items-center gap-2 text-[#003087] font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 w-fit px-4 py-2 rounded-full border border-blue-100/50">
+                    <div className="flex items-center gap-2 text-[#003087] dark:text-blue-300 font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-blue-900/30 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-blue-800/50">
                         <Settings size={14} />
                         Personalización UI
                     </div>
-                    <h2 className="text-5xl font-black text-gray-900 tracking-tight leading-none mb-4">
-                        Gestión de <span className="text-[#003087]">Contenido Inicio</span>
+                    <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">
+                        Gestión de <span className="text-[#003087] dark:text-blue-400">Contenido Inicio</span>
                     </h2>
                     <p className="text-gray-400 font-bold text-lg text-pretty">Modifica los textos principales de la página de aterrizaje en tiempo real.</p>
                 </header>
 
                 <form onSubmit={handleSubmit} className="space-y-12">
                     {/* SECCIÓN HERO */}
-                    <div className="bg-white rounded-[3rem] p-10 shadow-xl shadow-blue-900/5 border border-white">
+                    <div className="bg-white dark:bg-slate-800 rounded-[3rem] p-10 shadow-xl shadow-blue-900/5 border border-white">
                         <div className="flex items-center gap-4 mb-10 pb-6 border-b border-slate-50">
                             <div className="w-12 h-12 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center">
                                 <Layout size={24} />
                             </div>
                             <div>
-                                <h3 className="font-black text-xl text-slate-800 tracking-tight">Sección Hero Principal</h3>
+                                <h3 className="font-black text-xl text-slate-800 dark:text-white tracking-tight">Sección Hero Principal</h3>
                                 <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Títulos y Subtítulos de impacto</p>
                             </div>
                         </div>
@@ -139,13 +139,13 @@ function AdminConfigInicio() {
                     </div>
 
                     {/* SECCIÓN ESTADÍSTICAS */}
-                    <div className="bg-white rounded-[3rem] p-10 shadow-xl shadow-blue-900/5 border border-white">
+                    <div className="bg-white dark:bg-slate-800 rounded-[3rem] p-10 shadow-xl shadow-blue-900/5 border border-white">
                         <div className="flex items-center gap-4 mb-10 pb-6 border-b border-slate-50">
                             <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center">
                                 <Trophy size={24} />
                             </div>
                             <div>
-                                <h3 className="font-black text-xl text-slate-800 tracking-tight">Cifras e Impacto</h3>
+                                <h3 className="font-black text-xl text-slate-800 dark:text-white tracking-tight">Cifras e Impacto</h3>
                                 <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Contadores de éxito institucional</p>
                             </div>
                         </div>
@@ -171,13 +171,13 @@ function AdminConfigInicio() {
                     </div>
 
                     {/* SECCIÓN PILARES */}
-                    <div className="bg-white rounded-[3rem] p-10 shadow-xl shadow-blue-900/5 border border-white">
+                    <div className="bg-white dark:bg-slate-800 rounded-[3rem] p-10 shadow-xl shadow-blue-900/5 border border-white">
                         <div className="flex items-center gap-4 mb-10 pb-6 border-b border-slate-50">
                             <div className="w-12 h-12 rounded-2xl bg-slate-50 text-slate-600 flex items-center justify-center">
                                 <BookOpen size={24} />
                             </div>
                             <div>
-                                <h3 className="font-black text-xl text-slate-800 tracking-tight">Pilares Académicos</h3>
+                                <h3 className="font-black text-xl text-slate-800 dark:text-white tracking-tight">Pilares Académicos</h3>
                                 <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Ejes estratégicos del colegio</p>
                             </div>
                         </div>
