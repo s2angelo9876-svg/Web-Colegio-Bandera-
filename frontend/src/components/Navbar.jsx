@@ -82,8 +82,8 @@ const Navbar = () => {
       <nav
         className={`sticky top-0 z-[100] transition-all duration-300 ${
           scrolled
-            ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-lg shadow-blue-900/8 dark:shadow-none border-b border-gray-100 dark:border-dark-border'
-            : 'bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-dark-border'
+            ? 'bg-white/95 dark:bg-dark-bg/95 backdrop-blur-md shadow-lg shadow-blue-900/8 dark:shadow-none border-b border-gray-100 dark:border-dark-border'
+            : 'bg-white dark:bg-dark-bg border-b border-gray-100 dark:border-dark-border'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -106,7 +106,7 @@ const Navbar = () => {
                 <span className="text-[#003087] dark:text-blue-400 font-black text-[17px] tracking-tight uppercase">
                   Bandera del Perú
                 </span>
-                <span className="text-gray-400 dark:text-gray-500 text-[9px] font-bold tracking-[0.22em] uppercase mt-0.5">
+                <span className="text-gray-400 dark:text-slate-500 text-[9px] font-bold tracking-[0.22em] uppercase mt-0.5">
                   I.E. Emblemática · Pisco
                 </span>
               </div>
@@ -118,7 +118,7 @@ const Navbar = () => {
                 <div key={link.name} className="relative group">
                   {link.submenu ? (
                     <>
-                      <button className="flex items-center gap-1 text-gray-600 dark:text-gray-300 font-semibold text-[12px] xl:text-[13px] uppercase tracking-wider hover:text-[#003087] dark:hover:text-blue-400 transition-colors py-[26px] px-2 xl:px-3 rounded-lg hover:bg-blue-50/60 dark:hover:bg-slate-800">
+                      <button className="flex items-center gap-1 text-gray-600 dark:text-slate-300 font-semibold text-[12px] xl:text-[13px] uppercase tracking-wider hover:text-[#003087] dark:hover:text-blue-400 transition-colors py-[26px] px-2 xl:px-3 rounded-lg hover:bg-blue-50/60 dark:hover:bg-slate-800">
                         {link.name}
                         <ChevronDown
                           size={13}
@@ -134,10 +134,10 @@ const Navbar = () => {
                             <Link
                               key={sub.name}
                               to={sub.path}
-                              className="flex items-center gap-3 px-4 py-2.5 text-gray-500 dark:text-gray-400 hover:text-[#003087] dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-dark-hover rounded-xl text-[12px] font-semibold transition-all group/item"
+                              className="flex items-center gap-3 px-4 py-2.5 text-gray-500 dark:text-slate-400 hover:text-[#003087] dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-dark-hover rounded-xl text-[12px] font-semibold transition-all group/item"
                             >
                               <span className="w-7 h-7 bg-gray-100 dark:bg-dark-input group-hover/item:bg-blue-100 dark:group-hover/item:bg-blue-900/50 rounded-lg flex items-center justify-center transition-colors flex-shrink-0">
-                                <SubIcon size={13} className="text-gray-500 dark:text-gray-400 group-hover/item:text-[#003087] dark:group-hover/item:text-blue-400 transition-colors" />
+                                <SubIcon size={13} className="text-gray-500 dark:text-slate-400 group-hover/item:text-[#003087] dark:group-hover/item:text-blue-400 transition-colors" />
                               </span>
                               {sub.name}
                             </Link>
@@ -151,7 +151,7 @@ const Navbar = () => {
                       className={`flex items-center gap-1.5 font-semibold text-[12px] xl:text-[13px] uppercase tracking-wider transition-all py-[26px] px-2 xl:px-3 rounded-lg relative ${
                         isActive(link.path)
                           ? 'text-[#003087] dark:text-blue-400 bg-blue-50/60 dark:bg-dark-card'
-                          : 'text-gray-600 dark:text-gray-300 hover:text-[#003087] dark:hover:text-blue-400 hover:bg-blue-50/60 dark:hover:bg-slate-800'
+                          : 'text-gray-600 dark:text-slate-300 hover:text-[#003087] dark:hover:text-blue-400 hover:bg-blue-50/60 dark:hover:bg-slate-800'
                       }`}
                     >
                       {link.name}
@@ -169,7 +169,7 @@ const Navbar = () => {
               {/* Dark mode toggle */}
               <button
                 onClick={toggleDarkMode}
-                className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 dark:text-gray-400 hover:text-[#003087] dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all"
+                className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 dark:text-slate-400 hover:text-[#003087] dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all"
                 aria-label="Cambiar tema"
               >
                 {isDarkMode ? <Sun size={17} /> : <Moon size={17} />}
@@ -178,7 +178,7 @@ const Navbar = () => {
               {/* Buscador toggle */}
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
-                className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 dark:text-gray-400 hover:text-[#003087] dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all"
+                className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 dark:text-slate-400 hover:text-[#003087] dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all"
                 aria-label="Buscar"
               >
                 {searchOpen ? <X size={17} /> : <Search size={17} />}
@@ -225,7 +225,7 @@ const Navbar = () => {
 
         {/* ── Menú Mobile ── */}
         {isMenuOpen && (
-          <div className="lg:hidden border-t border-gray-100 dark:border-dark-border bg-white dark:bg-gray-900 animate-slide-down">
+          <div className="lg:hidden border-t border-gray-100 dark:border-dark-border bg-white dark:bg-dark-bg animate-slide-down">
             <div className="max-w-7xl mx-auto px-4 py-4 space-y-1 max-h-[75vh] overflow-y-auto">
               {navLinks.map((link) => (
                 <div key={link.name}>
@@ -281,7 +281,14 @@ const Navbar = () => {
                 </div>
               ))}
 
-              <div className="pt-4 pb-2">
+              <div className="pt-4 pb-2 flex flex-col gap-3">
+                <button
+                  onClick={toggleDarkMode}
+                  className="w-full flex items-center justify-center gap-2 bg-gray-100 dark:bg-dark-input text-gray-700 dark:text-slate-300 py-3 rounded-xl font-bold text-sm uppercase tracking-wider transition-all"
+                >
+                  {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
+                  Modo {isDarkMode ? 'Claro' : 'Oscuro'}
+                </button>
                 <button
                   onClick={() => navigate('/login')}
                   className="w-full flex items-center justify-center gap-2 bg-[#003087] text-white py-3.5 rounded-xl font-black text-sm uppercase tracking-wider hover:bg-red-600 transition-all shadow-lg"

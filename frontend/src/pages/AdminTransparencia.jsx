@@ -96,7 +96,7 @@ function AdminTransparencia() {
         : documentos.filter(d => d.categoria === filtro)
 
     return (
-        <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-gray-900 min-h-screen transition-colors duration-300 relative overflow-hidden">
+        <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-dark-bg min-h-screen transition-colors duration-300 relative overflow-hidden">
             {/* Decorative background mesh */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/30 rounded-full blur-[120px] -z-10 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-red-50/50 rounded-full blur-[120px] -z-10 pointer-events-none" />
@@ -111,13 +111,13 @@ function AdminTransparencia() {
                     <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">
                         Portal de <span className="text-[#003087] dark:text-blue-400">Transparencia</span>
                     </h2>
-                    <p className="text-gray-400 dark:text-gray-400 font-bold text-lg">Rendición de cuentas y normatividad institucional.</p>
+                    <p className="text-gray-400 dark:text-slate-400 font-bold text-lg">Rendición de cuentas y normatividad institucional.</p>
                 </div>
                 <button 
                     onClick={() => setShowForm(!showForm)}
                     className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl transition-all active:scale-95 group ${
                         showForm 
-                        ? 'bg-white dark:bg-dark-card text-gray-700 dark:text-gray-300 border border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-hover' 
+                        ? 'bg-white dark:bg-dark-card text-gray-700 dark:text-slate-300 border border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-hover' 
                         : 'bg-[#003087] text-white shadow-blue-900/30 hover:bg-blue-900'
                     }`}
                 >
@@ -234,7 +234,7 @@ function AdminTransparencia() {
                         <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-gray-200 mb-6 shadow-inner">
                             <FolderTree size={40} />
                         </div>
-                        <p className="text-gray-400 dark:text-gray-400 font-black text-lg tracking-tight">No se encontraron documentos en esta categoría.</p>
+                        <p className="text-gray-400 dark:text-slate-400 font-black text-lg tracking-tight">No se encontraron documentos en esta categoría.</p>
                         <button onClick={() => setFiltro('Todos')} className="text-[#003087] font-black text-[10px] uppercase tracking-widest mt-4 hover:underline">Ver todos los archivos</button>
                     </div>
                 )}

@@ -117,7 +117,7 @@ function Admin() {
   const isActive = (path) => location.pathname === `/admin/${path}` || (path === '' && location.pathname === '/admin')
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC] dark:bg-gray-900 transition-colors duration-300">
+    <div className="flex min-h-screen bg-[#F8FAFC] dark:bg-dark-bg transition-colors duration-300">
 
       {/* SIDEBAR FIJO ULTRA-PREMIUM */}
       <aside className="w-72 bg-[#001D52] flex flex-col p-6 sticky top-0 h-screen shadow-[10px_0_40px_rgba(0,0,0,0.1)] z-30">
@@ -189,7 +189,7 @@ function Admin() {
             <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">
               Dashboard
             </h2>
-            <p className="text-gray-400 dark:text-gray-400 font-bold text-lg flex items-center gap-2">
+            <p className="text-gray-400 dark:text-slate-400 font-bold text-lg flex items-center gap-2">
               Bienvenido de vuelta, <span className="text-gray-800 dark:text-gray-200">{usuario?.username}</span>
             </p>
           </div>
@@ -197,11 +197,11 @@ function Admin() {
           <div className="flex gap-4 animate-in fade-in slide-in-from-right duration-700 items-center">
             <button 
               onClick={toggleDarkMode}
-              className="w-14 h-14 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl flex items-center justify-center text-gray-400 dark:text-gray-300 hover:text-[#003087] dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-500/50 transition-all shadow-sm hover:shadow-xl group"
+              className="w-14 h-14 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl flex items-center justify-center text-gray-400 dark:text-slate-300 hover:text-[#003087] dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-500/50 transition-all shadow-sm hover:shadow-xl group"
             >
               {isDarkMode ? <Sun size={24} className="group-hover:rotate-45 transition-transform" /> : <Moon size={24} className="group-hover:-rotate-12 transition-transform" />}
             </button>
-            <button className="w-14 h-14 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl flex items-center justify-center text-gray-400 dark:text-gray-300 hover:text-[#003087] dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-500/50 transition-all shadow-sm hover:shadow-xl group">
+            <button className="w-14 h-14 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl flex items-center justify-center text-gray-400 dark:text-slate-300 hover:text-[#003087] dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-500/50 transition-all shadow-sm hover:shadow-xl group">
               <Bell size={24} className="group-hover:rotate-12 transition-transform" />
             </button>
             <Link to="/" className="flex items-center gap-3 px-8 py-4 bg-[#003087] text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl shadow-blue-900/30 hover:bg-blue-900 transition-all active:scale-95 group">
@@ -277,7 +277,7 @@ function Admin() {
 
         {/* ACCIONES RÁPIDAS */}
         <div className="relative z-10 bg-white/50 dark:bg-dark-card/60 backdrop-blur-sm p-10 rounded-[3rem] border border-white dark:border-dark-border">
-          <h3 className="text-[10px] font-black text-gray-400 dark:text-gray-400 uppercase tracking-[0.4em] mb-10 text-center">Acceso Directo a Módulos</h3>
+          <h3 className="text-[10px] font-black text-gray-400 dark:text-slate-400 uppercase tracking-[0.4em] mb-10 text-center">Acceso Directo a Módulos</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             <QuickAction to="noticias" color="blue" title="Redactar Noticia" icon={Newspaper} />
             <QuickAction to="eventos" color="red" title="Nuevo Evento" icon={Calendar} />
@@ -302,7 +302,7 @@ function StatCard({ label, count, loading, icon, color, bg, footer }) {
         <ArrowUpRight className="text-gray-200 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-400 transition-colors" size={24} />
       </div>
       <div className="relative z-10">
-        <p className="text-gray-400 dark:text-gray-400 text-[11px] font-black uppercase tracking-[0.2em] mb-2">{label}</p>
+        <p className="text-gray-400 dark:text-slate-400 text-[11px] font-black uppercase tracking-[0.2em] mb-2">{label}</p>
         {loading ? (
           <div className="h-14 flex items-center">
             <div className="h-10 w-24 bg-slate-50 dark:bg-dark-input rounded-xl animate-pulse"></div>
@@ -313,7 +313,7 @@ function StatCard({ label, count, loading, icon, color, bg, footer }) {
       </div>
 
       <div className="mt-8 pt-6 border-t border-gray-50 dark:border-dark-border flex items-center justify-between relative z-10">
-        <span className="text-[10px] font-bold text-gray-400 dark:text-gray-400 uppercase tracking-[0.15em]">{footer}</span>
+        <span className="text-[10px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-[0.15em]">{footer}</span>
         <div className="flex gap-1.5">
           <div className="w-2 h-2 rounded-full bg-blue-100" />
           <div className="w-2 h-2 rounded-full bg-blue-200" />

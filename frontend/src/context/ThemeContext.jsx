@@ -17,13 +17,17 @@ function getInitialDark() {
 export const ThemeProvider = ({ children }) => {
   const [isDarkMode, setIsDarkMode] = useState(getInitialDark);
 
-  // Sincroniza la clase 'dark' en <html> con el estado de React
+  // Sincroniza la clase 'dark' en <html> y <body> con el estado de React
   useEffect(() => {
     const root = document.documentElement;
+    const body = document.body;
+    
     if (isDarkMode) {
       root.classList.add('dark');
+      body.classList.add('dark');
     } else {
       root.classList.remove('dark');
+      body.classList.remove('dark');
     }
   }, [isDarkMode]);
 

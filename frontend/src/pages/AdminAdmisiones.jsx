@@ -45,7 +45,7 @@ function AdminAdmisiones() {
     }
 
     return (
-        <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-gray-900 transition-colors duration-300 min-h-screen relative overflow-hidden">
+        <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-dark-bg transition-colors duration-300 min-h-screen relative overflow-hidden">
             {/* Decorative background mesh */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/30 rounded-full blur-[120px] -z-10 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-red-50/50 rounded-full blur-[120px] -z-10 pointer-events-none" />
@@ -60,7 +60,7 @@ function AdminAdmisiones() {
                     <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">
                         Centro de <span className="text-[#003087] dark:text-blue-400">Admisiones</span>
                     </h2>
-                    <p className="text-gray-400 dark:text-gray-400 font-bold text-lg">Directorio de solicitudes enviadas por padres de familia.</p>
+                    <p className="text-gray-400 dark:text-slate-400 font-bold text-lg">Directorio de solicitudes enviadas por padres de familia.</p>
                 </div>
             </div>
 
@@ -85,7 +85,7 @@ function AdminAdmisiones() {
                             </div>
                             
                             <div className="flex items-center gap-3 mb-6 z-10">
-                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-400 flex items-center gap-1.5 bg-slate-50 dark:bg-dark-card/50 px-4 py-2 rounded-xl">
+                                <span className="text-[10px] font-black uppercase tracking-widest text-gray-400 dark:text-slate-400 flex items-center gap-1.5 bg-slate-50 dark:bg-dark-card/50 px-4 py-2 rounded-xl">
                                     <Calendar size={14} className="opacity-40" /> 
                                     {a.fecha_registro ? new Date(a.fecha_registro).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }) : 'Reciente'}
                                 </span>
@@ -95,14 +95,14 @@ function AdminAdmisiones() {
                                 <h3 className="text-xl font-black text-[#003087] dark:text-white mb-1 flex items-center gap-2">
                                     <User size={18} className="text-blue-500 dark:text-blue-400"/> {a.nombre_estudiante}
                                 </h3>
-                                <p className="text-[10px] font-black text-gray-400 dark:text-gray-400 uppercase tracking-widest flex items-center gap-2 mt-2">
+                                <p className="text-[10px] font-black text-gray-400 dark:text-slate-400 uppercase tracking-widest flex items-center gap-2 mt-2">
                                     <GraduationCap size={14} /> Postula a: <span className="text-gray-800 dark:text-gray-200">{a.grado_interes}</span>
                                 </p>
                             </div>
 
                             <div className="bg-slate-50 dark:bg-dark-card/30 p-6 rounded-2xl mb-2 flex-1 z-10 border border-slate-100 dark:border-dark-border">
-                                <p className="text-[10px] font-black text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-3">Datos del Apoderado</p>
-                                <p className="font-bold text-gray-700 dark:text-gray-300 text-sm mb-2">{a.nombre_padre}</p>
+                                <p className="text-[10px] font-black text-gray-400 dark:text-slate-500 uppercase tracking-widest mb-3">Datos del Apoderado</p>
+                                <p className="font-bold text-gray-700 dark:text-slate-300 text-sm mb-2">{a.nombre_padre}</p>
                                 <a href={`tel:${a.celular}`} className="inline-flex items-center gap-2 text-[#003087] dark:text-blue-400 hover:text-red-600 dark:hover:text-red-400 font-black text-xs uppercase tracking-widest transition-colors mt-2">
                                     <Phone size={14} /> {a.celular} <ArrowUpRight size={14} />
                                 </a>
@@ -115,7 +115,7 @@ function AdminAdmisiones() {
             {!cargando && admisiones.length === 0 && (
                 <div className="text-center py-20 bg-white dark:bg-dark-card rounded-[3rem] border border-dashed border-gray-200 dark:border-dark-border shadow-sm mt-6">
                     <FileText size={64} className="mx-auto text-gray-200 dark:text-gray-600 mb-4" />
-                    <p className="text-gray-400 dark:text-gray-400 font-bold text-lg">No hay solicitudes de admisión recientes.</p>
+                    <p className="text-gray-400 dark:text-slate-400 font-bold text-lg">No hay solicitudes de admisión recientes.</p>
                 </div>
             )}
         </div>

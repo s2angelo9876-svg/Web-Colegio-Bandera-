@@ -46,7 +46,7 @@ function AdminEventos() {
     }
 
     return (
-        <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-gray-900 min-h-screen relative overflow-hidden transition-colors duration-300">
+        <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-dark-bg min-h-screen relative overflow-hidden transition-colors duration-300">
             {/* Decorative background mesh */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/30 rounded-full blur-[120px] -z-10 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-red-50/50 rounded-full blur-[120px] -z-10 pointer-events-none" />
@@ -61,13 +61,13 @@ function AdminEventos() {
                     <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">
                         Agenda <span className="text-[#003087] dark:text-blue-400">Escolar</span>
                     </h2>
-                    <p className="text-gray-400 dark:text-gray-400 font-bold text-lg">Organiza actividades, ceremonias y fechas cívicas.</p>
+                    <p className="text-gray-400 dark:text-slate-400 font-bold text-lg">Organiza actividades, ceremonias y fechas cívicas.</p>
                 </div>
                 <button 
                     onClick={() => setShowForm(!showForm)} 
                     className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl transition-all active:scale-95 group ${
                         showForm 
-                        ? 'bg-white dark:bg-dark-card text-gray-700 dark:text-gray-300 border border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-hover' 
+                        ? 'bg-white dark:bg-dark-card text-gray-700 dark:text-slate-300 border border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-hover' 
                         : 'bg-[#003087] text-white shadow-blue-900/30 hover:bg-blue-900'
                     }`}
                 >
@@ -135,11 +135,11 @@ function AdminEventos() {
                         <div className="flex-1 text-center md:text-left py-4 z-10">
                             <h3 className="text-3xl font-black text-gray-900 dark:text-white mb-4 group-hover:text-[#003087] dark:group-hover:text-blue-400 transition-colors tracking-tight">{ev.titulo}</h3>
                             <div className="flex flex-wrap justify-center md:justify-start gap-4">
-                                <div className="flex items-center gap-2 text-[11px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest bg-white/50 dark:bg-dark-card/50 backdrop-blur-sm px-5 py-2.5 rounded-2xl border border-gray-100 dark:border-dark-border group-hover:border-blue-100 transition-colors">
+                                <div className="flex items-center gap-2 text-[11px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-widest bg-white/50 dark:bg-dark-card/50 backdrop-blur-sm px-5 py-2.5 rounded-2xl border border-gray-100 dark:border-dark-border group-hover:border-blue-100 transition-colors">
                                     <Clock size={16} className="text-red-500" />
                                     {ev.hora_evento ? ev.hora_evento.slice(0, 5) : "--:--"} hrs
                                 </div>
-                                <div className="flex items-center gap-2 text-[11px] font-black text-gray-500 dark:text-gray-400 uppercase tracking-widest bg-white/50 dark:bg-dark-card/50 backdrop-blur-sm px-5 py-2.5 rounded-2xl border border-gray-100 dark:border-dark-border group-hover:border-blue-100 transition-colors">
+                                <div className="flex items-center gap-2 text-[11px] font-black text-gray-500 dark:text-slate-400 uppercase tracking-widest bg-white/50 dark:bg-dark-card/50 backdrop-blur-sm px-5 py-2.5 rounded-2xl border border-gray-100 dark:border-dark-border group-hover:border-blue-100 transition-colors">
                                     <MapPin size={16} className="text-[#003087] dark:text-blue-400" />
                                     {ev.lugar || "Sede Institucional"}
                                 </div>
@@ -168,10 +168,10 @@ function AdminEventos() {
                 
                 {eventos.length === 0 && (
                     <div className="text-center py-24 bg-white/50 dark:bg-dark-card/60 backdrop-blur-sm rounded-[4rem] border border-dashed border-gray-200 dark:border-dark-border shadow-sm mt-6 flex flex-col items-center">
-                        <div className="w-24 h-24 bg-white dark:bg-dark-input rounded-full flex items-center justify-center text-gray-200 dark:text-gray-500 shadow-inner mb-6">
+                        <div className="w-24 h-24 bg-white dark:bg-dark-input rounded-full flex items-center justify-center text-gray-200 dark:text-slate-500 shadow-inner mb-6">
                             <Calendar size={48} />
                         </div>
-                        <p className="text-gray-400 dark:text-gray-400 font-black text-xl tracking-tight">No hay eventos registrados.</p>
+                        <p className="text-gray-400 dark:text-slate-400 font-black text-xl tracking-tight">No hay eventos registrados.</p>
                         <button onClick={() => setShowForm(true)} className="text-[#003087] dark:text-blue-400 font-black text-xs uppercase tracking-widest mt-4 hover:underline">Registrar el primer evento</button>
                     </div>
                 )}

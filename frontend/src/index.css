@@ -1,17 +1,22 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
-/* ============================================================
-   DESIGN SYSTEM — I.E. Bandera del Perú
-   ============================================================ */
-
-:root {
+@theme {
   --color-primary: #003087;
   --color-primary-dark: #001D52;
   --color-accent: #DC2626;
   --color-accent-light: #FEF2F2;
   --color-surface: #F8FAFC;
   --color-border: #E2E8F0;
+  
+  /* Dark Mode Palette - Premium Midnight */
+  --color-dark-bg: #020617;
+  --color-dark-card: #0f172a;
+  --color-dark-border: #1e293b;
+  --color-dark-hover: #1e293b;
+  --color-dark-input: #0f172a;
+  --color-dark-accent: #3b82f6;
+
   --shadow-card: 0 4px 24px rgba(0, 48, 135, 0.08);
   --shadow-card-hover: 0 20px 60px rgba(0, 48, 135, 0.14);
   --radius-card: 1.5rem;
@@ -40,59 +45,82 @@ body {
 }
 
 /* ============================================================
-   DARK MODE — Paleta adaptada al branding institucional
-   Fondo: gray-900 (#111827) — neutro, no se confunde con el azul #001D52
-   Tarjetas: #1a2332 — toque azulado sutil
-   Bordes: #2a3441
+   DARK MODE — Premium Midnight Palette
+   Background: #020617 (Slate-950)
+   Surfaces: #0f172a (Slate-900)
+   Borders: #1e293b (Slate-800)
    ============================================================ */
+html {
+  transition: background-color 0.3s ease;
+}
+
 html.dark body {
-  background-color: #111827;
-  color: #e5e7eb;
+  background-color: #020617;
+  color: #f8fafc;
 }
 
-html.dark ::-webkit-scrollbar-track { background: #1f2937; }
-html.dark ::-webkit-scrollbar-thumb { background: #4b7bec; }
-html.dark ::-webkit-scrollbar-thumb:hover { background: #DC2626; }
+/* Custom Scrollbar for Dark Mode */
+html.dark ::-webkit-scrollbar-track { background: #020617; }
+html.dark ::-webkit-scrollbar-thumb { background: #1e293b; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #334155; }
 
-html.dark .page-header::after { background: #111827; }
+/* Global overrides for dark mode */
+html.dark .bg-white { background-color: #0f172a !important; }
+html.dark .bg-\[\#F8FAFC\] { background-color: #020617 !important; }
+html.dark .text-gray-900 { color: #f8fafc !important; }
+html.dark .text-gray-800 { color: #f1f5f9 !important; }
+html.dark .text-gray-700 { color: #e2e8f0 !important; }
+html.dark .text-gray-600 { color: #cbd5e1 !important; }
+html.dark .border-gray-100 { border-color: #1e293b !important; }
+html.dark .border-gray-200 { border-color: #1e293b !important; }
 
-html.dark .card {
-  background: #1a2332;
-  border-color: #2a3441;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-}
-html.dark .card:hover {
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+/* Institutional Blue adaptation */
+html.dark .text-primary { color: var(--color-dark-accent) !important; }
+html.dark .bg-primary { background-color: var(--color-dark-accent) !important; }
+
+/* Premium Card Style */
+html.dark .card-premium {
+  background: var(--color-dark-card);
+  border: 1px solid var(--color-dark-border);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
-html.dark .btn-outline {
-  color: #7cb3ff;
-  border-color: #3a6fd8;
-}
-html.dark .btn-outline:hover {
-  background: #3a6fd8;
-  color: #fff;
+html.dark .card-premium:hover {
+  border-color: var(--color-dark-accent);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
 }
 
-html.dark .input-field {
-  background: #1a2332;
-  border-color: #2a3441;
-  color: #e5e7eb;
+/* Input Fields */
+html.dark .input-premium {
+  background: var(--color-dark-border);
+  border-color: var(--color-dark-hover);
+  color: #f8fafc;
 }
-html.dark .input-field:focus {
-  background: #111827;
-  border-color: #4b7bec;
-  box-shadow: 0 0 0 4px rgba(75, 123, 236, 0.12);
-}
-html.dark .input-icon { color: #6b7280; }
-html.dark .input-wrapper:focus-within .input-icon { color: #7cb3ff; }
 
-html.dark .nav-link-active { color: #7cb3ff !important; }
-
-html.dark .skeleton {
-  background: linear-gradient(90deg, #1a2332 25%, #2a3441 50%, #1a2332 75%);
-  background-size: 200% 100%;
+/* Premium Glow Effects */
+html.dark .glow-blue {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.2);
 }
+
+html.dark .glow-red {
+  box-shadow: 0 0 20px rgba(220, 38, 38, 0.2);
+}
+
+/* Specific component overrides */
+html.dark .bg-slate-50 { background-color: var(--color-dark-card) !important; }
+html.dark .bg-slate-100 { background-color: var(--color-dark-border) !important; }
+html.dark .bg-blue-50 { background-color: rgba(59, 130, 246, 0.1) !important; }
+
+/* Transitions específicas para evitar lag global */
+body, .card, .btn-primary, .btn-outline, .input-field, nav, aside {
+  transition-property: background-color, border-color, color, box-shadow;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+/* Disable transitions during theme switch to avoid lag if needed, 
+   but for now let's keep them for the "smooth" feel the user liked previously */
+
 
 /* ============================================================
    SCROLLBAR PERSONALIZADO

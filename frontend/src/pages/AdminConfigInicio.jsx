@@ -80,7 +80,7 @@ function AdminConfigInicio() {
     );
 
     return (
-        <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-gray-900 min-h-screen transition-colors duration-300">
+        <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-dark-bg min-h-screen transition-colors duration-300">
             <div className="max-w-5xl mx-auto">
                 <header className="mb-12 animate-in fade-in slide-in-from-left duration-700">
                     <div className="flex items-center gap-2 text-[#003087] dark:text-blue-300 font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-dark-accent/40 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-dark-accent/50">

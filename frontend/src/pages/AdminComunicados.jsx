@@ -93,7 +93,7 @@ function AdminComunicados() {
     }
 
     return (
-        <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-gray-900 min-h-screen transition-colors duration-300 relative overflow-hidden">
+        <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-dark-bg min-h-screen transition-colors duration-300 relative overflow-hidden">
             {/* Decorative background mesh */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/30 rounded-full blur-[120px] -z-10 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-red-50/50 rounded-full blur-[120px] -z-10 pointer-events-none" />
@@ -108,13 +108,13 @@ function AdminComunicados() {
                     <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">
                         Centro de <span className="text-[#003087] dark:text-blue-400">Comunicados</span>
                     </h2>
-                    <p className="text-gray-400 dark:text-gray-400 font-bold text-lg">Emite avisos, circulares y alertas urgentes a la comunidad.</p>
+                    <p className="text-gray-400 dark:text-slate-400 font-bold text-lg">Emite avisos, circulares y alertas urgentes a la comunidad.</p>
                 </div>
                 <button 
                     onClick={() => setShowForm(!showForm)} 
                     className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl transition-all active:scale-95 group ${
                         showForm 
-                        ? 'bg-white dark:bg-dark-card text-gray-700 dark:text-gray-300 border border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-hover' 
+                        ? 'bg-white dark:bg-dark-card text-gray-700 dark:text-slate-300 border border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-hover' 
                         : 'bg-[#003087] text-white shadow-blue-900/30 hover:bg-blue-900'
                     }`}
                 >
@@ -217,7 +217,7 @@ function AdminComunicados() {
             {comunicados.length === 0 && (
                 <div className="text-center py-20 bg-white rounded-[3rem] border border-dashed border-gray-200 shadow-sm mt-6">
                     <Megaphone size={64} className="mx-auto text-gray-200 mb-4" />
-                    <p className="text-gray-400 dark:text-gray-400 font-bold text-lg">No hay comunicados publicados actualmente.</p>
+                    <p className="text-gray-400 dark:text-slate-400 font-bold text-lg">No hay comunicados publicados actualmente.</p>
                 </div>
             )}
         </div>

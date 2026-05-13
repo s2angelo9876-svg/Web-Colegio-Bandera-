@@ -8,14 +8,14 @@ export default {
   theme: {
     extend: {
       colors: {
-        // Paleta Dark Mode personalizada
+        // Paleta Dark Mode Premium Midnight
         dark: {
-          bg:      '#111827',  // Fondo principal (gray-900)
-          card:    '#1a2332',  // Tarjetas y contenedores
-          border:  '#2a3441',  // Bordes
-          hover:   '#243040',  // Hover en elementos
-          input:   '#1f2937',  // Inputs y sub-elementos
-          accent:  '#1a2d4a',  // Acentos azules suaves
+          bg:      '#020617',  // Fondo ultra-oscuro (Slate-950)
+          card:    '#0f172a',  // Tarjetas (Slate-900)
+          border:  '#1e293b',  // Bordes (Slate-800)
+          hover:   '#1e293b',  // Hover en elementos
+          input:   '#0f172a',  // Fondo de inputs
+          accent:  '#3b82f6',  // Acento azul (Blue-500)
         }
       }
     },

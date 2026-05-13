@@ -118,7 +118,7 @@ function AdminNoticias() {
   )
 
   return (
-    <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-gray-900 min-h-screen relative overflow-hidden transition-colors duration-300">
+    <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-dark-bg min-h-screen relative overflow-hidden transition-colors duration-300">
       {/* Decorative background mesh */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/30 rounded-full blur-[120px] -z-10 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-red-50/50 rounded-full blur-[120px] -z-10 pointer-events-none" />
@@ -133,13 +133,13 @@ function AdminNoticias() {
               <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">
                   Portal de <span className="text-[#003087] dark:text-blue-400">Noticias</span>
               </h2>
-              <p className="text-gray-400 dark:text-gray-400 font-bold text-lg">Administra la comunicación y novedades del plantel.</p>
+              <p className="text-gray-400 dark:text-slate-400 font-bold text-lg">Administra la comunicación y novedades del plantel.</p>
           </div>
           <button 
               onClick={() => showForm ? resetForm() : setShowForm(true)} 
               className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl transition-all active:scale-95 group ${
                   showForm 
-                  ? 'bg-white dark:bg-dark-card text-gray-700 dark:text-gray-300 border border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-hover' 
+                  ? 'bg-white dark:bg-dark-card text-gray-700 dark:text-slate-300 border border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-hover' 
                   : 'bg-[#003087] text-white shadow-blue-900/30 hover:bg-blue-900'
               }`}
           >
@@ -302,7 +302,7 @@ function AdminNoticias() {
                   </td>
                   <td className="px-6 py-4">
                     <span className="font-bold text-gray-800 dark:text-white block truncate max-w-sm group-hover:text-[#003087] dark:group-hover:text-blue-400 transition-colors text-base">{n.titulo}</span>
-                    <p className="text-[11px] text-gray-400 dark:text-gray-400 font-medium mt-1 line-clamp-1">{n.contenido}</p>
+                    <p className="text-[11px] text-gray-400 dark:text-slate-400 font-medium mt-1 line-clamp-1">{n.contenido}</p>
                   </td>
                   <td className="px-6 py-4 text-center">
                     <div className="inline-flex flex-col items-center bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100 group-hover:border-blue-100 transition-colors">

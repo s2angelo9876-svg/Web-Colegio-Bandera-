@@ -87,7 +87,7 @@ function Inicio() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900 font-sans selection:bg-red-500 selection:text-white overflow-hidden transition-colors duration-300">
+    <div className="min-h-screen bg-white dark:bg-dark-bg font-sans selection:bg-red-500 selection:text-white overflow-hidden transition-colors duration-300">
 
       {/* ══════════════════════════════════════════
           ULTRA-PREMIUM STATIC HERO
@@ -246,7 +246,7 @@ function Inicio() {
       {/* ══════════════════════════════════════════
           PILARES INSTITUCIONALES
       ══════════════════════════════════════════ */}
-      <section className="py-32 px-6 bg-white dark:bg-gray-900 relative overflow-hidden transition-colors duration-300">
+      <section className="py-32 px-6 bg-white dark:bg-dark-bg relative overflow-hidden transition-colors duration-300">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-24 max-w-3xl mx-auto">
             <span className="text-red-600 font-black text-[10px] uppercase tracking-[0.4em] mb-4 block animate-in fade-in slide-in-from-bottom duration-700">Valores que nos definen</span>
@@ -298,7 +298,7 @@ function Inicio() {
       {/* ══════════════════════════════════════════
           CALL TO ACTION FINAL
       ══════════════════════════════════════════ */}
-      <section className="py-40 px-6 relative overflow-hidden bg-white dark:bg-gray-900 transition-colors duration-300">
+      <section className="py-40 px-6 relative overflow-hidden bg-white dark:bg-dark-bg transition-colors duration-300">
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="inline-flex items-center gap-3 bg-red-50 text-red-600 px-6 py-3 rounded-full text-[10px] font-black uppercase tracking-[0.3em] mb-12 shadow-sm border border-red-100">
              <Zap size={14} className="animate-pulse" />
