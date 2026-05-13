@@ -10,7 +10,7 @@ import EscudoImg from "../assets/escudo.jpeg";
 const navLinks = [
   { name: 'Inicio', path: '/', icon: Home },
   {
-    name: 'Institución',
+    name: 'Nosotros',
     icon: Building2,
     submenu: [
       { name: '¿Quiénes Somos?', path: '/nosotros',  icon: Info },
@@ -24,10 +24,20 @@ const navLinks = [
     name: 'Académico',
     icon: GraduationCap,
     submenu: [
+      { name: 'Proceso de Admisión',  path: '/admision',  icon: ClipboardList },
       { name: 'Propuesta Pedagógica', path: '/propuesta', icon: BookOpen },
       { name: 'Nuestros Docentes',    path: '/docentes',  icon: Users },
       { name: 'Talleres',             path: '/talleres',  icon: Zap },
       { name: 'Calendario Escolar',   path: '/eventos',   icon: ClipboardList },
+    ]
+  },
+  {
+    name: 'Actualidad',
+    icon: Newspaper,
+    submenu: [
+      { name: 'Noticias',    path: '/noticias',    icon: Newspaper },
+      { name: 'Comunicados', path: '/comunicados', icon: ClipboardList },
+      { name: 'Galería',     path: '/galeria',     icon: Image },
     ]
   },
   {
@@ -39,11 +49,7 @@ const navLinks = [
       { name: 'Proyectos Tecnológicos',path: '/tic/proyectos', icon: Cpu },
       { name: 'Soporte Técnico',       path: '/tic/soporte',   icon: Shield },
     ]
-  },
-  { name: 'Noticias',    path: '/noticias',    icon: Newspaper },
-  { name: 'Comunicados', path: '/comunicados', icon: ClipboardList },
-  { name: 'Admisión',    path: '/admision',    icon: ClipboardList },
-  { name: 'Galería',     path: '/galeria',     icon: Image },
+  }
 ];
 
 const Navbar = () => {
