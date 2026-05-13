@@ -40,61 +40,57 @@ body {
 }
 
 /* ============================================================
-   DARK MODE — Global Rules
+   DARK MODE — Paleta adaptada al branding institucional
+   Fondo: gray-900 (#111827) — neutro, no se confunde con el azul #001D52
+   Tarjetas: #1a2332 — toque azulado sutil
+   Bordes: #2a3441
    ============================================================ */
 html.dark body {
-  background-color: #0f172a;
-  color: #e2e8f0;
+  background-color: #111827;
+  color: #e5e7eb;
 }
 
-/* Scrollbar en Dark Mode */
-html.dark ::-webkit-scrollbar-track { background: #1e293b; }
-html.dark ::-webkit-scrollbar-thumb { background: #3b82f6; }
-html.dark ::-webkit-scrollbar-thumb:hover { background: #ef4444; }
+html.dark ::-webkit-scrollbar-track { background: #1f2937; }
+html.dark ::-webkit-scrollbar-thumb { background: #4b7bec; }
+html.dark ::-webkit-scrollbar-thumb:hover { background: #DC2626; }
 
-/* Page header wave */
-html.dark .page-header::after { background: #0f172a; }
+html.dark .page-header::after { background: #111827; }
 
-/* Card estándar */
 html.dark .card {
-  background: #1e293b;
-  border-color: #334155;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  background: #1a2332;
+  border-color: #2a3441;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 html.dark .card:hover {
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
 }
 
-/* Botones */
 html.dark .btn-outline {
-  color: #93c5fd;
-  border-color: #3b82f6;
+  color: #7cb3ff;
+  border-color: #3a6fd8;
 }
 html.dark .btn-outline:hover {
-  background: #3b82f6;
+  background: #3a6fd8;
   color: #fff;
 }
 
-/* Form inputs */
 html.dark .input-field {
-  background: #1e293b;
-  border-color: #334155;
-  color: #e2e8f0;
+  background: #1a2332;
+  border-color: #2a3441;
+  color: #e5e7eb;
 }
 html.dark .input-field:focus {
-  background: #0f172a;
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
+  background: #111827;
+  border-color: #4b7bec;
+  box-shadow: 0 0 0 4px rgba(75, 123, 236, 0.12);
 }
-html.dark .input-icon { color: #64748b; }
-html.dark .input-wrapper:focus-within .input-icon { color: #60a5fa; }
+html.dark .input-icon { color: #6b7280; }
+html.dark .input-wrapper:focus-within .input-icon { color: #7cb3ff; }
 
-/* Nav active */
-html.dark .nav-link-active { color: #93c5fd !important; }
+html.dark .nav-link-active { color: #7cb3ff !important; }
 
-/* Skeleton */
 html.dark .skeleton {
-  background: linear-gradient(90deg, #1e293b 25%, #334155 50%, #1e293b 75%);
+  background: linear-gradient(90deg, #1a2332 25%, #2a3441 50%, #1a2332 75%);
   background-size: 200% 100%;
 }
 

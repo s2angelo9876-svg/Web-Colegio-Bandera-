@@ -118,7 +118,7 @@ function AdminNoticias() {
   )
 
   return (
-    <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-slate-900 min-h-screen relative overflow-hidden transition-colors duration-300">
+    <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-gray-900 min-h-screen relative overflow-hidden transition-colors duration-300">
       {/* Decorative background mesh */}
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/30 rounded-full blur-[120px] -z-10 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-red-50/50 rounded-full blur-[120px] -z-10 pointer-events-none" />
@@ -126,20 +126,20 @@ function AdminNoticias() {
       {/* Header Principal */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16 relative z-10">
           <div className="animate-in fade-in slide-in-from-left duration-700">
-              <div className="flex items-center gap-2 text-[#003087] dark:text-blue-300 font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-blue-900/30 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-blue-800/50">
+              <div className="flex items-center gap-2 text-[#003087] dark:text-[#7cb3ff] font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-[#1a2d4a]/40 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-[#2a4a6a]/50">
                   <Newspaper size={14} className="animate-pulse" />
                   Gestión Editorial
               </div>
               <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">
-                  Portal de <span className="text-[#003087] dark:text-blue-400">Noticias</span>
+                  Portal de <span className="text-[#003087] dark:text-[#60a5fa]">Noticias</span>
               </h2>
-              <p className="text-gray-400 dark:text-slate-400 font-bold text-lg">Administra la comunicación y novedades del plantel.</p>
+              <p className="text-gray-400 dark:text-gray-400 font-bold text-lg">Administra la comunicación y novedades del plantel.</p>
           </div>
           <button 
               onClick={() => showForm ? resetForm() : setShowForm(true)} 
               className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl transition-all active:scale-95 group ${
                   showForm 
-                  ? 'bg-white dark:bg-slate-800 text-gray-700 dark:text-slate-300 border border-gray-100 dark:border-slate-700 hover:bg-gray-50 dark:hover:bg-slate-700' 
+                  ? 'bg-white dark:bg-[#1a2332] text-gray-700 dark:text-gray-300 border border-gray-100 dark:border-[#2a3441] hover:bg-gray-50 dark:hover:bg-[#243040]' 
                   : 'bg-[#003087] text-white shadow-blue-900/30 hover:bg-blue-900'
               }`}
           >
@@ -150,7 +150,7 @@ function AdminNoticias() {
       {/* FORMULARIO AVANZADO */}
       {showForm && (
         <div className="animate-in fade-in slide-in-from-top-6 duration-500 mb-12 relative z-10">
-          <form onSubmit={handleSubmit} className="p-10 bg-white/80 dark:bg-slate-800/90 backdrop-blur-xl rounded-[3rem] shadow-2xl shadow-blue-900/10 dark:shadow-none border border-white dark:border-slate-700 flex flex-col gap-8">
+          <form onSubmit={handleSubmit} className="p-10 bg-white/80 dark:bg-[#1a2332] backdrop-blur-xl rounded-[3rem] shadow-2xl shadow-blue-900/10 dark:shadow-none border border-white dark:border-[#2a3441] flex flex-col gap-8">
             <div className="flex items-center justify-between border-b border-gray-100 pb-6">
                 <div className="flex items-center gap-3 text-[#003087] font-black uppercase text-xs tracking-[0.2em]">
                     <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
@@ -241,7 +241,7 @@ function AdminNoticias() {
       )}
 
       {/* CONTENEDOR DE TABLA / LISTADO */}
-      <div className="bg-white dark:bg-slate-800 rounded-[3rem] shadow-xl shadow-blue-900/5 dark:shadow-none border border-white dark:border-slate-700 relative z-10 overflow-hidden">
+      <div className="bg-white dark:bg-[#1a2332] rounded-[3rem] shadow-xl shadow-blue-900/5 dark:shadow-none border border-white dark:border-[#2a3441] relative z-10 overflow-hidden">
         <div className="p-10 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-center gap-8 bg-slate-50/30">
             <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-2xl bg-blue-50 flex items-center justify-center text-[#003087]">
@@ -263,7 +263,7 @@ function AdminNoticias() {
                     placeholder="Buscar por título o palabra clave..."
                     value={busqueda}
                     onChange={(e) => setBusqueda(e.target.value)}
-                    className="w-full bg-white dark:bg-slate-700 border border-gray-100 dark:border-slate-600 focus:border-[#003087] dark:focus:border-blue-500 focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/30 pl-14 pr-8 py-4 rounded-2xl text-sm outline-none transition-all font-bold text-gray-700 dark:text-slate-200 shadow-sm dark:shadow-none"
+                    className="w-full bg-white dark:bg-[#1f2937] border border-gray-100 dark:border-[#2a3441] focus:border-[#003087] dark:focus:border-[#4b7bec] focus:ring-4 focus:ring-blue-50 dark:focus:ring-blue-900/30 pl-14 pr-8 py-4 rounded-2xl text-sm outline-none transition-all font-bold text-gray-700 dark:text-gray-200 shadow-sm dark:shadow-none"
                 />
             </div>
         </div>
@@ -289,7 +289,7 @@ function AdminNoticias() {
                     </tr>
                 ))
               ) : noticiasFiltradas.map(n => (
-                <tr key={n.id} className="group bg-white dark:bg-slate-800 hover:bg-blue-50/50 dark:hover:bg-slate-700/50 transition-all rounded-[2rem]">
+                <tr key={n.id} className="group bg-white dark:bg-[#1a2332] hover:bg-blue-50/50 dark:hover:bg-[#243040]/50 transition-all rounded-[2rem]">
                   <td className="px-6 py-4 first:rounded-l-[2rem]">
                     <div className="relative w-24 h-16 rounded-2xl overflow-hidden shadow-sm">
                         <img 
@@ -301,8 +301,8 @@ function AdminNoticias() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="font-bold text-gray-800 dark:text-white block truncate max-w-sm group-hover:text-[#003087] dark:group-hover:text-blue-400 transition-colors text-base">{n.titulo}</span>
-                    <p className="text-[11px] text-gray-400 dark:text-slate-400 font-medium mt-1 line-clamp-1">{n.contenido}</p>
+                    <span className="font-bold text-gray-800 dark:text-white block truncate max-w-sm group-hover:text-[#003087] dark:group-hover:text-[#60a5fa] transition-colors text-base">{n.titulo}</span>
+                    <p className="text-[11px] text-gray-400 dark:text-gray-400 font-medium mt-1 line-clamp-1">{n.contenido}</p>
                   </td>
                   <td className="px-6 py-4 text-center">
                     <div className="inline-flex flex-col items-center bg-gray-50 px-4 py-2 rounded-2xl border border-gray-100 group-hover:border-blue-100 transition-colors">
