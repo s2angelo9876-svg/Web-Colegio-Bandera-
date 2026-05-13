@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const carruselController = require('../controllers/carruselController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
-const upload = require('../middleware/uploadMiddleware');
+const { upload, processImage } = require('../middleware/uploadMiddleware');
 const { body, validationResult } = require('express-validator');
 
 // Middleware de validación
@@ -19,7 +19,7 @@ const validateCarrusel = [
 ];
 
 router.get('/', carruselController.getSlides);
-router.post('/', verificarToken, soloAdmin, upload.single('imagen'), validateCarrusel, carruselController.createSlide);
+router.post('/', verificarToken, soloAdmin, upload.single('imagen'), processImage, validateCarrusel, carruselController.createSlide);
 router.delete('/:id', verificarToken, soloAdmin, carruselController.deleteSlide);
 
 module.exports = router;

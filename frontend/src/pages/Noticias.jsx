@@ -96,17 +96,22 @@ function NoticiaCard({ n, index }) {
 
 function Noticias() {
   const [noticias, setNoticias] = useState([]);
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState('');
 
   useEffect(() => {
-    cargarNoticias();
-  }, []);
+    cargarNoticias(pagination.page);
+  }, [pagination.page]);
 
-  const cargarNoticias = () => {
+  const cargarNoticias = (page = 1) => {
     setCargando(true);
-    getNoticias()
-      .then(res => { setNoticias(res.data); setCargando(false); })
+    getNoticias({ page, limit: 6 }) // Limitamos a 6 por página para que se note la paginación
+      .then(res => { 
+        setNoticias(res.data.data); 
+        setPagination(prev => ({ ...prev, totalPages: res.data.pagination.totalPages }));
+        setCargando(false); 
+      })
       .catch(() => setCargando(false));
   };
 
@@ -203,6 +208,29 @@ function Noticias() {
           </div>
         )}
 
+        {/* Paginación */}
+        {!cargando && pagination.totalPages > 1 && (
+          <div className="flex justify-center items-center gap-4 mt-16">
+            <button
+              onClick={() => setPagination(p => ({ ...p, page: Math.max(1, p.page - 1) }))}
+              disabled={pagination.page === 1}
+              className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 rounded-xl text-gray-400 hover:text-[#003087] disabled:opacity-30 transition-all shadow-sm"
+            >
+              <ArrowRight size={20} className="rotate-180" />
+            </button>
+            <span className="text-sm font-black text-gray-900 uppercase tracking-widest">
+              Página {pagination.page} de {pagination.totalPages}
+            </span>
+            <button
+              onClick={() => setPagination(p => ({ ...p, page: Math.min(pagination.totalPages, p.page + 1) }))}
+              disabled={pagination.page === pagination.totalPages}
+              className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 rounded-xl text-gray-400 hover:text-[#003087] disabled:opacity-30 transition-all shadow-sm"
+            >
+              <ArrowRight size={20} />
+            </button>
+          </div>
+        )}
+
         {/* Estado vacío */}
         {!cargando && filtradas.length === 0 && (
           <div className="bg-white rounded-[3rem] p-20 text-center shadow-xl border border-slate-50 flex flex-col items-center animate-fade-in">
@@ -211,13 +239,13 @@ function Noticias() {
             </div>
             <h3 className="text-2xl font-black text-gray-800 mb-2 uppercase tracking-tighter">Sin resultados</h3>
             <p className="text-gray-400 text-sm max-w-sm mb-8 font-medium">
-              No hemos encontrado noticias que coincidan con tu búsqueda. Prueba con otros términos.
+              No hemos encontrado noticias que coincidan con tu búsqueda en esta página.
             </p>
             <button 
-                onClick={() => setBusqueda('')} 
+                onClick={() => { setBusqueda(''); setPagination(p => ({...p, page: 1})); }} 
                 className="text-[#003087] font-black text-[11px] uppercase tracking-widest hover:text-red-600 transition-colors underline underline-offset-4"
             >
-                Ver todas las noticias
+                Reiniciar filtros
             </button>
           </div>
         )}

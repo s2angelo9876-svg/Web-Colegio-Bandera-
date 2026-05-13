@@ -3,6 +3,8 @@ const cors = require('cors')
 const path = require('path')
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
+const compression = require('compression');
+const morgan = require('morgan');
 require('dotenv').config()
 
 const db = require('./config/db') 
@@ -44,6 +46,8 @@ app.use('/api/', limiter);
 
 app.use(cors())
 app.use(express.json())
+app.use(compression()) // Comprime todas las respuestas HTTP
+app.use(morgan('dev')) // Logger de peticiones en consola
 
 // Servir imágenes subidas como archivos estáticos
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))

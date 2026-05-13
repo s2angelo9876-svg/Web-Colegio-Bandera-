@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { getGaleria, createFoto, deleteFoto } = require('../controllers/galeriaController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
-const upload = require('../middleware/uploadMiddleware');
+const { upload, processImage } = require('../middleware/uploadMiddleware');
 const { body, validationResult } = require('express-validator');
 
 // Middleware de validación
@@ -18,7 +18,7 @@ const validateGaleria = [
 ];
 
 router.get('/', getGaleria);
-router.post('/', verificarToken, soloAdmin, upload.single('imagen'), validateGaleria, createFoto);
+router.post('/', verificarToken, soloAdmin, upload.single('imagen'), processImage, validateGaleria, createFoto);
 router.delete('/:id', verificarToken, soloAdmin, deleteFoto);
 
 module.exports = router;

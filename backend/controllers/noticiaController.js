@@ -1,11 +1,29 @@
 const db = require('../config/db');
 
-// Obtener noticias
+// Obtener noticias con paginación
 exports.getNoticias = async (req, res) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const offset = (page - 1) * limit;
+
     try {
-        // En mysql2/promise, query devuelve un array: [filas, campos]
-        const [rows] = await db.query('SELECT * FROM noticias ORDER BY fecha DESC');
-        res.json(rows);
+        // Obtenemos total para el frontend
+        const [[{ total }]] = await db.query('SELECT COUNT(*) as total FROM noticias');
+        
+        const [rows] = await db.query(
+            'SELECT * FROM noticias ORDER BY fecha DESC LIMIT ? OFFSET ?',
+            [limit, offset]
+        );
+
+        res.json({
+            data: rows,
+            pagination: {
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit)
+            }
+        });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

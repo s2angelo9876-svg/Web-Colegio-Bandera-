@@ -17,6 +17,7 @@ const Toast = Swal.mixin({
 
 function AdminNoticias() {
   const [noticias, setNoticias] = useState([])
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1 })
   const [cargando, setCargando] = useState(true)
   const [showForm, setShowForm] = useState(false)
   const [editMode, setEditMode] = useState(null) // ID de la noticia a editar
@@ -29,7 +30,7 @@ function AdminNoticias() {
   const [preview, setPreview] = useState(null)
   const [enviando, setEnviando] = useState(false)
 
-  useEffect(() => { cargarNoticias() }, [])
+  useEffect(() => { cargarNoticias(pagination.page) }, [pagination.page])
 
   useEffect(() => {
     if (!imagen) { setPreview(null); return }
@@ -38,11 +39,12 @@ function AdminNoticias() {
     return () => URL.revokeObjectURL(objectUrl)
   }, [imagen])
 
-  const cargarNoticias = async () => {
+  const cargarNoticias = async (page = 1) => {
     setCargando(true)
     try {
-      const res = await getNoticias()
-      setNoticias(res.data)
+      const res = await getNoticias({ page, limit: 10 })
+      setNoticias(res.data.data)
+      setPagination(prev => ({ ...prev, totalPages: res.data.pagination.totalPages }))
     } catch (error) {
       console.error(error)
     } finally { setCargando(false) }
@@ -331,9 +333,34 @@ function AdminNoticias() {
                 </tr>
               ))}
             </tbody>
-          </table>
-          
-          {!cargando && noticiasFiltradas.length === 0 && (
+        </div>
+
+        {/* Paginación Admin */}
+        {!cargando && pagination.totalPages > 1 && (
+            <div className="p-6 bg-slate-50/50 border-t border-gray-50 flex justify-center items-center gap-6">
+                <button
+                    onClick={() => setPagination(p => ({ ...p, page: Math.max(1, p.page - 1) }))}
+                    disabled={pagination.page === 1}
+                    className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-[#003087] disabled:opacity-30 transition-all shadow-sm"
+                >
+                    <ArrowRight size={20} className="rotate-180" />
+                </button>
+                <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Página</span>
+                    <span className="w-8 h-8 rounded-lg bg-[#003087] text-white flex items-center justify-center font-black text-xs">{pagination.page}</span>
+                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">de {pagination.totalPages}</span>
+                </div>
+                <button
+                    onClick={() => setPagination(p => ({ ...p, page: Math.min(pagination.totalPages, p.page + 1) }))}
+                    disabled={pagination.page === pagination.totalPages}
+                    className="p-3 bg-white border border-gray-100 rounded-xl text-gray-400 hover:text-[#003087] disabled:opacity-30 transition-all shadow-sm"
+                >
+                    <ArrowRight size={20} />
+                </button>
+            </div>
+        )}
+
+        {!cargando && noticiasFiltradas.length === 0 && (
             <div className="py-24 text-center flex flex-col items-center justify-center gap-4">
               <div className="p-6 bg-slate-50 rounded-[2rem] text-gray-300">
                 <Search size={48} />

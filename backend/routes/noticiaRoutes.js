@@ -3,7 +3,7 @@ const router = express.Router()
 const { body, validationResult } = require('express-validator');
 const noticiaController = require('../controllers/noticiaController')
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware')
-const upload = require('../middleware/uploadMiddleware')
+const { upload, processImage } = require('../middleware/uploadMiddleware')
 
 // Middleware para manejar errores de validación
 const handleValidationErrors = (req, res, next) => {
@@ -22,8 +22,8 @@ const validateNoticia = [
 
 // Rutas
 router.get('/', noticiaController.getNoticias)
-router.post('/', verificarToken, soloAdmin, upload.single('imagen'), validateNoticia, noticiaController.crearNoticia)
-router.put('/:id', verificarToken, soloAdmin, upload.single('imagen'), validateNoticia, noticiaController.actualizarNoticia)
+router.post('/', verificarToken, soloAdmin, upload.single('imagen'), processImage, validateNoticia, noticiaController.crearNoticia)
+router.put('/:id', verificarToken, soloAdmin, upload.single('imagen'), processImage, validateNoticia, noticiaController.actualizarNoticia)
 router.delete('/:id', verificarToken, soloAdmin, noticiaController.eliminarNoticia)
 
 module.exports = router
