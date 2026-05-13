@@ -21,10 +21,10 @@ const pasos = [
 
 const Admision = () => {
   const [formData, setFormData] = useState({
-    nombre_padre:   '',
-    nombre_student: '',
-    grado:          '1er Año Secundaria',
-    telefono:       '',
+    nombre_padre:      '',
+    nombre_estudiante: '',
+    grado_interes:     '1er Año Secundaria',
+    celular:           '',
   });
   const [enviando, setEnviando] = useState(false);
   const [status, setStatus]     = useState(null); // 'success' | 'error' | null
@@ -39,7 +39,7 @@ const Admision = () => {
     try {
       await API.post('/admision', formData);
       setStatus('success');
-      setFormData({ nombre_padre: '', nombre_student: '', grado: '1er Año Secundaria', telefono: '' });
+      setFormData({ nombre_padre: '', nombre_estudiante: '', grado_interes: '1er Año Secundaria', celular: '' });
     } catch {
       setStatus('error');
     } finally {
@@ -216,8 +216,8 @@ const Admision = () => {
                           <Phone size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#003087] transition-colors" />
                           <input
                             type="tel"
-                            name="telefono"
-                            value={formData.telefono}
+                            name="celular"
+                            value={formData.celular}
                             onChange={handleChange}
                             placeholder="999 999 999"
                             className="w-full pl-14 pr-6 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-[#003087] rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
@@ -236,8 +236,8 @@ const Admision = () => {
                       <User size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#003087] transition-colors" />
                       <input
                         type="text"
-                        name="nombre_student"
-                        value={formData.nombre_student}
+                        name="nombre_estudiante"
+                        value={formData.nombre_estudiante}
                         onChange={handleChange}
                         placeholder="Nombres y apellidos del alumno"
                         className="w-full pl-14 pr-6 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-[#003087] rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
@@ -254,8 +254,8 @@ const Admision = () => {
                     <div className="relative group">
                       <BookOpen size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#003087] transition-colors pointer-events-none" />
                       <select
-                        name="grado"
-                        value={formData.grado}
+                        name="grado_interes"
+                        value={formData.grado_interes}
                         onChange={handleChange}
                         className="w-full pl-14 pr-12 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-[#003087] rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner appearance-none cursor-pointer"
                       >
