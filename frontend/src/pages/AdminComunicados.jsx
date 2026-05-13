@@ -101,12 +101,12 @@ function AdminComunicados() {
             {/* Header Principal */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16 relative z-10">
                 <div className="animate-in fade-in slide-in-from-left duration-700">
-                    <div className="flex items-center gap-2 text-[#003087] dark:text-[#7cb3ff] font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-[#1a2d4a]/40 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-[#2a4a6a]/50">
+                    <div className="flex items-center gap-2 text-[#003087] dark:text-blue-300 font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-dark-accent/40 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-dark-accent/50">
                         <Megaphone size={14} className="animate-pulse" />
                         Comunicación Institucional
                     </div>
                     <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">
-                        Centro de <span className="text-[#003087] dark:text-[#60a5fa]">Comunicados</span>
+                        Centro de <span className="text-[#003087] dark:text-blue-400">Comunicados</span>
                     </h2>
                     <p className="text-gray-400 dark:text-gray-400 font-bold text-lg">Emite avisos, circulares y alertas urgentes a la comunidad.</p>
                 </div>
@@ -114,7 +114,7 @@ function AdminComunicados() {
                     onClick={() => setShowForm(!showForm)} 
                     className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl transition-all active:scale-95 group ${
                         showForm 
-                        ? 'bg-white dark:bg-[#1a2332] text-gray-700 dark:text-gray-300 border border-gray-100 dark:border-[#2a3441] hover:bg-gray-50 dark:hover:bg-[#243040]' 
+                        ? 'bg-white dark:bg-dark-card text-gray-700 dark:text-gray-300 border border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-hover' 
                         : 'bg-[#003087] text-white shadow-blue-900/30 hover:bg-blue-900'
                     }`}
                 >
@@ -125,7 +125,7 @@ function AdminComunicados() {
             {/* Formulario Animado */}
             {showForm && (
                 <div className="animate-in fade-in slide-in-from-top-6 duration-500 mb-12 relative z-10">
-                    <form onSubmit={handleSubmit} className="p-10 bg-white/80 dark:bg-[#1a2332] backdrop-blur-xl rounded-[3.5rem] shadow-2xl shadow-blue-900/10 dark:shadow-none border border-white dark:border-[#2a3441] flex flex-col gap-8">
+                    <form onSubmit={handleSubmit} className="p-10 bg-white/80 dark:bg-dark-card backdrop-blur-xl rounded-[3.5rem] shadow-2xl shadow-blue-900/10 dark:shadow-none border border-white dark:border-dark-border flex flex-col gap-8">
                         <div className="flex items-center justify-between border-b border-gray-100 pb-6">
                             <div className="flex items-center gap-3 text-[#003087] font-black uppercase text-xs tracking-[0.2em]">
                                 <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
@@ -171,11 +171,11 @@ function AdminComunicados() {
             {/* Listado con Mejor UX */}
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 relative z-10">
                 {comunicados.map(c => (
-                    <div key={c.id} className="bg-white/70 dark:bg-[#1a2332]/90 backdrop-blur-sm border border-white dark:border-[#2a3441] p-8 rounded-[3rem] shadow-xl shadow-blue-900/5 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group overflow-hidden flex flex-col h-full min-h-[320px]">
+                    <div key={c.id} className="bg-white/70 dark:bg-dark-card/90 backdrop-blur-sm border border-white dark:border-dark-border p-8 rounded-[3rem] shadow-xl shadow-blue-900/5 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative group overflow-hidden flex flex-col h-full min-h-[320px]">
                         <div className="absolute -right-8 -top-8 w-24 h-24 bg-blue-50 rounded-full blur-2xl group-hover:bg-blue-100 transition-colors opacity-50" />
                         
                         <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0 z-20">
-                            <button onClick={() => handleEliminar(c.id)} className="bg-white dark:bg-[#1f2937] text-red-500 p-4 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-xl shadow-red-900/10 dark:shadow-none border border-red-50 dark:border-[#2a3441]">
+                            <button onClick={() => handleEliminar(c.id)} className="bg-white dark:bg-dark-input text-red-500 p-4 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-xl shadow-red-900/10 dark:shadow-none border border-red-50 dark:border-dark-border">
                                 <Trash2 size={20} />
                             </button>
                         </div>

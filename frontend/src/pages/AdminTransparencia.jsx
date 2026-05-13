@@ -104,12 +104,12 @@ function AdminTransparencia() {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16 relative z-10">
                 <div className="animate-in fade-in slide-in-from-left duration-700">
-                    <div className="flex items-center gap-2 text-[#003087] dark:text-[#7cb3ff] font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-[#1a2d4a]/40 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-[#2a4a6a]/50">
+                    <div className="flex items-center gap-2 text-[#003087] dark:text-blue-300 font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-dark-accent/40 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-dark-accent/50">
                         <FolderTree size={14} className="animate-pulse" />
                         Gobierno Digital
                     </div>
                     <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">
-                        Portal de <span className="text-[#003087] dark:text-[#60a5fa]">Transparencia</span>
+                        Portal de <span className="text-[#003087] dark:text-blue-400">Transparencia</span>
                     </h2>
                     <p className="text-gray-400 dark:text-gray-400 font-bold text-lg">Rendición de cuentas y normatividad institucional.</p>
                 </div>
@@ -117,7 +117,7 @@ function AdminTransparencia() {
                     onClick={() => setShowForm(!showForm)}
                     className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl transition-all active:scale-95 group ${
                         showForm 
-                        ? 'bg-white dark:bg-[#1a2332] text-gray-700 dark:text-gray-300 border border-gray-100 dark:border-[#2a3441] hover:bg-gray-50 dark:hover:bg-[#243040]' 
+                        ? 'bg-white dark:bg-dark-card text-gray-700 dark:text-gray-300 border border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-hover' 
                         : 'bg-[#003087] text-white shadow-blue-900/30 hover:bg-blue-900'
                     }`}
                 >
@@ -128,7 +128,7 @@ function AdminTransparencia() {
             {/* Formulario Sincronizado */}
             {showForm && (
                 <div className="animate-in fade-in slide-in-from-top-6 duration-500 mb-12 relative z-10">
-                    <form onSubmit={handleSubmit} className="p-10 bg-white/80 dark:bg-[#1a2332] backdrop-blur-xl rounded-[3.5rem] shadow-2xl shadow-blue-900/10 dark:shadow-none border border-white dark:border-[#2a3441] flex flex-col gap-8">
+                    <form onSubmit={handleSubmit} className="p-10 bg-white/80 dark:bg-dark-card backdrop-blur-xl rounded-[3.5rem] shadow-2xl shadow-blue-900/10 dark:shadow-none border border-white dark:border-dark-border flex flex-col gap-8">
                         <div className="flex items-center justify-between border-b border-gray-100 pb-6">
                             <div className="flex items-center gap-3 text-[#003087] font-black uppercase text-xs tracking-[0.2em]">
                                 <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
@@ -178,7 +178,7 @@ function AdminTransparencia() {
             </div>
 
             {/* Tabla Premium */}
-            <div className="bg-white/70 dark:bg-[#1a2332]/90 backdrop-blur-xl rounded-[3rem] shadow-2xl shadow-blue-900/5 border border-white overflow-hidden relative z-10">
+            <div className="bg-white/70 dark:bg-dark-card/90 backdrop-blur-xl rounded-[3rem] shadow-2xl shadow-blue-900/5 border border-white overflow-hidden relative z-10">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left">
                         <thead>

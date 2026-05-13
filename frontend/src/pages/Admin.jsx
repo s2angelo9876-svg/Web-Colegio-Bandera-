@@ -182,7 +182,7 @@ function Admin() {
 
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 relative z-10 gap-6">
           <div className="animate-in fade-in slide-in-from-left duration-700">
-            <div className="flex items-center gap-3 text-[#003087] dark:text-[#7cb3ff] font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-[#1a2d4a]/40 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-[#2a4a6a]/50">
+            <div className="flex items-center gap-3 text-[#003087] dark:text-blue-300 font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-dark-accent/40 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-dark-accent/50">
               <Clock size={14} className="animate-pulse" />
               {currentTime.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
             </div>
@@ -197,11 +197,11 @@ function Admin() {
           <div className="flex gap-4 animate-in fade-in slide-in-from-right duration-700 items-center">
             <button 
               onClick={toggleDarkMode}
-              className="w-14 h-14 bg-white dark:bg-[#1a2332] border border-gray-100 dark:border-[#2a3441] rounded-2xl flex items-center justify-center text-gray-400 dark:text-gray-300 hover:text-[#003087] dark:hover:text-[#60a5fa] hover:border-blue-200 dark:hover:border-blue-500/50 transition-all shadow-sm hover:shadow-xl group"
+              className="w-14 h-14 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl flex items-center justify-center text-gray-400 dark:text-gray-300 hover:text-[#003087] dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-500/50 transition-all shadow-sm hover:shadow-xl group"
             >
               {isDarkMode ? <Sun size={24} className="group-hover:rotate-45 transition-transform" /> : <Moon size={24} className="group-hover:-rotate-12 transition-transform" />}
             </button>
-            <button className="w-14 h-14 bg-white dark:bg-[#1a2332] border border-gray-100 dark:border-[#2a3441] rounded-2xl flex items-center justify-center text-gray-400 dark:text-gray-300 hover:text-[#003087] dark:hover:text-[#60a5fa] hover:border-blue-200 dark:hover:border-blue-500/50 transition-all shadow-sm hover:shadow-xl group">
+            <button className="w-14 h-14 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl flex items-center justify-center text-gray-400 dark:text-gray-300 hover:text-[#003087] dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-500/50 transition-all shadow-sm hover:shadow-xl group">
               <Bell size={24} className="group-hover:rotate-12 transition-transform" />
             </button>
             <Link to="/" className="flex items-center gap-3 px-8 py-4 bg-[#003087] text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl shadow-blue-900/30 hover:bg-blue-900 transition-all active:scale-95 group">
@@ -276,7 +276,7 @@ function Admin() {
         </div>
 
         {/* ACCIONES RÁPIDAS */}
-        <div className="relative z-10 bg-white/50 dark:bg-[#1a2332]/60 backdrop-blur-sm p-10 rounded-[3rem] border border-white dark:border-[#2a3441]">
+        <div className="relative z-10 bg-white/50 dark:bg-dark-card/60 backdrop-blur-sm p-10 rounded-[3rem] border border-white dark:border-dark-border">
           <h3 className="text-[10px] font-black text-gray-400 dark:text-gray-400 uppercase tracking-[0.4em] mb-10 text-center">Acceso Directo a Módulos</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             <QuickAction to="noticias" color="blue" title="Redactar Noticia" icon={Newspaper} />
@@ -293,7 +293,7 @@ function Admin() {
 
 function StatCard({ label, count, loading, icon, color, bg, footer }) {
   return (
-    <div className="bg-white dark:bg-[#1a2332] p-8 rounded-[2.5rem] border border-gray-100 dark:border-[#2a3441] shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group overflow-hidden relative">
+    <div className="bg-white dark:bg-dark-card p-8 rounded-[2.5rem] border border-gray-100 dark:border-dark-border shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group overflow-hidden relative">
       <div className={`absolute -right-10 -top-10 w-32 h-32 rounded-full blur-3xl opacity-10 ${bg}`}></div>
       <div className="flex justify-between items-start mb-8 relative z-10">
         <div className={`p-5 rounded-2xl ${bg} text-white group-hover:scale-110 transition-transform shadow-xl shadow-blue-900/10`}>
@@ -305,14 +305,14 @@ function StatCard({ label, count, loading, icon, color, bg, footer }) {
         <p className="text-gray-400 dark:text-gray-400 text-[11px] font-black uppercase tracking-[0.2em] mb-2">{label}</p>
         {loading ? (
           <div className="h-14 flex items-center">
-            <div className="h-10 w-24 bg-slate-50 dark:bg-[#1f2937] rounded-xl animate-pulse"></div>
+            <div className="h-10 w-24 bg-slate-50 dark:bg-dark-input rounded-xl animate-pulse"></div>
           </div>
         ) : (
           <h3 className="text-6xl font-black text-gray-900 dark:text-white animate-in fade-in slide-in-from-bottom-4 duration-700 tracking-tighter">{count}</h3>
         )}
       </div>
 
-      <div className="mt-8 pt-6 border-t border-gray-50 dark:border-[#2a3441] flex items-center justify-between relative z-10">
+      <div className="mt-8 pt-6 border-t border-gray-50 dark:border-dark-border flex items-center justify-between relative z-10">
         <span className="text-[10px] font-bold text-gray-400 dark:text-gray-400 uppercase tracking-[0.15em]">{footer}</span>
         <div className="flex gap-1.5">
           <div className="w-2 h-2 rounded-full bg-blue-100" />

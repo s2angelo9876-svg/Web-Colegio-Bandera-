@@ -259,7 +259,7 @@ function Inicio() {
             {pilares.map((p, i) => (
               <div
                 key={p.title}
-                className="group p-12 rounded-[3.5rem] bg-slate-50 dark:bg-[#1a2332] hover:bg-white dark:hover:bg-[#243040] border-2 border-transparent hover:border-slate-100 dark:hover:border-slate-600 transition-all duration-700 shadow-sm hover:shadow-2xl relative overflow-hidden"
+                className="group p-12 rounded-[3.5rem] bg-slate-50 dark:bg-dark-card hover:bg-white dark:hover:bg-dark-hover border-2 border-transparent hover:border-slate-100 dark:hover:border-slate-600 transition-all duration-700 shadow-sm hover:shadow-2xl relative overflow-hidden"
               >
                 <div className={`w-24 h-24 ${p.iconBg} ${p.iconColor} rounded-[2rem] flex items-center justify-center mb-10 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-xl`}>
                   <p.icon size={40} />
