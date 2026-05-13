@@ -8,8 +8,6 @@ import {
 import Footer from '../components/Footer';
 
 const grados = [
-  '1er Grado Primaria', '2do Grado Primaria', '3er Grado Primaria',
-  '4to Grado Primaria', '5to Grado Primaria', '6to Grado Primaria',
   '1er Año Secundaria', '2do Año Secundaria', '3er Año Secundaria',
   '4to Año Secundaria', '5to Año Secundaria',
 ];
@@ -25,7 +23,7 @@ const Admision = () => {
   const [formData, setFormData] = useState({
     nombre_padre:   '',
     nombre_student: '',
-    grado:          '1er Grado Primaria',
+    grado:          '1er Año Secundaria',
     telefono:       '',
   });
   const [enviando, setEnviando] = useState(false);
@@ -41,7 +39,7 @@ const Admision = () => {
     try {
       await API.post('/admision', formData);
       setStatus('success');
-      setFormData({ nombre_padre: '', nombre_student: '', grado: '1er Grado Primaria', telefono: '' });
+      setFormData({ nombre_padre: '', nombre_student: '', grado: '1er Año Secundaria', telefono: '' });
     } catch {
       setStatus('error');
     } finally {
