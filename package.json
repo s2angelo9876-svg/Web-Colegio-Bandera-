@@ -1,0 +1,24 @@
+{
+  "name": "web_institucional",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/s2angelo9876-svg/Web-Colegio-Bandera-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/s2angelo9876-svg/Web-Colegio-Bandera-/issues"
+  },
+  "homepage": "https://github.com/s2angelo9876-svg/Web-Colegio-Bandera-#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
