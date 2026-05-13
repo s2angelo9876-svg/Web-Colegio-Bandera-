@@ -73,6 +73,18 @@ const initDb = async () => {
             )
         `);
 
+        // 7. Tabla Admisiones
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS admisiones (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                nombre_padre VARCHAR(255) NOT NULL,
+                nombre_estudiante VARCHAR(255) NOT NULL,
+                grado_interes VARCHAR(100) NOT NULL,
+                celular VARCHAR(20) NOT NULL,
+                fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
         console.log('✅ Base de datos verificada y tablas aseguradas.');
     } catch (error) {
         console.error('❌ Error al inicializar la base de datos:', error.message);
