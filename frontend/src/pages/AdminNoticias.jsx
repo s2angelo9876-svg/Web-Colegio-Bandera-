@@ -333,6 +333,17 @@ function AdminNoticias() {
                 </tr>
               ))}
             </tbody>
+          </table>
+          
+          {!cargando && noticiasFiltradas.length === 0 && (
+            <div className="py-24 text-center flex flex-col items-center justify-center gap-4">
+              <div className="p-6 bg-slate-50 rounded-[2rem] text-gray-300">
+                <Search size={48} />
+              </div>
+              <p className="text-gray-400 font-bold tracking-tight text-lg">No se encontraron noticias con ese criterio.</p>
+              <button onClick={() => setBusqueda('')} className="text-[#003087] font-black text-[10px] uppercase tracking-widest hover:underline mt-2">Limpiar búsqueda</button>
+            </div>
+          )}
         </div>
 
         {/* Paginación Admin */}
@@ -359,17 +370,6 @@ function AdminNoticias() {
                 </button>
             </div>
         )}
-
-        {!cargando && noticiasFiltradas.length === 0 && (
-            <div className="py-24 text-center flex flex-col items-center justify-center gap-4">
-              <div className="p-6 bg-slate-50 rounded-[2rem] text-gray-300">
-                <Search size={48} />
-              </div>
-              <p className="text-gray-400 font-bold tracking-tight text-lg">No se encontraron noticias con ese criterio.</p>
-              <button onClick={() => setBusqueda('')} className="text-[#003087] font-black text-[10px] uppercase tracking-widest hover:underline mt-2">Limpiar búsqueda</button>
-            </div>
-          )}
-        </div>
       </div>
     </div>
   )
