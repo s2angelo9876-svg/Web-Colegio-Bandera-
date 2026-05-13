@@ -89,10 +89,14 @@ function AppContent() {
   )
 }
 
+import { ThemeProvider } from './context/ThemeContext'
+
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
     </AuthProvider>
   )
 }

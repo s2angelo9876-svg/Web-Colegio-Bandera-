@@ -11,10 +11,12 @@ import {
   API
 } from '../services/api'
 
+import { useTheme } from '../context/ThemeContext'
+
 import {
   Newspaper, Calendar, Megaphone, FolderTree,
   Users, Image as ImageIcon, LayoutDashboard, LogOut,
-  ChevronRight, Bell, Loader2, Briefcase, ArrowUpRight, Clock, Settings, FileText
+  ChevronRight, Bell, Loader2, Briefcase, ArrowUpRight, Clock, Settings, FileText, Moon, Sun
 } from 'lucide-react'
 import AdminChart from '../components/AdminChart';
 
@@ -56,6 +58,7 @@ function SidebarItem({ to, icon: Icon, label, active }) {
 }
 function Admin() {
   const { usuario, logout } = useAuth()
+  const { isDarkMode, toggleDarkMode } = useTheme()
   const navigate = useNavigate()
   const location = useLocation()
   const [currentTime, setCurrentTime] = useState(new Date())
@@ -114,7 +117,7 @@ function Admin() {
   const isActive = (path) => location.pathname === `/admin/${path}` || (path === '' && location.pathname === '/admin')
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC]">
+    <div className="flex min-h-screen bg-[#F8FAFC] dark:bg-slate-900 transition-colors duration-300">
 
       {/* SIDEBAR FIJO ULTRA-PREMIUM */}
       <aside className="w-72 bg-[#001D52] flex flex-col p-6 sticky top-0 h-screen shadow-[10px_0_40px_rgba(0,0,0,0.1)] z-30">
@@ -179,20 +182,26 @@ function Admin() {
 
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 relative z-10 gap-6">
           <div className="animate-in fade-in slide-in-from-left duration-700">
-            <div className="flex items-center gap-3 text-[#003087] font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 w-fit px-4 py-2 rounded-full border border-blue-100/50">
+            <div className="flex items-center gap-3 text-[#003087] dark:text-blue-300 font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-blue-900/30 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-blue-800/50">
               <Clock size={14} className="animate-pulse" />
               {currentTime.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
             </div>
-            <h2 className="text-5xl font-black text-gray-900 tracking-tight leading-none mb-4">
+            <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">
               Dashboard
             </h2>
-            <p className="text-gray-400 font-bold text-lg flex items-center gap-2">
-              Bienvenido de vuelta, <span className="text-gray-800">{usuario?.username}</span>
+            <p className="text-gray-400 dark:text-slate-400 font-bold text-lg flex items-center gap-2">
+              Bienvenido de vuelta, <span className="text-gray-800 dark:text-slate-200">{usuario?.username}</span>
             </p>
           </div>
 
-          <div className="flex gap-4 animate-in fade-in slide-in-from-right duration-700">
-            <button className="w-14 h-14 bg-white border border-gray-100 rounded-2xl flex items-center justify-center text-gray-400 hover:text-[#003087] hover:border-blue-200 transition-all shadow-sm hover:shadow-xl group">
+          <div className="flex gap-4 animate-in fade-in slide-in-from-right duration-700 items-center">
+            <button 
+              onClick={toggleDarkMode}
+              className="w-14 h-14 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl flex items-center justify-center text-gray-400 dark:text-slate-300 hover:text-[#003087] dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-500/50 transition-all shadow-sm hover:shadow-xl group"
+            >
+              {isDarkMode ? <Sun size={24} className="group-hover:rotate-45 transition-transform" /> : <Moon size={24} className="group-hover:-rotate-12 transition-transform" />}
+            </button>
+            <button className="w-14 h-14 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl flex items-center justify-center text-gray-400 dark:text-slate-300 hover:text-[#003087] dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-500/50 transition-all shadow-sm hover:shadow-xl group">
               <Bell size={24} className="group-hover:rotate-12 transition-transform" />
             </button>
             <Link to="/" className="flex items-center gap-3 px-8 py-4 bg-[#003087] text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl shadow-blue-900/30 hover:bg-blue-900 transition-all active:scale-95 group">
@@ -267,8 +276,8 @@ function Admin() {
         </div>
 
         {/* ACCIONES RÁPIDAS */}
-        <div className="relative z-10 bg-white/50 backdrop-blur-sm p-10 rounded-[3rem] border border-white">
-          <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-[0.4em] mb-10 text-center">Acceso Directo a Módulos</h3>
+        <div className="relative z-10 bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm p-10 rounded-[3rem] border border-white dark:border-slate-700">
+          <h3 className="text-[10px] font-black text-gray-400 dark:text-slate-400 uppercase tracking-[0.4em] mb-10 text-center">Acceso Directo a Módulos</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             <QuickAction to="noticias" color="blue" title="Redactar Noticia" icon={Newspaper} />
             <QuickAction to="eventos" color="red" title="Nuevo Evento" icon={Calendar} />
@@ -284,27 +293,27 @@ function Admin() {
 
 function StatCard({ label, count, loading, icon, color, bg, footer }) {
   return (
-    <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group overflow-hidden relative">
+    <div className="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] border border-gray-100 dark:border-slate-700 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 group overflow-hidden relative">
       <div className={`absolute -right-10 -top-10 w-32 h-32 rounded-full blur-3xl opacity-10 ${bg}`}></div>
       <div className="flex justify-between items-start mb-8 relative z-10">
         <div className={`p-5 rounded-2xl ${bg} text-white group-hover:scale-110 transition-transform shadow-xl shadow-blue-900/10`}>
           {icon}
         </div>
-        <ArrowUpRight className="text-gray-200 group-hover:text-gray-400 transition-colors" size={24} />
+        <ArrowUpRight className="text-gray-200 dark:text-slate-600 group-hover:text-gray-400 dark:group-hover:text-slate-400 transition-colors" size={24} />
       </div>
       <div className="relative z-10">
-        <p className="text-gray-400 text-[11px] font-black uppercase tracking-[0.2em] mb-2">{label}</p>
+        <p className="text-gray-400 dark:text-slate-400 text-[11px] font-black uppercase tracking-[0.2em] mb-2">{label}</p>
         {loading ? (
           <div className="h-14 flex items-center">
-            <div className="h-10 w-24 bg-slate-50 rounded-xl animate-pulse"></div>
+            <div className="h-10 w-24 bg-slate-50 dark:bg-slate-700 rounded-xl animate-pulse"></div>
           </div>
         ) : (
-          <h3 className="text-6xl font-black text-gray-900 animate-in fade-in slide-in-from-bottom-4 duration-700 tracking-tighter">{count}</h3>
+          <h3 className="text-6xl font-black text-gray-900 dark:text-white animate-in fade-in slide-in-from-bottom-4 duration-700 tracking-tighter">{count}</h3>
         )}
       </div>
 
-      <div className="mt-8 pt-6 border-t border-gray-50 flex items-center justify-between relative z-10">
-        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em]">{footer}</span>
+      <div className="mt-8 pt-6 border-t border-gray-50 dark:border-slate-700 flex items-center justify-between relative z-10">
+        <span className="text-[10px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-[0.15em]">{footer}</span>
         <div className="flex gap-1.5">
           <div className="w-2 h-2 rounded-full bg-blue-100" />
           <div className="w-2 h-2 rounded-full bg-blue-200" />
