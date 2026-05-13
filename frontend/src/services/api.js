@@ -36,7 +36,8 @@ export const getDocentes = () => API.get('/docentes')
 export const getEventos = () => API.get('/eventos')
 export const getGaleria = () => API.get('/galeria')
 export const getComunicados = () => API.get('/comunicados')
-
+export const getAdmisiones = () => API.get('/admision')
+export const eliminarAdmision = (id) => API.delete(`/admision/${id}`)
 export const getTransparencia = (categoria) =>
   API.get('/transparencia', { params: categoria ? { categoria } : {} })
 

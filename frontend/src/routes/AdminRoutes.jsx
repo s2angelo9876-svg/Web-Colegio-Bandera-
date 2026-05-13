@@ -8,6 +8,7 @@ import AdminAdministrativos from '../pages/AdminAdministrativos'; // Importar nu
 import AdminTransparencia from '../pages/AdminTransparencia'; // Importar nuevo
 import AdminGaleria from '../pages/AdminGaleria'; // Importar nuevo
 import AdminConfigInicio from '../pages/AdminConfigInicio';
+import AdminAdmisiones from '../pages/AdminAdmisiones'; // Nuevo import
 
 function AdminRoutes() {
   return (
@@ -19,6 +20,7 @@ function AdminRoutes() {
       <Route path="noticias" element={<AdminNoticias />} />
       <Route path="eventos" element={<AdminEventos />} />
       <Route path="comunicados" element={<AdminComunicados />} />
+      <Route path="admisiones" element={<AdminAdmisiones />} />
 
       {/* Rutas Institucionales */}
       <Route path="transparencia" element={<AdminTransparencia />} />

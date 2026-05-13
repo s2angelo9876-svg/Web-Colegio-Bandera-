@@ -23,3 +23,15 @@ exports.obtenerSolicitudes = async (req, res) => {
         res.status(500).json({ message: "Error al obtener solicitudes" });
     }
 };
+
+// Eliminar una solicitud
+exports.eliminarSolicitud = async (req, res) => {
+    try {
+        const { id } = req.params;
+        await db.query('DELETE FROM admisiones WHERE id = ?', [id]);
+        res.json({ message: "Solicitud eliminada correctamente" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error al eliminar la solicitud" });
+    }
+};
