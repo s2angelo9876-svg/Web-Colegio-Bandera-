@@ -16,6 +16,7 @@
   --color-dark-hover: #1e293b;
   --color-dark-input: #0f172a;
   --color-dark-accent: #3b82f6;
+  --color-dark-accent-text: #60a5fa;
 
   --shadow-card: 0 4px 24px rgba(0, 48, 135, 0.08);
   --shadow-card-hover: 0 20px 60px rgba(0, 48, 135, 0.14);
@@ -75,8 +76,18 @@ html.dark .border-gray-100 { border-color: #1e293b !important; }
 html.dark .border-gray-200 { border-color: #1e293b !important; }
 
 /* Institutional Blue adaptation */
-html.dark .text-primary { color: var(--color-dark-accent) !important; }
-html.dark .bg-primary { background-color: var(--color-dark-accent) !important; }
+html.dark .text-primary,
+html.dark .text-primary-dark,
+html.dark .text-\[\#003087\],
+html.dark .text-\[\#001D52\] { 
+  color: var(--color-dark-accent-text) !important; 
+}
+html.dark .bg-primary,
+html.dark .bg-primary-dark,
+html.dark .bg-\[\#003087\],
+html.dark .bg-\[\#001D52\] { 
+  background-color: var(--color-dark-accent) !important; 
+}
 
 /* Premium Card Style */
 html.dark .card-premium {
