@@ -96,7 +96,7 @@ function AdminTransparencia() {
         : documentos.filter(d => d.categoria === filtro)
 
     return (
-        <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-dark-bg min-h-screen transition-colors duration-300 relative overflow-hidden">
+        <div className="p-8 lg:p-12 bg-surface dark:bg-dark-bg min-h-screen transition-colors duration-300 relative overflow-hidden">
             {/* Decorative background mesh */}
             <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/30 rounded-full blur-[120px] -z-10 pointer-events-none" />
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-red-50/50 rounded-full blur-[120px] -z-10 pointer-events-none" />
@@ -104,12 +104,12 @@ function AdminTransparencia() {
             {/* Header */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16 relative z-10">
                 <div className="animate-in fade-in slide-in-from-left duration-700">
-                    <div className="flex items-center gap-2 text-[#003087] dark:text-blue-300 font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-dark-accent/40 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-dark-accent/50">
+                    <div className="flex items-center gap-2 text-primary dark:text-blue-300 font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-dark-accent/40 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-dark-accent/50">
                         <FolderTree size={14} className="animate-pulse" />
                         Gobierno Digital
                     </div>
                     <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">
-                        Portal de <span className="text-[#003087] dark:text-blue-400">Transparencia</span>
+                        Portal de <span className="text-primary dark:text-blue-400">Transparencia</span>
                     </h2>
                     <p className="text-gray-400 dark:text-slate-400 font-bold text-lg">Rendición de cuentas y normatividad institucional.</p>
                 </div>
@@ -118,7 +118,7 @@ function AdminTransparencia() {
                     className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl transition-all active:scale-95 group ${
                         showForm 
                         ? 'bg-white dark:bg-dark-card text-gray-700 dark:text-slate-300 border border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-hover' 
-                        : 'bg-[#003087] text-white shadow-blue-900/30 hover:bg-blue-900'
+                        : 'bg-primary text-white shadow-blue-900/30 hover:bg-blue-900'
                     }`}
                 >
                     {showForm ? <><X size={18}/> Cancelar Registro</> : <><FilePlus size={18}/> Cargar Documento</>}
@@ -130,7 +130,7 @@ function AdminTransparencia() {
                 <div className="animate-in fade-in slide-in-from-top-6 duration-500 mb-12 relative z-10">
                     <form onSubmit={handleSubmit} className="p-10 bg-white/80 dark:bg-dark-card backdrop-blur-xl rounded-[3.5rem] shadow-2xl shadow-blue-900/10 dark:shadow-none border border-white dark:border-dark-border flex flex-col gap-8">
                         <div className="flex items-center justify-between border-b border-gray-100 pb-6">
-                            <div className="flex items-center gap-3 text-[#003087] font-black uppercase text-xs tracking-[0.2em]">
+                            <div className="flex items-center gap-3 text-primary font-black uppercase text-xs tracking-[0.2em]">
                                 <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
                                     <Info size={18}/>
                                 </div>
@@ -139,28 +139,28 @@ function AdminTransparencia() {
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                             <div className="space-y-2 group">
-                                <label className="text-[10px] font-black text-gray-400 uppercase ml-4 tracking-widest group-focus-within:text-[#003087] transition-colors">Título del Recurso</label>
-                                <input type="text" className="w-full p-5 rounded-2xl bg-slate-50/50 border border-transparent focus:border-[#003087] focus:bg-white focus:ring-4 focus:ring-blue-50 font-bold text-gray-800 outline-none transition-all" value={form.titulo} onChange={e => setForm({...form, titulo: e.target.value})} required placeholder="Ej: Presupuesto Anual" />
+                                <label className="text-[10px] font-black text-gray-400 uppercase ml-4 tracking-widest group-focus-within:text-primary transition-colors">Título del Recurso</label>
+                                <input type="text" className="w-full p-5 rounded-2xl bg-slate-50/50 border border-transparent focus:border-primary focus:bg-white focus:ring-4 focus:ring-blue-50 font-bold text-gray-800 outline-none transition-all" value={form.titulo} onChange={e => setForm({...form, titulo: e.target.value})} required placeholder="Ej: Presupuesto Anual" />
                             </div>
                             <div className="space-y-2 group">
-                                <label className="text-[10px] font-black text-gray-400 uppercase ml-4 tracking-widest group-focus-within:text-[#003087] transition-colors">Categoría Legal</label>
-                                <select className="w-full p-5 rounded-2xl bg-slate-50/50 border border-transparent focus:border-[#003087] focus:bg-white focus:ring-4 focus:ring-blue-50 font-black text-gray-700 outline-none transition-all cursor-pointer appearance-none" value={form.categoria} onChange={e => setForm({...form, categoria: e.target.value})}>
+                                <label className="text-[10px] font-black text-gray-400 uppercase ml-4 tracking-widest group-focus-within:text-primary transition-colors">Categoría Legal</label>
+                                <select className="w-full p-5 rounded-2xl bg-slate-50/50 border border-transparent focus:border-primary focus:bg-white focus:ring-4 focus:ring-blue-50 font-black text-gray-700 outline-none transition-all cursor-pointer appearance-none" value={form.categoria} onChange={e => setForm({...form, categoria: e.target.value})}>
                                     {categorias.map(cat => <option key={cat.id} value={cat.id}>{cat.label}</option>)}
                                 </select>
                             </div>
                             <div className="space-y-2 group">
-                                <label className="text-[10px] font-black text-gray-400 uppercase ml-4 tracking-widest group-focus-within:text-[#003087] transition-colors">Etiqueta / Año</label>
-                                <input type="text" className="w-full p-5 rounded-2xl bg-slate-50/50 border border-transparent focus:border-[#003087] focus:bg-white focus:ring-4 focus:ring-blue-50 font-bold text-gray-800 outline-none transition-all" value={form.descripcion} onChange={e => setForm({...form, descripcion: e.target.value})} placeholder="Ej: Año Fiscal 2024" />
+                                <label className="text-[10px] font-black text-gray-400 uppercase ml-4 tracking-widest group-focus-within:text-primary transition-colors">Etiqueta / Año</label>
+                                <input type="text" className="w-full p-5 rounded-2xl bg-slate-50/50 border border-transparent focus:border-primary focus:bg-white focus:ring-4 focus:ring-blue-50 font-bold text-gray-800 outline-none transition-all" value={form.descripcion} onChange={e => setForm({...form, descripcion: e.target.value})} placeholder="Ej: Año Fiscal 2024" />
                             </div>
                         </div>
                         <div className="space-y-2 group">
-                            <label className="text-[10px] font-black text-gray-400 uppercase ml-4 tracking-widest group-focus-within:text-[#003087] transition-colors">Enlace de Acceso (PDF/Drive)</label>
+                            <label className="text-[10px] font-black text-gray-400 uppercase ml-4 tracking-widest group-focus-within:text-primary transition-colors">Enlace de Acceso (PDF/Drive)</label>
                             <div className="relative">
                                 <FileText className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300" size={20} />
-                                <input type="text" className="w-full p-5 pl-14 rounded-2xl bg-slate-50/50 border border-transparent focus:border-[#003087] focus:bg-white focus:ring-4 focus:ring-blue-50 font-medium text-[#003087] outline-none transition-all" value={form.archivo_pdf} onChange={e => setForm({...form, archivo_pdf: e.target.value})} required placeholder="https://drive.google.com/..." />
+                                <input type="text" className="w-full p-5 pl-14 rounded-2xl bg-slate-50/50 border border-transparent focus:border-primary focus:bg-white focus:ring-4 focus:ring-blue-50 font-medium text-primary outline-none transition-all" value={form.archivo_pdf} onChange={e => setForm({...form, archivo_pdf: e.target.value})} required placeholder="https://drive.google.com/..." />
                             </div>
                         </div>
-                        <button className="bg-gradient-to-r from-[#003087] to-blue-900 text-white py-6 rounded-[1.5rem] font-black uppercase tracking-[0.2em] hover:shadow-2xl hover:shadow-blue-900/40 hover:-translate-y-1 transition-all active:scale-[0.98] text-xs">
+                        <button className="bg-gradient-to-r from-primary to-blue-900 text-white py-6 rounded-[1.5rem] font-black uppercase tracking-[0.2em] hover:shadow-2xl hover:shadow-blue-900/40 hover:-translate-y-1 transition-all active:scale-[0.98] text-xs">
                             Confirmar Publicación Oficial
                         </button>
                     </form>
@@ -169,9 +169,9 @@ function AdminTransparencia() {
 
             {/* Filtros Premium */}
             <div className="flex gap-4 mb-12 overflow-x-auto pb-4 no-scrollbar relative z-10">
-                <button onClick={() => setFiltro('Todos')} className={`px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl active:scale-95 ${filtro === 'Todos' ? 'bg-[#003087] text-white shadow-blue-900/20' : 'bg-white text-gray-400 hover:bg-gray-50 border border-white'}`}>Todos los Recursos</button>
+                <button onClick={() => setFiltro('Todos')} className={`px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all shadow-xl active:scale-95 ${filtro === 'Todos' ? 'bg-primary text-white shadow-blue-900/20' : 'bg-white text-gray-400 hover:bg-gray-50 border border-white'}`}>Todos los Recursos</button>
                 {categorias.map(cat => (
-                    <button key={cat.id} onClick={() => setFiltro(cat.id)} className={`px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all shadow-xl active:scale-95 ${filtro === cat.id ? 'bg-[#003087] text-white shadow-blue-900/20' : 'bg-white text-gray-400 hover:bg-gray-50 border border-white'}`}>
+                    <button key={cat.id} onClick={() => setFiltro(cat.id)} className={`px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest whitespace-nowrap transition-all shadow-xl active:scale-95 ${filtro === cat.id ? 'bg-primary text-white shadow-blue-900/20' : 'bg-white text-gray-400 hover:bg-gray-50 border border-white'}`}>
                         {cat.label}
                     </button>
                 ))}
@@ -198,7 +198,7 @@ function AdminTransparencia() {
                                                 <FileText size={24} />
                                             </div>
                                             <div>
-                                                <div className="font-black text-gray-900 text-lg group-hover:text-[#003087] transition-colors tracking-tight">{doc.titulo}</div>
+                                                <div className="font-black text-gray-900 text-lg group-hover:text-primary transition-colors tracking-tight">{doc.titulo}</div>
                                                 <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1 flex items-center gap-2">
                                                     <div className="w-1 h-1 rounded-full bg-gray-300" />
                                                     {doc.descripcion || 'Sin metadatos'}
@@ -207,7 +207,7 @@ function AdminTransparencia() {
                                         </div>
                                     </td>
                                     <td className="px-10 py-6">
-                                        <span className="px-4 py-2 bg-blue-50 text-[#003087] rounded-xl text-[9px] font-black uppercase tracking-widest border border-blue-100/50 group-hover:bg-white transition-colors">{doc.categoria}</span>
+                                        <span className="px-4 py-2 bg-blue-50 text-primary rounded-xl text-[9px] font-black uppercase tracking-widest border border-blue-100/50 group-hover:bg-white transition-colors">{doc.categoria}</span>
                                     </td>
                                     <td className="px-10 py-6">
                                         <div className="text-[11px] font-black text-gray-400 uppercase tracking-tighter">
@@ -216,7 +216,7 @@ function AdminTransparencia() {
                                     </td>
                                     <td className="px-10 py-6">
                                         <div className="flex justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                                            <a href={doc.archivo_pdf} target="_blank" rel="noreferrer" className="p-4 bg-white border border-gray-100 text-[#003087] hover:bg-[#003087] hover:text-white rounded-2xl shadow-xl shadow-blue-900/10 transition-all" title="Ver documento">
+                                            <a href={doc.archivo_pdf} target="_blank" rel="noreferrer" className="p-4 bg-white border border-gray-100 text-primary hover:bg-primary hover:text-white rounded-2xl shadow-xl shadow-blue-900/10 transition-all" title="Ver documento">
                                                 <ExternalLink size={20} />
                                             </a>
                                             <button onClick={() => handleEliminar(doc.id)} className="p-4 bg-white border border-gray-100 text-red-500 hover:bg-red-500 hover:text-white rounded-2xl shadow-xl shadow-red-900/10 transition-all" title="Eliminar registro">
@@ -235,7 +235,7 @@ function AdminTransparencia() {
                             <FolderTree size={40} />
                         </div>
                         <p className="text-gray-400 dark:text-slate-400 font-black text-lg tracking-tight">No se encontraron documentos en esta categoría.</p>
-                        <button onClick={() => setFiltro('Todos')} className="text-[#003087] font-black text-[10px] uppercase tracking-widest mt-4 hover:underline">Ver todos los archivos</button>
+                        <button onClick={() => setFiltro('Todos')} className="text-primary font-black text-[10px] uppercase tracking-widest mt-4 hover:underline">Ver todos los archivos</button>
                     </div>
                 )}
             </div>

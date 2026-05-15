@@ -47,16 +47,16 @@ function Administrativos() {
                                         alt={p.nombre}
                                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                                     />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#003087]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-primary/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                                     <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-4 py-1.5 rounded-full shadow-lg transform translate-y-[-20px] group-hover:translate-y-0 opacity-0 group-hover:opacity-100 transition-all duration-300">
                                         <span className="text-xs font-black text-blue-800 uppercase tracking-widest">{p.area || 'General'}</span>
                                     </div>
                                 </div>
                                 <div className="p-8 text-center relative bg-white">
-                                    <h3 className="text-xl font-black text-gray-800 mb-1 group-hover:text-[#003087] transition-colors">{p.nombre}</h3>
+                                    <h3 className="text-xl font-black text-gray-800 mb-1 group-hover:text-primary transition-colors">{p.nombre}</h3>
                                     <p className="text-blue-600 font-bold text-sm uppercase tracking-tighter mb-4">{p.cargo}</p>
                                     <div className="flex justify-center gap-2">
-                                        <div className="p-3 bg-gray-50 rounded-full text-gray-400 hover:bg-[#003087] hover:text-white transition-all cursor-pointer shadow-sm hover:shadow-md">
+                                        <div className="p-3 bg-gray-50 rounded-full text-gray-400 hover:bg-primary hover:text-white transition-all cursor-pointer shadow-sm hover:shadow-md">
                                             <Briefcase size={18} />
                                         </div>
                                     </div>

@@ -25,7 +25,7 @@ function DocenteCard({ doc, index }) {
   const cargoColor =
     doc.cargo?.toLowerCase().includes('director') ? 'bg-red-600 shadow-red-900/40' :
     doc.cargo?.toLowerCase().includes('coordinad') ? 'bg-blue-700 shadow-blue-900/40' :
-    'bg-[#003087] shadow-blue-900/40';
+    'bg-primary shadow-blue-900/40';
 
   return (
     <div
@@ -44,7 +44,7 @@ function DocenteCard({ doc, index }) {
         />
 
         {/* Overlay de hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#001D52]/90 via-[#003087]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/90 via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
         {/* Info en overlay */}
         <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-3 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400">
@@ -69,7 +69,7 @@ function DocenteCard({ doc, index }) {
       <div className="p-6 text-center relative">
         <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-1 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500" />
         
-        <h3 className="text-[#003087] font-black text-base leading-tight uppercase tracking-tight mb-1 group-hover:text-red-600 transition-colors">
+        <h3 className="text-primary font-black text-base leading-tight uppercase tracking-tight mb-1 group-hover:text-red-600 transition-colors">
           {doc.nombre}
         </h3>
         <p className="text-gray-400 font-bold text-[10px] uppercase tracking-[0.2em] mb-3">
@@ -110,7 +110,7 @@ const Docentes = () => {
     <div className="min-h-screen bg-slate-50 font-sans">
 
       {/* ── Page Header ── */}
-      <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-[#003087] to-[#001D52]">
+      <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-primary to-primary-dark">
         {/* Decoraciones de fondo */}
         <div className="absolute top-0 left-0 w-full h-full">
            <div className="absolute top-10 right-10 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
@@ -146,7 +146,7 @@ const Docentes = () => {
         {/* Toolbar */}
         <div className="bg-white rounded-[2.5rem] p-6 md:p-8 shadow-xl shadow-blue-900/5 border border-white/60 backdrop-blur-sm flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-[#003087]">
+            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-primary">
                 <Users size={24} />
             </div>
             <div>
@@ -165,13 +165,13 @@ const Docentes = () => {
                     placeholder="Buscar docente..."
                     value={busqueda}
                     onChange={(e) => setBusqueda(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border-none focus:ring-2 focus:ring-[#003087] rounded-xl text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-xl text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
                 />
             </div>
             <button
                 onClick={cargar}
                 disabled={cargando}
-                className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 text-gray-400 hover:text-[#003087] hover:border-blue-100 transition-all rounded-xl shadow-sm disabled:opacity-50"
+                className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 text-gray-400 hover:text-primary hover:border-blue-100 transition-all rounded-xl shadow-sm disabled:opacity-50"
             >
                 <RefreshCw size={20} className={cargando ? 'animate-spin' : ''} />
             </button>
@@ -206,7 +206,7 @@ const Docentes = () => {
             </p>
             <button
               onClick={cargar}
-              className="flex items-center gap-3 bg-[#003087] text-white font-black px-10 py-5 rounded-2xl hover:bg-red-600 transition-all shadow-xl shadow-blue-900/20 active:scale-95 uppercase tracking-widest text-[11px]"
+              className="flex items-center gap-3 bg-primary text-white font-black px-10 py-5 rounded-2xl hover:bg-red-600 transition-all shadow-xl shadow-blue-900/20 active:scale-95 uppercase tracking-widest text-[11px]"
             >
               <RefreshCw size={16} />
               Reintentar Conexión
@@ -226,7 +226,7 @@ const Docentes = () => {
             </p>
             <button 
                 onClick={() => setBusqueda('')} 
-                className="text-[#003087] font-black text-[11px] uppercase tracking-widest hover:text-red-600 transition-colors underline underline-offset-4"
+                className="text-primary font-black text-[11px] uppercase tracking-widest hover:text-red-600 transition-colors underline underline-offset-4"
             >
                 Limpiar filtros
             </button>

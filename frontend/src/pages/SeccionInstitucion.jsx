@@ -32,7 +32,7 @@ const SeccionInstitucion = () => {
       titulo: 'Quiénes Somos',
       subtitulo: 'Nuestra Identidad Institucional',
       info: 'La Institución Educativa Emblemática "Bandera del Perú" es un referente de formación integral en la provincia de Pisco, dedicada a brindar una educación de calidad basada en principios éticos, disciplina y excelencia académica.',
-      color: 'from-[#003087] to-[#001D52]'
+      color: 'from-primary to-primary-dark'
     },
     '/historia': {
       titulo: 'Nuestra Historia',
@@ -44,7 +44,7 @@ const SeccionInstitucion = () => {
       titulo: 'Equipo Directivo',
       subtitulo: 'Liderazgo y Gestión Educativa',
       info: 'Contamos con un cuerpo directivo altamente calificado que gestiona con transparencia, ética y visión de futuro, asegurando que cada estudiante de nuestra comunidad alcance su máximo potencial bajo un entorno seguro y estimulante.',
-      color: 'from-[#003087] to-[#001D52]'
+      color: 'from-primary to-primary-dark'
     },
     '/mision': {
       titulo: 'Misión y Visión',
@@ -58,7 +58,7 @@ const SeccionInstitucion = () => {
       info: 'Nuestra estructura organizacional garantiza una gestión administrativa y pedagógica transparente, permitiendo una comunicación fluida entre todos los niveles para el beneficio directo de nuestros alumnos.',
       esOrganigrama: true,
       imagenUrl: '/organigrama-institucional.png',
-      color: 'from-[#003087] to-[#001D52]'
+      color: 'from-primary to-primary-dark'
     },
     '/valores': {
       titulo: 'Nuestros Valores',
@@ -70,7 +70,7 @@ const SeccionInstitucion = () => {
       titulo: 'Propuesta Educativa',
       subtitulo: 'Innovación para el Aprendizaje',
       info: 'Nuestro enfoque pedagógico combina el desarrollo de habilidades socioemocionales con el dominio de competencias tecnológicas y científicas, preparando a los estudiantes para los desafíos del siglo XXI.',
-      color: 'from-[#003087] to-[#001D52]'
+      color: 'from-primary to-primary-dark'
     },
     '/talleres': {
       titulo: 'Talleres Extracurriculares',
@@ -150,11 +150,11 @@ const SeccionInstitucion = () => {
             
             {/* Bloque de Información Principal */}
             <div className="relative bg-slate-50/80 p-8 md:p-12 rounded-[2.5rem] mb-12 group transition-all duration-500 border border-slate-100 hover:bg-white hover:shadow-xl hover:border-blue-100">
-              <div className="absolute -top-4 -left-4 w-12 h-12 bg-[#003087] rounded-2xl flex items-center justify-center text-white shadow-lg">
+              <div className="absolute -top-4 -left-4 w-12 h-12 bg-primary rounded-2xl flex items-center justify-center text-white shadow-lg">
                 <Info size={20} />
               </div>
               
-              <h3 className="text-[#003087] font-black uppercase tracking-[0.2em] text-[10px] mb-6 flex items-center gap-2">
+              <h3 className="text-primary font-black uppercase tracking-[0.2em] text-[10px] mb-6 flex items-center gap-2">
                 <Zap size={12} className="text-red-500" /> Detalle Institucional
               </h3>
               
@@ -199,7 +199,7 @@ const SeccionInstitucion = () => {
 
               <Link 
                 to="/" 
-                className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-[#003087] hover:text-red-600 transition-colors"
+                className="group flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:text-red-600 transition-colors"
               >
                 Volver al Inicio
                 <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />

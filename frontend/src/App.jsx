@@ -35,7 +35,7 @@ function AppContent() {
 
       {/* Barra de estado de sesión para el Admin cuando navega por el sitio público */}
       {usuario && !isAdminPath && (
-        <div className="bg-[#003087] text-white px-6 py-2 text-sm text-right flex justify-end items-center gap-4">
+        <div className="bg-primary text-white px-6 py-2 text-sm text-right flex justify-end items-center gap-4">
           <span>Sesión activa: <strong>{usuario.username}</strong></span>
           <a href="/admin" className="bg-red-600 px-3 py-1 rounded text-xs font-bold hover:bg-red-700 transition-colors">
             VOLVER AL PANEL

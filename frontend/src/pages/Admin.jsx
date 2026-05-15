@@ -117,10 +117,10 @@ function Admin() {
   const isActive = (path) => location.pathname === `/admin/${path}` || (path === '' && location.pathname === '/admin')
 
   return (
-    <div className="flex min-h-screen bg-[#F8FAFC] dark:bg-dark-bg transition-colors duration-300">
+    <div className="flex min-h-screen bg-surface dark:bg-dark-bg transition-colors duration-300">
 
       {/* SIDEBAR FIJO ULTRA-PREMIUM */}
-      <aside className="w-72 bg-[#001D52] flex flex-col p-6 sticky top-0 h-screen shadow-[10px_0_40px_rgba(0,0,0,0.1)] z-30">
+      <aside className="w-72 bg-primary-dark flex flex-col p-6 sticky top-0 h-screen shadow-[10px_0_40px_rgba(0,0,0,0.1)] z-30">
         <div className="mb-12 px-2 flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center shadow-lg shadow-red-900/40 transform -rotate-3 hover:rotate-0 transition-transform duration-300">
             <LayoutDashboard size={24} className="text-white" />
@@ -182,7 +182,7 @@ function Admin() {
 
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 relative z-10 gap-6">
           <div className="animate-in fade-in slide-in-from-left duration-700">
-            <div className="flex items-center gap-3 text-[#003087] dark:text-blue-300 font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-dark-accent/40 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-dark-accent/50">
+            <div className="flex items-center gap-3 text-primary dark:text-blue-300 font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-dark-accent/40 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-dark-accent/50">
               <Clock size={14} className="animate-pulse" />
               {currentTime.toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })}
             </div>
@@ -197,14 +197,14 @@ function Admin() {
           <div className="flex gap-4 animate-in fade-in slide-in-from-right duration-700 items-center">
             <button 
               onClick={toggleDarkMode}
-              className="w-14 h-14 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl flex items-center justify-center text-gray-400 dark:text-slate-300 hover:text-[#003087] dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-500/50 transition-all shadow-sm hover:shadow-xl group"
+              className="w-14 h-14 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl flex items-center justify-center text-gray-400 dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-500/50 transition-all shadow-sm hover:shadow-xl group"
             >
               {isDarkMode ? <Sun size={24} className="group-hover:rotate-45 transition-transform" /> : <Moon size={24} className="group-hover:-rotate-12 transition-transform" />}
             </button>
-            <button className="w-14 h-14 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl flex items-center justify-center text-gray-400 dark:text-slate-300 hover:text-[#003087] dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-500/50 transition-all shadow-sm hover:shadow-xl group">
+            <button className="w-14 h-14 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl flex items-center justify-center text-gray-400 dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:border-blue-200 dark:hover:border-blue-500/50 transition-all shadow-sm hover:shadow-xl group">
               <Bell size={24} className="group-hover:rotate-12 transition-transform" />
             </button>
-            <Link to="/" className="flex items-center gap-3 px-8 py-4 bg-[#003087] text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl shadow-blue-900/30 hover:bg-blue-900 transition-all active:scale-95 group">
+            <Link to="/" className="flex items-center gap-3 px-8 py-4 bg-primary text-white rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl shadow-blue-900/30 hover:bg-blue-900 transition-all active:scale-95 group">
               Previsualizar Portal
               <ChevronRight size={18} className="group-hover:translate-x-1 transition-transform" />
             </Link>

@@ -55,8 +55,8 @@ function Inicio() {
       title: config.pilar1_titulo,
       desc: config.pilar1_desc,
       color: 'bg-blue-50',
-      iconColor: 'text-[#003087]',
-      accent: 'border-[#003087]',
+      iconColor: 'text-primary',
+      accent: 'border-primary',
       iconBg: 'bg-blue-100',
     },
     {
@@ -73,8 +73,8 @@ function Inicio() {
       title: config.pilar3_titulo,
       desc: config.pilar3_desc,
       color: 'bg-blue-50',
-      iconColor: 'text-[#003087]',
-      accent: 'border-[#003087]',
+      iconColor: 'text-primary',
+      accent: 'border-primary',
       iconBg: 'bg-blue-100',
     },
   ];
@@ -83,7 +83,7 @@ function Inicio() {
     { icon: Newspaper,      label: 'Noticias',     path: '/noticias',    color: 'from-blue-600 to-blue-800' },
     { icon: Bell,           label: 'Comunicados',  path: '/comunicados', color: 'from-red-600 to-red-800' },
     { icon: GraduationCap,  label: 'Docentes',     path: '/docentes',    color: 'from-slate-700 to-slate-900' },
-    { icon: Calendar,       label: 'Agenda',       path: '/eventos',     color: 'from-[#003087] to-blue-900' },
+    { icon: Calendar,       label: 'Agenda',       path: '/eventos',     color: 'from-primary to-blue-900' },
   ];
 
   return (
@@ -92,7 +92,7 @@ function Inicio() {
       {/* ══════════════════════════════════════════
           ULTRA-PREMIUM STATIC HERO
       ══════════════════════════════════════════ */}
-      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-[#001D52]">
+      <section className="relative min-h-screen flex items-center pt-20 overflow-hidden bg-primary-dark">
         {/* Cinematic Background Layer */}
         <div className="absolute inset-0 z-0">
           <img
@@ -101,7 +101,7 @@ function Inicio() {
             alt="Fondo Institucional"
           />
           {/* Overlays */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#001D52] via-[#003087]/80 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-primary-dark via-primary/80 to-transparent" />
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10" />
         </div>
 
@@ -140,7 +140,7 @@ function Inicio() {
             <div className="flex flex-wrap gap-6">
               <Link
                 to="/admision"
-                className="group flex items-center gap-4 bg-red-600 hover:bg-white hover:text-[#003087] text-white font-black px-12 py-6 rounded-2xl transition-all duration-500 shadow-2xl shadow-red-900/40 active:scale-95 uppercase tracking-widest text-xs"
+                className="group flex items-center gap-4 bg-red-600 hover:bg-white hover:text-primary text-white font-black px-12 py-6 rounded-2xl transition-all duration-500 shadow-2xl shadow-red-900/40 active:scale-95 uppercase tracking-widest text-xs"
               >
                 Postula Ahora
                 <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
@@ -158,8 +158,8 @@ function Inicio() {
           {/* Interactive Feature Card */}
           <div className="hidden lg:block animate-in fade-in slide-in-from-right duration-1000 delay-500">
             <div className="relative group">
-               <div className="absolute -inset-2 bg-gradient-to-r from-red-600 to-[#003087] rounded-[4rem] blur-2xl opacity-10 group-hover:opacity-30 transition duration-1000" />
-               <div className="relative bg-[#001D52]/60 backdrop-blur-3xl p-12 rounded-[4rem] border border-white/10 shadow-2xl overflow-hidden">
+               <div className="absolute -inset-2 bg-gradient-to-r from-red-600 to-primary rounded-[4rem] blur-2xl opacity-10 group-hover:opacity-30 transition duration-1000" />
+               <div className="relative bg-primary-dark/60 backdrop-blur-3xl p-12 rounded-[4rem] border border-white/10 shadow-2xl overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-red-600/10 rounded-full -translate-y-16 translate-x-16 blur-2xl" />
                   
                   <div className="flex items-center gap-6 mb-12">
@@ -189,7 +189,7 @@ function Inicio() {
 
                   <Link
                     to="/docentes"
-                    className="flex items-center justify-center gap-4 w-full bg-white text-[#001D52] font-black py-6 rounded-2xl hover:bg-red-600 hover:text-white transition-all duration-500 text-xs uppercase tracking-widest shadow-xl active:scale-95"
+                    className="flex items-center justify-center gap-4 w-full bg-white text-primary-dark font-black py-6 rounded-2xl hover:bg-red-600 hover:text-white transition-all duration-500 text-xs uppercase tracking-widest shadow-xl active:scale-95"
                   >
                     Conoce a la Plana Docente
                     <ChevronRight size={20} />
@@ -230,7 +230,7 @@ function Inicio() {
                 <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-150 group-hover:rotate-12 transition-transform duration-1000">
                    <Icon size={100} />
                 </div>
-                <div className="relative z-10 w-20 h-20 bg-white/10 rounded-[2rem] flex items-center justify-center group-hover:bg-white group-hover:text-[#003087] transition-all duration-500 shadow-inner border border-white/10">
+                <div className="relative z-10 w-20 h-20 bg-white/10 rounded-[2rem] flex items-center justify-center group-hover:bg-white group-hover:text-primary transition-all duration-500 shadow-inner border border-white/10">
                   <Icon size={32} strokeWidth={2.5} />
                 </div>
                 <span className="relative z-10 font-black text-sm uppercase tracking-[0.3em] text-center">{label}</span>
@@ -250,7 +250,7 @@ function Inicio() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-24 max-w-3xl mx-auto">
             <span className="text-red-600 font-black text-[10px] uppercase tracking-[0.4em] mb-4 block animate-in fade-in slide-in-from-bottom duration-700">Valores que nos definen</span>
-            <h2 className="text-5xl md:text-7xl font-black text-[#001D52] tracking-tighter mb-8 leading-none uppercase">
+            <h2 className="text-5xl md:text-7xl font-black text-primary-dark tracking-tighter mb-8 leading-none uppercase">
               Excelencia en cada <span className="text-red-600 italic">detalle</span>
             </h2>
           </div>
@@ -264,7 +264,7 @@ function Inicio() {
                 <div className={`w-24 h-24 ${p.iconBg} ${p.iconColor} rounded-[2rem] flex items-center justify-center mb-10 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-xl`}>
                   <p.icon size={40} />
                 </div>
-                <h3 className="text-3xl font-black text-[#001D52] mb-6 tracking-tight">{p.title}</h3>
+                <h3 className="text-3xl font-black text-primary-dark mb-6 tracking-tight">{p.title}</h3>
                 <p className="text-slate-500 text-lg leading-relaxed font-medium mb-8">{p.desc}</p>
                 <div className={`w-12 h-1 bg-red-600 transition-all duration-500 group-hover:w-full`} />
               </div>
@@ -276,7 +276,7 @@ function Inicio() {
       {/* ══════════════════════════════════════════
           ESTADÍSTICAS IMPACTANTES
       ══════════════════════════════════════════ */}
-      <section className="py-32 bg-[#001D52] relative overflow-hidden">
+      <section className="py-32 bg-primary-dark relative overflow-hidden">
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-red-600/5 rounded-full blur-[150px] -translate-y-1/2 translate-x-1/2" />
         <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-400/5 rounded-full blur-[150px] translate-y-1/2 -translate-x-1/2" />
         
@@ -304,14 +304,14 @@ function Inicio() {
              <Zap size={14} className="animate-pulse" />
              Tu futuro comienza aquí
           </div>
-          <h2 className="text-6xl md:text-8xl font-black text-[#001D52] mb-12 tracking-tighter leading-none uppercase">
+          <h2 className="text-6xl md:text-8xl font-black text-primary-dark mb-12 tracking-tighter leading-none uppercase">
             Únete a la <span className="text-red-600">élite</span> educativa
           </h2>
           <p className="text-xl md:text-2xl text-slate-500 font-medium mb-16 max-w-2xl mx-auto leading-relaxed">
             Forma parte de la institución líder en Pisco. Vacantes limitadas para el periodo académico 2026.
           </p>
           <div className="flex flex-wrap justify-center gap-6">
-            <Link to="/admision" className="group bg-red-600 hover:bg-[#001D52] text-white font-black px-12 py-7 rounded-[2rem] transition-all duration-500 shadow-2xl shadow-red-900/40 active:scale-95 uppercase tracking-widest text-xs flex items-center gap-4">
+            <Link to="/admision" className="group bg-red-600 hover:bg-primary-dark text-white font-black px-12 py-7 rounded-[2rem] transition-all duration-500 shadow-2xl shadow-red-900/40 active:scale-95 uppercase tracking-widest text-xs flex items-center gap-4">
               Iniciar Proceso de Admisión
               <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform" />
             </Link>

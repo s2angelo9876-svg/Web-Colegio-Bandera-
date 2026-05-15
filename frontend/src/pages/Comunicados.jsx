@@ -26,7 +26,7 @@ function ComunicadoCard({ c, index }) {
     >
       <div className="flex">
         {/* Franja lateral dinámica */}
-        <div className={`w-2 ${cat === 'urgente' ? 'bg-red-600' : 'bg-[#003087]'} flex-shrink-0 rounded-l-[2.5rem] group-hover:w-3 transition-all duration-500`} />
+        <div className={`w-2 ${cat === 'urgente' ? 'bg-red-600' : 'bg-primary'} flex-shrink-0 rounded-l-[2.5rem] group-hover:w-3 transition-all duration-500`} />
 
         <div className="flex-1 p-8 md:p-10">
           {/* Header card */}
@@ -38,7 +38,7 @@ function ComunicadoCard({ c, index }) {
                 {c.categoria || 'General'}
               </span>
               {/* Fecha */}
-              <div className="flex items-center gap-2 text-gray-400 group-hover:text-[#003087] transition-colors">
+              <div className="flex items-center gap-2 text-gray-400 group-hover:text-primary transition-colors">
                 <Calendar size={13} />
                 <span className="text-[11px] font-black uppercase tracking-wider">
                   {!isNaN(fecha) ? fecha.toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Fecha por confirmar'}
@@ -53,7 +53,7 @@ function ComunicadoCard({ c, index }) {
           </div>
 
           {/* Título */}
-          <h3 className="text-xl md:text-2xl font-black text-[#003087] mb-4 leading-tight uppercase tracking-tight group-hover:text-red-600 transition-colors">
+          <h3 className="text-xl md:text-2xl font-black text-primary mb-4 leading-tight uppercase tracking-tight group-hover:text-red-600 transition-colors">
             {c.titulo}
           </h3>
 
@@ -68,7 +68,7 @@ function ComunicadoCard({ c, index }) {
           <div className="mt-8 flex justify-between items-center pt-6 border-t border-slate-50">
              <button
                 onClick={() => setExpanded(!expanded)}
-                className="flex items-center gap-3 text-[#003087] text-[10px] font-black uppercase tracking-[0.2em] hover:text-red-600 transition-all group/btn"
+                className="flex items-center gap-3 text-primary text-[10px] font-black uppercase tracking-[0.2em] hover:text-red-600 transition-all group/btn"
               >
                 {expanded ? (
                   <>
@@ -127,7 +127,7 @@ function Comunicados() {
     <div className="min-h-screen bg-slate-50 font-sans">
 
       {/* ── Page Header ── */}
-      <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-[#003087] to-[#001D52]">
+      <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-primary to-primary-dark">
         <div className="absolute top-0 left-0 w-full h-full">
            <div className="absolute top-10 right-10 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
            <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-black/10 rounded-full blur-3xl" />
@@ -160,7 +160,7 @@ function Comunicados() {
         {/* Toolbar */}
         <div className="bg-white rounded-[2.5rem] p-6 md:p-8 shadow-xl shadow-blue-900/5 border border-white/60 backdrop-blur-sm flex flex-col lg:flex-row items-center justify-between gap-6 mb-12">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-[#003087]">
+            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-primary">
                 <Shield size={24} />
             </div>
             <div>
@@ -179,7 +179,7 @@ function Comunicados() {
                     placeholder="Filtrar por título..."
                     value={busqueda}
                     onChange={(e) => setBusqueda(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border-none focus:ring-2 focus:ring-[#003087] rounded-xl text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-xl text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
                 />
             </div>
             
@@ -189,7 +189,7 @@ function Comunicados() {
                   <select 
                     value={categoria}
                     onChange={(e) => setCategoria(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border-none focus:ring-2 focus:ring-[#003087] rounded-xl text-sm font-bold text-gray-700 appearance-none outline-none shadow-inner cursor-pointer"
+                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-xl text-sm font-bold text-gray-700 appearance-none outline-none shadow-inner cursor-pointer"
                   >
                     <option value="todos">Todas las categorías</option>
                     <option value="general">General</option>
@@ -201,7 +201,7 @@ function Comunicados() {
                <button
                   onClick={cargar}
                   disabled={cargando}
-                  className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 text-gray-400 hover:text-[#003087] hover:border-blue-100 transition-all rounded-xl shadow-sm disabled:opacity-50"
+                  className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 text-gray-400 hover:text-primary hover:border-blue-100 transition-all rounded-xl shadow-sm disabled:opacity-50"
                 >
                   <RefreshCw size={20} className={cargando ? 'animate-spin' : ''} />
                 </button>
@@ -246,7 +246,7 @@ function Comunicados() {
             </p>
             <button 
                 onClick={() => { setBusqueda(''); setCategoria('todos'); }} 
-                className="text-[#003087] font-black text-[11px] uppercase tracking-widest hover:text-red-600 transition-colors underline underline-offset-4"
+                className="text-primary font-black text-[11px] uppercase tracking-widest hover:text-red-600 transition-colors underline underline-offset-4"
             >
                 Restablecer filtros
             </button>

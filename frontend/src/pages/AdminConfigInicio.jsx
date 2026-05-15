@@ -75,20 +75,20 @@ function AdminConfigInicio() {
 
     if (loading) return (
         <div className="flex items-center justify-center min-h-screen">
-            <Loader2 className="animate-spin text-[#003087]" size={48} />
+            <Loader2 className="animate-spin text-primary" size={48} />
         </div>
     );
 
     return (
-        <div className="p-8 lg:p-12 bg-[#F8FAFC] dark:bg-dark-bg min-h-screen transition-colors duration-300">
+        <div className="p-8 lg:p-12 bg-surface dark:bg-dark-bg min-h-screen transition-colors duration-300">
             <div className="max-w-5xl mx-auto">
                 <header className="mb-12 animate-in fade-in slide-in-from-left duration-700">
-                    <div className="flex items-center gap-2 text-[#003087] dark:text-blue-300 font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-dark-accent/40 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-dark-accent/50">
+                    <div className="flex items-center gap-2 text-primary dark:text-blue-300 font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-dark-accent/40 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-dark-accent/50">
                         <Settings size={14} />
                         Personalización UI
                     </div>
                     <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">
-                        Gestión de <span className="text-[#003087] dark:text-blue-400">Contenido Inicio</span>
+                        Gestión de <span className="text-primary dark:text-blue-400">Contenido Inicio</span>
                     </h2>
                     <p className="text-gray-400 font-bold text-lg text-pretty">Modifica los textos principales de la página de aterrizaje en tiempo real.</p>
                 </header>

@@ -37,16 +37,16 @@ const Transparencia = () => {
         <div className="bg-white rounded-[2.5rem] shadow-xl p-8 mb-8 border border-gray-100 max-w-5xl mx-auto">
           <div className="flex flex-col md:flex-row gap-4 mb-8">
             <div className="relative flex-1 group">
-              <Search className="absolute left-4 top-3.5 text-gray-400 group-focus-within:text-[#003087] transition-colors" size={20} />
+              <Search className="absolute left-4 top-3.5 text-gray-400 group-focus-within:text-primary transition-colors" size={20} />
               <input 
                 type="text" 
                 placeholder="Buscar documento por título..." 
-                className="w-full pl-12 pr-4 py-3 bg-gray-50 border-transparent rounded-xl focus:bg-white focus:border-[#003087] focus:ring-2 focus:ring-[#003087]/20 outline-none transition-all"
+                className="w-full pl-12 pr-4 py-3 bg-gray-50 border-transparent rounded-xl focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
                 onChange={(e) => setFiltro(e.target.value)}
               />
             </div>
             <select 
-              className="bg-gray-50 border-transparent rounded-xl px-4 py-3 outline-none focus:bg-white focus:border-[#003087] focus:ring-2 focus:ring-[#003087]/20 transition-all cursor-pointer font-medium text-gray-700"
+              className="bg-gray-50 border-transparent rounded-xl px-4 py-3 outline-none focus:bg-white focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer font-medium text-gray-700"
               onChange={(e) => setCategoria(e.target.value)}
             >
               <option value="Todos">Todas las categorías</option>
@@ -65,7 +65,7 @@ const Transparencia = () => {
                     <FileText size={28} />
                   </div>
                   <div>
-                    <h3 className="font-bold text-gray-800 text-lg group-hover:text-[#003087] transition-colors">{doc.titulo}</h3>
+                    <h3 className="font-bold text-gray-800 text-lg group-hover:text-primary transition-colors">{doc.titulo}</h3>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="px-2.5 py-1 bg-gray-100 text-gray-600 rounded-full text-xs font-semibold tracking-wide uppercase">
                         {doc.categoria}
@@ -78,7 +78,7 @@ const Transparencia = () => {
                   href={doc.url} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto bg-[#003087] text-white px-6 py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-800 transition-colors shadow-sm hover:shadow-md font-medium"
+                  className="w-full sm:w-auto bg-primary text-white px-6 py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-800 transition-colors shadow-sm hover:shadow-md font-medium"
                 >
                   <Download size={18} /> <span>Descargar</span>
                 </a>
@@ -89,7 +89,7 @@ const Transparencia = () => {
                 <p className="text-gray-500 font-medium">No se encontraron documentos que coincidan con tu búsqueda.</p>
                 <button 
                   onClick={() => { setFiltro(''); setCategoria('Todos'); }}
-                  className="mt-4 text-[#003087] font-bold hover:underline"
+                  className="mt-4 text-primary font-bold hover:underline"
                 >
                   Limpiar filtros
                 </button>

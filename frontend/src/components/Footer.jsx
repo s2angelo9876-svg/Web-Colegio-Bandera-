@@ -22,9 +22,9 @@ const footerLinks = {
 };
 
 const Footer = () => (
-  <footer className="bg-[#001D52] text-white relative overflow-hidden">
+  <footer className="bg-primary-dark text-white relative overflow-hidden">
     {/* ── Franja superior coloreada (Sistema de Diseño) ── */}
-    <div className="h-1.5 bg-gradient-to-r from-[#DC2626] via-[#3b82f6] to-[#DC2626]" />
+    <div className="h-1.5 bg-gradient-to-r from-accent via-[#3b82f6] to-accent" />
 
     {/* Elemento decorativo de fondo */}
     <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/5 rounded-full blur-[100px] -mr-48 -mt-48" />
@@ -35,7 +35,7 @@ const Footer = () => (
         {/* Columna 1 — Identidad */}
         <div className="space-y-6">
           <div className="flex items-center gap-3 group cursor-default">
-            <div className="w-12 h-12 bg-[#DC2626] rounded-2xl flex items-center justify-center shadow-2xl shadow-red-900/40 transform transition-transform group-hover:rotate-6">
+            <div className="w-12 h-12 bg-accent rounded-2xl flex items-center justify-center shadow-2xl shadow-red-900/40 transform transition-transform group-hover:rotate-6">
               <School size={24} className="text-white" />
             </div>
             <div>
@@ -58,7 +58,7 @@ const Footer = () => (
                 key={label}
                 href={href}
                 aria-label={label}
-                className="w-10 h-10 bg-white/5 hover:bg-[#DC2626] border border-white/10 hover:border-[#DC2626] rounded-xl flex items-center justify-center transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-red-900/40 group"
+                className="w-10 h-10 bg-white/5 hover:bg-accent border border-white/10 hover:border-accent rounded-xl flex items-center justify-center transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-red-900/40 group"
               >
                 <Icon size={18} className="text-blue-200 group-hover:text-white transition-colors" />
               </a>

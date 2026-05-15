@@ -103,7 +103,7 @@ const Navbar = () => {
                 />
               </div>
               <div className="flex flex-col leading-none">
-                <span className="text-[#003087] dark:text-blue-400 font-black text-[17px] tracking-tight uppercase">
+                <span className="text-primary dark:text-blue-400 font-black text-[17px] tracking-tight uppercase">
                   Bandera del Perú
                 </span>
                 <span className="text-gray-400 dark:text-slate-500 text-[9px] font-bold tracking-[0.22em] uppercase mt-0.5">
@@ -118,7 +118,7 @@ const Navbar = () => {
                 <div key={link.name} className="relative group">
                   {link.submenu ? (
                     <>
-                      <button className="flex items-center gap-1 text-gray-600 dark:text-slate-300 font-semibold text-[12px] xl:text-[13px] uppercase tracking-wider hover:text-[#003087] dark:hover:text-blue-400 transition-colors py-[26px] px-2 xl:px-3 rounded-lg hover:bg-blue-50/60 dark:hover:bg-slate-800">
+                      <button className="flex items-center gap-1 text-gray-600 dark:text-slate-300 font-semibold text-[12px] xl:text-[13px] uppercase tracking-wider hover:text-primary dark:hover:text-blue-400 transition-colors py-[26px] px-2 xl:px-3 rounded-lg hover:bg-blue-50/60 dark:hover:bg-slate-800">
                         {link.name}
                         <ChevronDown
                           size={13}
@@ -134,10 +134,10 @@ const Navbar = () => {
                             <Link
                               key={sub.name}
                               to={sub.path}
-                              className="flex items-center gap-3 px-4 py-2.5 text-gray-500 dark:text-slate-400 hover:text-[#003087] dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-dark-hover rounded-xl text-[12px] font-semibold transition-all group/item"
+                              className="flex items-center gap-3 px-4 py-2.5 text-gray-500 dark:text-slate-400 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-dark-hover rounded-xl text-[12px] font-semibold transition-all group/item"
                             >
                               <span className="w-7 h-7 bg-gray-100 dark:bg-dark-input group-hover/item:bg-blue-100 dark:group-hover/item:bg-blue-900/50 rounded-lg flex items-center justify-center transition-colors flex-shrink-0">
-                                <SubIcon size={13} className="text-gray-500 dark:text-slate-400 group-hover/item:text-[#003087] dark:group-hover/item:text-blue-400 transition-colors" />
+                                <SubIcon size={13} className="text-gray-500 dark:text-slate-400 group-hover/item:text-primary dark:group-hover/item:text-blue-400 transition-colors" />
                               </span>
                               {sub.name}
                             </Link>
@@ -150,8 +150,8 @@ const Navbar = () => {
                       to={link.path}
                       className={`flex items-center gap-1.5 font-semibold text-[12px] xl:text-[13px] uppercase tracking-wider transition-all py-[26px] px-2 xl:px-3 rounded-lg relative ${
                         isActive(link.path)
-                          ? 'text-[#003087] dark:text-blue-400 bg-blue-50/60 dark:bg-dark-card'
-                          : 'text-gray-600 dark:text-slate-300 hover:text-[#003087] dark:hover:text-blue-400 hover:bg-blue-50/60 dark:hover:bg-slate-800'
+                          ? 'text-primary dark:text-blue-400 bg-blue-50/60 dark:bg-dark-card'
+                          : 'text-gray-600 dark:text-slate-300 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50/60 dark:hover:bg-slate-800'
                       }`}
                     >
                       {link.name}
@@ -169,7 +169,7 @@ const Navbar = () => {
               {/* Dark mode toggle */}
               <button
                 onClick={toggleDarkMode}
-                className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 dark:text-slate-400 hover:text-[#003087] dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all"
+                className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 dark:text-slate-400 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all"
                 aria-label="Cambiar tema"
               >
                 {isDarkMode ? <Sun size={17} /> : <Moon size={17} />}
@@ -178,7 +178,7 @@ const Navbar = () => {
               {/* Buscador toggle */}
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
-                className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 dark:text-slate-400 hover:text-[#003087] dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all"
+                className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 dark:text-slate-400 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-slate-800 transition-all"
                 aria-label="Buscar"
               >
                 {searchOpen ? <X size={17} /> : <Search size={17} />}
@@ -187,7 +187,7 @@ const Navbar = () => {
               {/* Intranet */}
               <button
                 onClick={() => navigate('/login')}
-                className="flex items-center gap-2 bg-[#003087] text-white px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-[0.12em] hover:bg-red-600 transition-all shadow-lg shadow-blue-900/20 active:scale-95 group"
+                className="flex items-center gap-2 bg-primary text-white px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-[0.12em] hover:bg-red-600 transition-all shadow-lg shadow-blue-900/20 active:scale-95 group"
               >
                 <Shield size={13} className="group-hover:rotate-12 transition-transform" />
                 Intranet
@@ -216,7 +216,7 @@ const Navbar = () => {
                   autoFocus
                   type="text"
                   placeholder="Buscar en el sitio..."
-                  className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-[#003087] focus:ring-2 focus:ring-blue-100 transition-all"
+                  className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-blue-100 transition-all"
                 />
               </div>
             </div>
@@ -233,7 +233,7 @@ const Navbar = () => {
                     <>
                       <button
                         onClick={() => setOpenMobile(openMobile === link.name ? null : link.name)}
-                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 font-semibold text-sm hover:bg-blue-50 hover:text-[#003087] transition-all"
+                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 font-semibold text-sm hover:bg-blue-50 hover:text-primary transition-all"
                       >
                         <div className="flex items-center gap-3">
                           {(() => { const Icon = link.icon; return <Icon size={16} className="text-gray-400" />; })()}
@@ -252,7 +252,7 @@ const Navbar = () => {
                               <Link
                                 key={sub.name}
                                 to={sub.path}
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:text-[#003087] hover:bg-blue-50 text-sm font-medium transition-all"
+                                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:text-primary hover:bg-blue-50 text-sm font-medium transition-all"
                               >
                                 <SubIcon size={14} className="text-gray-400 flex-shrink-0" />
                                 {sub.name}
@@ -267,8 +267,8 @@ const Navbar = () => {
                       to={link.path}
                       className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
                         isActive(link.path)
-                          ? 'bg-blue-50 text-[#003087]'
-                          : 'text-gray-700 hover:bg-blue-50 hover:text-[#003087]'
+                          ? 'bg-blue-50 text-primary'
+                          : 'text-gray-700 hover:bg-blue-50 hover:text-primary'
                       }`}
                     >
                       {(() => { const Icon = link.icon; return <Icon size={16} className="text-gray-400 flex-shrink-0" />; })()}
@@ -291,7 +291,7 @@ const Navbar = () => {
                 </button>
                 <button
                   onClick={() => navigate('/login')}
-                  className="w-full flex items-center justify-center gap-2 bg-[#003087] text-white py-3.5 rounded-xl font-black text-sm uppercase tracking-wider hover:bg-red-600 transition-all shadow-lg"
+                  className="w-full flex items-center justify-center gap-2 bg-primary text-white py-3.5 rounded-xl font-black text-sm uppercase tracking-wider hover:bg-red-600 transition-all shadow-lg"
                 >
                   <Shield size={15} />
                   Acceso Intranet

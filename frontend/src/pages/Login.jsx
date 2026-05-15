@@ -32,7 +32,7 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#001D52] flex items-center justify-center px-4 relative overflow-hidden">
+    <div className="min-h-screen bg-primary-dark flex items-center justify-center px-4 relative overflow-hidden">
 
       {/* ── Decoraciones de fondo ── */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -68,7 +68,7 @@ function Login() {
         <div className="bg-white rounded-[2rem] shadow-2xl shadow-black/30 overflow-hidden">
 
           {/* ── Header card ── */}
-          <div className="relative bg-gradient-to-br from-[#003087] to-[#001D52] py-10 px-8 text-center overflow-hidden">
+          <div className="relative bg-gradient-to-br from-primary to-primary-dark py-10 px-8 text-center overflow-hidden">
             {/* Anillo decorativo en header */}
             <div className="absolute top-0 right-0 w-32 h-32 border-2 border-white/5 rounded-full translate-x-1/3 -translate-y-1/3" />
             <div className="absolute bottom-0 left-0 w-20 h-20 border border-white/5 rounded-full -translate-x-1/3 translate-y-1/3" />
@@ -142,7 +142,7 @@ function Login() {
                   <button
                     type="button"
                     onClick={() => setShowPass(!showPass)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#003087] transition-colors"
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-primary transition-colors"
                     aria-label={showPass ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
                     {showPass
@@ -157,7 +157,7 @@ function Login() {
               <button
                 type="submit"
                 disabled={cargando}
-                className="w-full flex items-center justify-center gap-3 bg-[#003087] hover:bg-red-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-black py-4 rounded-xl shadow-lg shadow-blue-900/30 hover:shadow-red-500/30 transition-all duration-300 transform active:scale-[0.98] text-sm tracking-wide mt-2"
+                className="w-full flex items-center justify-center gap-3 bg-primary hover:bg-red-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-black py-4 rounded-xl shadow-lg shadow-blue-900/30 hover:shadow-red-500/30 transition-all duration-300 transform active:scale-[0.98] text-sm tracking-wide mt-2"
               >
                 {cargando ? (
                   <>

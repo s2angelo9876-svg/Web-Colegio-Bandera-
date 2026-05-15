@@ -51,7 +51,7 @@ const Admision = () => {
     <div className="min-h-screen bg-slate-50 font-sans">
 
       {/* ── Page Header ── */}
-      <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-[#003087] to-[#001D52]">
+      <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-primary to-primary-dark">
         <div className="absolute top-0 left-0 w-full h-full">
            <div className="absolute top-10 right-10 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
            <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-black/10 rounded-full blur-3xl" />
@@ -98,7 +98,7 @@ const Admision = () => {
                        <div className="absolute left-7 top-14 w-0.5 h-10 bg-slate-100 group-hover:bg-blue-100 transition-colors" />
                     )}
                     <div className="relative flex-shrink-0">
-                      <div className="w-14 h-14 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center group-hover:bg-[#003087] group-hover:text-white transition-all duration-500 group-hover:scale-110 shadow-sm">
+                      <div className="w-14 h-14 bg-slate-50 border border-slate-100 rounded-2xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-500 group-hover:scale-110 shadow-sm">
                         <Icon size={24} />
                       </div>
                       <span className="absolute -bottom-2 -right-2 w-6 h-6 bg-red-600 rounded-lg text-white text-[10px] font-black flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform">
@@ -106,7 +106,7 @@ const Admision = () => {
                       </span>
                     </div>
                     <div>
-                      <h3 className="font-black text-gray-900 text-lg mb-1 group-hover:text-[#003087] transition-colors">{title}</h3>
+                      <h3 className="font-black text-gray-900 text-lg mb-1 group-hover:text-primary transition-colors">{title}</h3>
                       <p className="text-gray-500 text-sm leading-relaxed font-medium">{desc}</p>
                     </div>
                   </div>
@@ -145,7 +145,7 @@ const Admision = () => {
                     <Award size={80} strokeWidth={1} />
                 </div>
                 <div className="flex items-center gap-4 relative z-10">
-                  <div className="w-14 h-14 bg-[#003087] rounded-[1.25rem] flex items-center justify-center shadow-xl shadow-blue-900/20">
+                  <div className="w-14 h-14 bg-primary rounded-[1.25rem] flex items-center justify-center shadow-xl shadow-blue-900/20">
                     <Send size={24} className="text-white" />
                   </div>
                   <div>
@@ -194,14 +194,14 @@ const Admision = () => {
                           Padre o Apoderado
                         </label>
                         <div className="relative group">
-                          <User size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#003087] transition-colors" />
+                          <User size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
                           <input
                             type="text"
                             name="nombre_padre"
                             value={formData.nombre_padre}
                             onChange={handleChange}
                             placeholder="Nombre completo"
-                            className="w-full pl-14 pr-6 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-[#003087] rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
+                            className="w-full pl-14 pr-6 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
                             required
                           />
                         </div>
@@ -213,14 +213,14 @@ const Admision = () => {
                           Teléfono de Contacto
                         </label>
                         <div className="relative group">
-                          <Phone size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#003087] transition-colors" />
+                          <Phone size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
                           <input
                             type="tel"
                             name="celular"
                             value={formData.celular}
                             onChange={handleChange}
                             placeholder="999 999 999"
-                            className="w-full pl-14 pr-6 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-[#003087] rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
+                            className="w-full pl-14 pr-6 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
                             required
                           />
                         </div>
@@ -233,14 +233,14 @@ const Admision = () => {
                       Nombre del Postulante
                     </label>
                     <div className="relative group">
-                      <User size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#003087] transition-colors" />
+                      <User size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
                       <input
                         type="text"
                         name="nombre_estudiante"
                         value={formData.nombre_estudiante}
                         onChange={handleChange}
                         placeholder="Nombres y apellidos del alumno"
-                        className="w-full pl-14 pr-6 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-[#003087] rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
+                        className="w-full pl-14 pr-6 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
                         required
                       />
                     </div>
@@ -252,12 +252,12 @@ const Admision = () => {
                       Nivel y Grado Académico
                     </label>
                     <div className="relative group">
-                      <BookOpen size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#003087] transition-colors pointer-events-none" />
+                      <BookOpen size={18} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors pointer-events-none" />
                       <select
                         name="grado_interes"
                         value={formData.grado_interes}
                         onChange={handleChange}
-                        className="w-full pl-14 pr-12 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-[#003087] rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner appearance-none cursor-pointer"
+                        className="w-full pl-14 pr-12 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner appearance-none cursor-pointer"
                       >
                         {grados.map(g => <option key={g}>{g}</option>)}
                       </select>
@@ -269,7 +269,7 @@ const Admision = () => {
                   <button
                     type="submit"
                     disabled={enviando}
-                    className="w-full flex items-center justify-center gap-4 bg-[#003087] hover:bg-red-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-blue-900/20 hover:shadow-red-500/30 transition-all duration-500 transform active:scale-95 uppercase tracking-widest text-xs"
+                    className="w-full flex items-center justify-center gap-4 bg-primary hover:bg-red-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-blue-900/20 hover:shadow-red-500/30 transition-all duration-500 transform active:scale-95 uppercase tracking-widest text-xs"
                   >
                     {enviando ? (
                       <>

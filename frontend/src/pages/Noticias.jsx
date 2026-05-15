@@ -57,7 +57,7 @@ function NoticiaCard({ n, index }) {
       <div className="p-8 md:p-10 flex flex-col flex-1">
         {/* Meta */}
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-[#003087] group-hover:bg-blue-50 transition-all">
+          <div className="w-8 h-8 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-primary group-hover:bg-blue-50 transition-all">
              <Calendar size={14} />
           </div>
           <span className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em]">
@@ -68,7 +68,7 @@ function NoticiaCard({ n, index }) {
         </div>
 
         {/* Título */}
-        <h2 className="text-xl md:text-2xl font-black text-gray-900 mb-4 leading-tight group-hover:text-[#003087] transition-colors line-clamp-2 uppercase tracking-tight">
+        <h2 className="text-xl md:text-2xl font-black text-gray-900 mb-4 leading-tight group-hover:text-primary transition-colors line-clamp-2 uppercase tracking-tight">
           {n.titulo}
         </h2>
 
@@ -79,7 +79,7 @@ function NoticiaCard({ n, index }) {
 
         {/* CTA */}
         <div className="pt-6 border-t border-slate-50">
-          <button className="group/btn flex items-center gap-3 text-[#003087] text-[11px] font-black uppercase tracking-[0.15em] hover:text-red-600 transition-colors">
+          <button className="group/btn flex items-center gap-3 text-primary text-[11px] font-black uppercase tracking-[0.15em] hover:text-red-600 transition-colors">
             Expandir Noticia
             <div className="w-8 h-8 bg-blue-50 group-hover/btn:bg-red-50 rounded-xl flex items-center justify-center transition-all">
                 <ArrowRight
@@ -124,7 +124,7 @@ function Noticias() {
     <div className="min-h-screen bg-slate-50 font-sans">
 
       {/* ── Page Header ── */}
-      <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-[#003087] to-[#001D52]">
+      <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-primary to-primary-dark">
         {/* Decoraciones de fondo */}
         <div className="absolute top-0 left-0 w-full h-full">
            <div className="absolute top-10 right-10 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
@@ -160,7 +160,7 @@ function Noticias() {
         {/* Toolbar */}
         <div className="bg-white rounded-[2.5rem] p-6 md:p-8 shadow-xl shadow-blue-900/5 border border-white/60 backdrop-blur-sm flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-[#003087]">
+            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-primary">
                 <Zap size={24} />
             </div>
             <div>
@@ -179,13 +179,13 @@ function Noticias() {
                     placeholder="Buscar noticias..."
                     value={busqueda}
                     onChange={(e) => setBusqueda(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border-none focus:ring-2 focus:ring-[#003087] rounded-xl text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
+                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-xl text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
                 />
             </div>
             <button
                 onClick={cargarNoticias}
                 disabled={cargando}
-                className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 text-gray-400 hover:text-[#003087] hover:border-blue-100 transition-all rounded-xl shadow-sm disabled:opacity-50"
+                className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 text-gray-400 hover:text-primary hover:border-blue-100 transition-all rounded-xl shadow-sm disabled:opacity-50"
             >
                 <RefreshCw size={20} className={cargando ? 'animate-spin' : ''} />
             </button>
@@ -214,7 +214,7 @@ function Noticias() {
             <button
               onClick={() => setPagination(p => ({ ...p, page: Math.max(1, p.page - 1) }))}
               disabled={pagination.page === 1}
-              className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 rounded-xl text-gray-400 hover:text-[#003087] disabled:opacity-30 transition-all shadow-sm"
+              className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 rounded-xl text-gray-400 hover:text-primary disabled:opacity-30 transition-all shadow-sm"
             >
               <ArrowRight size={20} className="rotate-180" />
             </button>
@@ -224,7 +224,7 @@ function Noticias() {
             <button
               onClick={() => setPagination(p => ({ ...p, page: Math.min(pagination.totalPages, p.page + 1) }))}
               disabled={pagination.page === pagination.totalPages}
-              className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 rounded-xl text-gray-400 hover:text-[#003087] disabled:opacity-30 transition-all shadow-sm"
+              className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 rounded-xl text-gray-400 hover:text-primary disabled:opacity-30 transition-all shadow-sm"
             >
               <ArrowRight size={20} />
             </button>
@@ -243,7 +243,7 @@ function Noticias() {
             </p>
             <button 
                 onClick={() => { setBusqueda(''); setPagination(p => ({...p, page: 1})); }} 
-                className="text-[#003087] font-black text-[11px] uppercase tracking-widest hover:text-red-600 transition-colors underline underline-offset-4"
+                className="text-primary font-black text-[11px] uppercase tracking-widest hover:text-red-600 transition-colors underline underline-offset-4"
             >
                 Reiniciar filtros
             </button>

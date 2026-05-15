@@ -61,7 +61,7 @@ const Galeria = () => {
         <div className="flex flex-col md:flex-row items-center justify-between mb-10 gap-6">
           <div>
             <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
-              <Images size={22} className="text-[#003087]" />
+              <Images size={22} className="text-primary" />
               {loading ? 'Cargando...' : `${filteredFotos.length} fotografías`}
             </h2>
             <p className="text-gray-400 text-sm mt-0.5">Haz clic en una foto para ampliarla</p>
@@ -74,8 +74,8 @@ const Galeria = () => {
                 onClick={() => setSelectedYear(year)}
                 className={`px-6 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
                   selectedYear === year
-                  ? 'bg-[#003087] text-white shadow-lg shadow-blue-900/20'
-                  : 'bg-white text-gray-400 hover:bg-blue-50 hover:text-[#003087] border border-gray-100'
+                  ? 'bg-primary text-white shadow-lg shadow-blue-900/20'
+                  : 'bg-white text-gray-400 hover:bg-blue-50 hover:text-primary border border-gray-100'
                 }`}
               >
                 {year === 'Todos' ? 'Todos' : year}
@@ -108,7 +108,7 @@ const Galeria = () => {
                   loading="lazy"
                 />
                 {/* Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#001D52]/85 via-[#003087]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col items-center justify-center gap-2">
+                <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/85 via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-400 flex flex-col items-center justify-center gap-2">
                   <div className="w-10 h-10 bg-white/20 border border-white/30 rounded-xl flex items-center justify-center backdrop-blur-sm">
                     <ZoomIn size={18} className="text-white" />
                   </div>

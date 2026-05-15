@@ -38,7 +38,7 @@ function EventoCard({ e, index }) {
       style={{ animationDelay: `${index * 0.08}s` }}
     >
       {/* Bloque de fecha */}
-      <div className="relative bg-[#003087] text-white flex flex-col items-center justify-center px-10 py-10 md:w-48 overflow-hidden flex-shrink-0">
+      <div className="relative bg-primary text-white flex flex-col items-center justify-center px-10 py-10 md:w-48 overflow-hidden flex-shrink-0">
         <div className="absolute inset-0 bg-red-600 translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-in-out" />
         <div className="relative z-10 flex flex-col items-center gap-1">
           <span className="text-6xl font-black leading-none drop-shadow-lg">{dia}</span>
@@ -54,13 +54,13 @@ function EventoCard({ e, index }) {
         </div>
 
         <div className="flex items-center gap-3 mb-4 relative z-10">
-          <span className="flex items-center gap-1.5 bg-blue-50 text-[#003087] text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-widest border border-blue-100">
+          <span className="flex items-center gap-1.5 bg-blue-50 text-primary text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-widest border border-blue-100">
             <Tag size={10} className="text-red-500" />
             Actividad Escolar
           </span>
         </div>
 
-        <h2 className="text-2xl font-black text-gray-900 group-hover:text-[#003087] transition-colors leading-tight uppercase tracking-tight mb-4 relative z-10">
+        <h2 className="text-2xl font-black text-gray-900 group-hover:text-primary transition-colors leading-tight uppercase tracking-tight mb-4 relative z-10">
           {e.titulo}
         </h2>
 
@@ -82,7 +82,7 @@ function EventoCard({ e, index }) {
           )}
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-blue-50 rounded-2xl flex items-center justify-center shadow-sm">
-              <Clock size={16} className="text-[#003087]" />
+              <Clock size={16} className="text-primary" />
             </div>
             <div className="flex flex-col">
                 <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Horario</span>
@@ -211,7 +211,7 @@ function Eventos() {
             </p>
             <button 
                 onClick={() => setBusqueda('')} 
-                className="text-[#003087] font-black text-[11px] uppercase tracking-widest hover:text-red-600 transition-colors underline underline-offset-4"
+                className="text-primary font-black text-[11px] uppercase tracking-widest hover:text-red-600 transition-colors underline underline-offset-4"
             >
                 Ver todo el calendario
             </button>
