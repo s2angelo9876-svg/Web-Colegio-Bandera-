@@ -6,6 +6,7 @@ import {
   Info, Shield, Zap, Building2, Moon, Sun
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
+import { API } from '../services/api';
 import EscudoImg from "../assets/escudo.jpeg";
 
 const navLinks = [
@@ -25,11 +26,11 @@ const navLinks = [
     name: 'Académico',
     icon: GraduationCap,
     submenu: [
-      { name: 'Proceso de Admisión',  path: '/admision',  icon: ClipboardList },
-      { name: 'Propuesta Pedagógica', path: '/propuesta', icon: BookOpen },
-      { name: 'Nuestros Docentes',    path: '/docentes',  icon: Users },
-      { name: 'Talleres',             path: '/talleres',  icon: Zap },
-      { name: 'Calendario Escolar',   path: '/eventos',   icon: ClipboardList },
+      { name: 'Mesa de Partes',       path: '/mesa-partes', icon: ClipboardList },
+      { name: 'Propuesta Pedagógica', path: '/propuesta',   icon: BookOpen },
+      { name: 'Nuestros Docentes',    path: '/docentes',    icon: Users },
+      { name: 'Talleres',             path: '/talleres',    icon: Zap },
+      { name: 'Calendario Escolar',   path: '/eventos',     icon: ClipboardList },
     ]
   },
   {
@@ -39,6 +40,7 @@ const navLinks = [
       { name: 'Noticias',    path: '/noticias',    icon: Newspaper },
       { name: 'Comunicados', path: '/comunicados', icon: ClipboardList },
       { name: 'Galería',     path: '/galeria',     icon: Image },
+      { name: 'Documentos Inst.', path: '/documentos-institucionales', icon: BookOpen },
     ]
   },
   {
@@ -48,7 +50,6 @@ const navLinks = [
       { name: 'Aula de Innovación',    path: '/tic/aula',      icon: Zap },
       { name: 'Recursos Digitales',    path: '/tic/recursos',  icon: BookOpen },
       { name: 'Proyectos Tecnológicos',path: '/tic/proyectos', icon: Cpu },
-      { name: 'Soporte Técnico',       path: '/tic/soporte',   icon: Shield },
     ]
   }
 ];
@@ -57,6 +58,9 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen]       = useState(false);
   const [scrolled, setScrolled]           = useState(false);
   const [searchOpen, setSearchOpen]       = useState(false);
+  const [searchQuery, setSearchQuery]     = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+  const [searching, setSearching]         = useState(false);
   const [openMobile, setOpenMobile]       = useState(null);
   const { isDarkMode, toggleDarkMode }    = useTheme();
   const navigate  = useNavigate();
@@ -69,21 +73,58 @@ const Navbar = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  /* Cerrar menú mobile al cambiar de ruta */
+  /* Cerrar menú mobile y buscador al cambiar de ruta */
   useEffect(() => {
     setIsMenuOpen(false);
     setOpenMobile(null);
+    setSearchOpen(false);
+    setSearchQuery('');
+    setSearchResults([]);
   }, [location.pathname]);
 
+  /* Búsqueda en tiempo real (debounce) */
+  useEffect(() => {
+    if (searchQuery.trim().length < 2) {
+      setSearchResults([]);
+      return;
+    }
+    const delay = setTimeout(async () => {
+      setSearching(true);
+      try {
+        const res = await API.get('/buscar', { params: { q: searchQuery } });
+        setSearchResults(res.data.resultados || []);
+      } catch (err) {
+        console.error('Error al buscar:', err);
+      } finally {
+        setSearching(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(delay);
+  }, [searchQuery]);
+
   const isActive = (path) => location.pathname === path;
+
+  const handleResultClick = (item) => {
+    setSearchOpen(false);
+    setSearchQuery('');
+    setSearchResults([]);
+    if (item.tipo === 'noticia') {
+      navigate('/noticias');
+    } else if (item.tipo === 'comunicado') {
+      navigate('/comunicados');
+    } else if (item.tipo === 'docente') {
+      navigate('/docentes');
+    }
+  };
 
   return (
     <>
       <nav
         className={`sticky top-0 z-[100] transition-all duration-300 ${
           scrolled
-            ? 'bg-white/95 dark:bg-dark-bg/95 backdrop-blur-md shadow-lg shadow-blue-900/8 dark:shadow-none border-b border-gray-100 dark:border-dark-border'
-            : 'bg-white dark:bg-dark-bg border-b border-gray-100 dark:border-dark-border'
+            ? 'bg-white/95 dark:!bg-dark-card/95 backdrop-blur-md shadow-lg shadow-blue-900/8 dark:shadow-none border-b border-gray-100 dark:border-dark-border'
+            : 'bg-white dark:!bg-dark-card border-b border-gray-100 dark:border-dark-border'
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -207,18 +248,48 @@ const Navbar = () => {
             </button>
           </div>
 
-          {/* ── Search bar ── */}
+          {/* ── Search bar (Desktop) ── */}
           {searchOpen && (
-            <div className="hidden lg:block pb-3 animate-fade-in-down">
-              <div className="relative max-w-md">
+            <div className="hidden lg:block pb-4 animate-fade-in-down relative">
+              <div className="relative max-w-xl mx-auto font-sans">
                 <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input
                   autoFocus
                   type="text"
-                  placeholder="Buscar en el sitio..."
-                  className="w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-primary focus:ring-2 focus:ring-blue-100 transition-all"
+                  placeholder="Buscar noticias, comunicados o docentes..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-11 pr-4 py-2.5 bg-gray-50 dark:bg-dark-input border border-gray-200 dark:border-dark-border rounded-xl text-sm focus:outline-none focus:border-primary dark:focus:border-blue-400 focus:ring-2 focus:ring-blue-100 dark:focus:ring-blue-950 transition-all dark:text-white"
                 />
               </div>
+
+              {/* Search Results Dropdown */}
+              {(searchResults.length > 0 || searching || searchQuery.trim().length >= 2) && (
+                <div className="absolute left-1/2 -translate-x-1/2 top-full w-full max-w-xl bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-2xl shadow-2xl z-[150] p-4 mt-2 max-h-[300px] overflow-y-auto font-sans">
+                  {searching && (
+                    <div className="text-gray-400 text-xs font-bold text-center py-4 uppercase tracking-widest">Buscando en tiempo real...</div>
+                  )}
+                  {!searching && searchResults.length === 0 && (
+                    <div className="text-gray-400 text-xs font-bold text-center py-4 uppercase tracking-widest">No se encontraron resultados</div>
+                  )}
+                  {!searching && searchResults.length > 0 && (
+                    <div className="space-y-1">
+                      {searchResults.map((item) => (
+                        <div
+                          key={`${item.tipo}-${item.id}`}
+                          onClick={() => handleResultClick(item)}
+                          className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 dark:hover:bg-dark-hover rounded-xl cursor-pointer transition-all border border-transparent hover:border-slate-100 dark:hover:border-slate-800"
+                        >
+                          <span className="text-sm font-bold text-gray-700 dark:text-slate-200">{item.titulo}</span>
+                          <span className="text-[9px] font-black uppercase tracking-widest px-2.5 py-1 bg-blue-50 dark:bg-blue-950/40 text-primary dark:text-blue-400 rounded-lg">
+                            {item.tipo}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -227,13 +298,50 @@ const Navbar = () => {
         {isMenuOpen && (
           <div className="lg:hidden border-t border-gray-100 dark:border-dark-border bg-white dark:bg-dark-bg animate-slide-down">
             <div className="max-w-7xl mx-auto px-4 py-4 space-y-1 max-h-[75vh] overflow-y-auto">
+              
+              {/* Search Bar Mobile */}
+              <div className="relative mb-4 font-sans">
+                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Buscar en el sitio..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-11 pr-4 py-3 bg-gray-50 dark:bg-dark-input border border-gray-200 dark:border-dark-border rounded-xl text-sm focus:outline-none dark:text-white"
+                />
+                
+                {/* Search Results Mobile */}
+                {(searchResults.length > 0 || searching || searchQuery.trim().length >= 2) && (
+                  <div className="mt-2 bg-white dark:bg-dark-card border border-gray-100 dark:border-dark-border rounded-xl shadow-xl p-3 max-h-[200px] overflow-y-auto">
+                    {searching && <div className="text-center text-xs text-gray-400 py-2">Buscando...</div>}
+                    {!searching && searchResults.length === 0 && <div className="text-center text-xs text-gray-400 py-2">Sin resultados</div>}
+                    {!searching && searchResults.length > 0 && (
+                      <div className="space-y-1">
+                        {searchResults.map((item) => (
+                          <div
+                            key={`${item.tipo}-${item.id}`}
+                            onClick={() => handleResultClick(item)}
+                            className="flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-dark-hover rounded-lg cursor-pointer"
+                          >
+                            <span className="text-xs font-bold text-gray-700 dark:text-slate-200 truncate pr-2">{item.titulo}</span>
+                            <span className="text-[8px] font-black uppercase bg-blue-50 dark:bg-blue-950/40 text-primary dark:text-blue-400 px-2 py-0.5 rounded">
+                              {item.tipo}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
               {navLinks.map((link) => (
                 <div key={link.name}>
                   {link.submenu ? (
                     <>
                       <button
                         onClick={() => setOpenMobile(openMobile === link.name ? null : link.name)}
-                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 font-semibold text-sm hover:bg-blue-50 hover:text-primary transition-all"
+                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-gray-700 dark:text-slate-300 font-semibold text-sm hover:bg-blue-50 dark:hover:bg-dark-hover hover:text-primary dark:hover:text-blue-400 transition-all"
                       >
                         <div className="flex items-center gap-3">
                           {(() => { const Icon = link.icon; return <Icon size={16} className="text-gray-400" />; })()}
@@ -245,14 +353,14 @@ const Navbar = () => {
                         />
                       </button>
                       {openMobile === link.name && (
-                        <div className="mt-1 ml-4 pl-4 border-l-2 border-blue-100 space-y-1 animate-slide-down">
+                        <div className="mt-1 ml-4 pl-4 border-l-2 border-blue-100 dark:border-slate-800 space-y-1 animate-slide-down">
                           {link.submenu.map((sub) => {
                             const SubIcon = sub.icon;
                             return (
                               <Link
                                 key={sub.name}
                                 to={sub.path}
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:text-primary hover:bg-blue-50 text-sm font-medium transition-all"
+                                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 dark:text-slate-400 hover:text-primary dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-dark-hover text-sm font-medium transition-all"
                               >
                                 <SubIcon size={14} className="text-gray-400 flex-shrink-0" />
                                 {sub.name}
@@ -267,8 +375,8 @@ const Navbar = () => {
                       to={link.path}
                       className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all ${
                         isActive(link.path)
-                          ? 'bg-blue-50 text-primary'
-                          : 'text-gray-700 hover:bg-blue-50 hover:text-primary'
+                          ? 'bg-blue-50 dark:bg-dark-hover text-primary dark:text-blue-400'
+                          : 'text-gray-700 dark:text-slate-300 hover:bg-blue-50 dark:hover:bg-dark-hover hover:text-primary'
                       }`}
                     >
                       {(() => { const Icon = link.icon; return <Icon size={16} className="text-gray-400 flex-shrink-0" />; })()}

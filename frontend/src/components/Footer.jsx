@@ -1,8 +1,42 @@
 import { Link } from 'react-router-dom';
 import {
-  MapPin, Phone, Mail, Clock, Users, Camera,
-  PlayCircle, ExternalLink, Heart, ArrowRight, School
+  MapPin, Phone, Mail, Clock, ExternalLink, Heart, ArrowRight, School
 } from 'lucide-react';
+
+const FacebookIcon = ({ size = 18, className = "" }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+  </svg>
+);
+
+const YoutubeIcon = ({ size = 18, className = "" }) => (
+  <svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    width={size} 
+    height={size} 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    stroke="currentColor" 
+    strokeWidth="2" 
+    strokeLinecap="round" 
+    strokeLinejoin="round" 
+    className={className}
+  >
+    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z" />
+    <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02" />
+  </svg>
+);
 
 const footerLinks = {
   institucional: [
@@ -10,19 +44,19 @@ const footerLinks = {
     { label: '¿Quiénes Somos?', path: '/nosotros' },
     { label: 'Historia', path: '/historia' },
     { label: 'Equipo Directivo', path: '/directivo' },
-    { label: 'Transparencia', path: '/transparencia' },
+    { label: 'Documentos Institucionales', path: '/documentos-institucionales' },
   ],
   academico: [
     { label: 'Nuestros Docentes', path: '/docentes' },
     { label: 'Noticias', path: '/noticias' },
     { label: 'Comunicados', path: '/comunicados' },
     { label: 'Galería', path: '/galeria' },
-    { label: 'Admisión 2026', path: '/admision' },
+    { label: 'Mesa de Partes', path: '/mesa-partes' },
   ],
 };
 
 const Footer = () => (
-  <footer className="bg-primary-dark text-white relative overflow-hidden">
+  <footer className="bg-primary-dark text-white relative overflow-hidden font-sans">
     {/* ── Franja superior coloreada (Sistema de Diseño) ── */}
     <div className="h-1.5 bg-gradient-to-r from-accent via-[#3b82f6] to-accent" />
 
@@ -44,19 +78,25 @@ const Footer = () => (
             </div>
           </div>
 
-          <p className="text-blue-200/70 text-sm leading-relaxed max-w-[260px] font-medium">
-            "Disciplina, Estudio y Superación". Más de seis décadas forjando líderes íntegros en la provincia de Pisco.
-          </p>
+          <div className="space-y-2">
+            <p className="text-blue-300 font-extrabold text-sm uppercase tracking-wider">
+              "Honor · Lealtad · Trabajo"
+            </p>
+            <p className="text-blue-200/70 text-xs leading-relaxed max-w-[260px] font-medium">
+              Más de seis décadas forjando líderes íntegros en la provincia de Pisco bajo nuestros firmes valores institucionales.
+            </p>
+          </div>
 
           <div className="flex items-center gap-3">
             {[
-              { icon: Users, label: 'Comunidad', href: '#' },
-              { icon: Camera, label: 'Galería', href: '#' },
-              { icon: PlayCircle, label: 'Videos', href: '#' },
+              { icon: FacebookIcon, label: 'Facebook', href: 'https://facebook.com' },
+              { icon: YoutubeIcon, label: 'YouTube', href: 'https://youtube.com' },
             ].map(({ icon: Icon, label, href }) => (
               <a
                 key={label}
                 href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={label}
                 className="w-10 h-10 bg-white/5 hover:bg-accent border border-white/10 hover:border-accent rounded-xl flex items-center justify-center transition-all duration-500 hover:-translate-y-1 hover:shadow-xl hover:shadow-red-900/40 group"
               >

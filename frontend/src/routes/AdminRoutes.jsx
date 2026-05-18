@@ -3,12 +3,12 @@ import Admin from '../pages/Admin';
 import AdminNoticias from '../pages/AdminNoticias';
 import AdminEventos from '../pages/AdminEventos';
 import AdminComunicados from '../pages/AdminComunicados';
-import AdminDocentes from '../pages/AdminDocentes'; // Importar
-import AdminAdministrativos from '../pages/AdminAdministrativos'; // Importar nuevo
-import AdminTransparencia from '../pages/AdminTransparencia'; // Importar nuevo
-import AdminGaleria from '../pages/AdminGaleria'; // Importar nuevo
+import AdminDocentes from '../pages/AdminDocentes';
+import AdminAdministrativos from '../pages/AdminAdministrativos';
+import AdminDocumentosInstitucionales from '../pages/AdminDocumentosInstitucionales';
+import AdminGaleria from '../pages/AdminGaleria';
 import AdminConfigInicio from '../pages/AdminConfigInicio';
-import AdminAdmisiones from '../pages/AdminAdmisiones'; // Nuevo import
+import AdminMesaPartes from '../pages/AdminMesaPartes';
 
 function AdminRoutes() {
   return (
@@ -20,16 +20,19 @@ function AdminRoutes() {
       <Route path="noticias" element={<AdminNoticias />} />
       <Route path="eventos" element={<AdminEventos />} />
       <Route path="comunicados" element={<AdminComunicados />} />
-      <Route path="admisiones" element={<AdminAdmisiones />} />
+      <Route path="mesa-partes" element={<AdminMesaPartes />} />
 
       {/* Rutas Institucionales */}
-      <Route path="transparencia" element={<AdminTransparencia />} />
+      <Route path="documentos-institucionales" element={<AdminDocumentosInstitucionales />} />
       <Route path="docentes" element={<AdminDocentes />} />
       <Route path="administrativos" element={<AdminAdministrativos />} />
       <Route path="galeria" element={<AdminGaleria />} />
       <Route path="config-inicio" element={<AdminConfigInicio />} />
 
-      {/* Redirección SIEMPRE al final de todas las rutas */}
+      {/* Compatibilidad con rutas antiguas */}
+      <Route path="transparencia" element={<Navigate to="/admin/documentos-institucionales" replace />} />
+      <Route path="admisiones" element={<Navigate to="/admin/mesa-partes" replace />} />
+
       <Route path="*" element={<Navigate to="/admin" />} />
     </Routes>
   );

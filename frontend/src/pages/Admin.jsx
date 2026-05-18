@@ -138,10 +138,10 @@ function Admin() {
           <SidebarItem to="noticias" icon={Newspaper} label="Noticias" active={isActive('noticias')} />
           <SidebarItem to="eventos" icon={Calendar} label="Eventos" active={isActive('eventos')} />
           <SidebarItem to="comunicados" icon={Megaphone} label="Comunicados" active={isActive('comunicados')} />
-          <SidebarItem to="admisiones" icon={FileText} label="Admisiones" active={isActive('admisiones')} />
+          <SidebarItem to="mesa-partes" icon={FileText} label="Mesa de Partes" active={isActive('mesa-partes')} />
 
           <p className="text-[10px] font-black text-blue-300/40 uppercase tracking-[0.2em] px-4 mt-10 mb-4">Institucional</p>
-          <SidebarItem to="transparencia" icon={FolderTree} label="Transparencia" active={isActive('transparencia')} />
+          <SidebarItem to="documentos-institucionales" icon={FolderTree} label="Documentos Inst." active={isActive('documentos-institucionales')} />
 
           {usuario?.rol === 'admin' && (
             <>

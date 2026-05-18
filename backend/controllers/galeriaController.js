@@ -1,5 +1,8 @@
 const db = require('../config/db');
+const fs = require('fs');
+const path = require('path');
 
+// 1. Obtener toda la galería (fotos y videos)
 const getGaleria = async (req, res) => {
     try {
         const sql = 'SELECT * FROM galeria ORDER BY fecha_publicacion DESC';
@@ -11,19 +14,41 @@ const getGaleria = async (req, res) => {
     }
 };
 
+// 2. Crear elemento (foto o video)
 const createFoto = async (req, res) => {
-    const { titulo, anio, dia, mes } = req.body;
+    const { titulo, anio, dia, mes, tipo, video_url } = req.body;
     const imagen_url = req.file ? req.file.filename : null;
 
-    // Valores por defecto seguros
+    const tipoFinal = tipo || 'foto';
     const finalAnio = anio || new Date().getFullYear().toString();
     const finalDia = dia || new Date().getDate().toString();
     const finalMes = mes || (new Date().getMonth() + 1).toString();
 
+    // Validar: si es foto necesita imagen, si es video puede tener video_url o imagen
+    if (tipoFinal === 'foto' && !imagen_url) {
+        return res.status(400).json({ error: 'Se requiere una imagen para fotos' });
+    }
+    if (tipoFinal === 'video' && !video_url && !imagen_url) {
+        return res.status(400).json({ error: 'Se requiere URL de video o imagen para videos' });
+    }
+
     try {
-        const sql = 'INSERT INTO galeria (titulo, imagen_url, anio, dia, mes) VALUES (?, ?, ?, ?, ?)';
-        const [result] = await db.query(sql, [titulo, imagen_url, finalAnio, finalDia, finalMes]);
-        res.status(201).json({ message: 'Imagen añadida a la galería', id: result.insertId });
+        const sql = `INSERT INTO galeria 
+            (titulo, imagen_url, anio, dia, mes, tipo, video_url) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        const [result] = await db.query(sql, [
+            titulo,
+            imagen_url,
+            finalAnio,
+            finalDia,
+            finalMes,
+            tipoFinal,
+            video_url || null
+        ]);
+        res.status(201).json({ 
+            message: tipoFinal === 'video' ? 'Video añadido a la galería' : 'Imagen añadida a la galería', 
+            id: result.insertId 
+        });
     } catch (err) {
         console.error("Error en createFoto:", err.message);
         return res.status(500).json({ 
@@ -33,27 +58,22 @@ const createFoto = async (req, res) => {
     }
 };
 
-const fs = require('fs');
-const path = require('path');
-
+// 3. Eliminar elemento (foto o video)
 const deleteFoto = async (req, res) => {
     const { id } = req.params;
     try {
-        // 1. Obtener la información de la imagen antes de borrarla
-        const [rows] = await db.query('SELECT imagen_url FROM galeria WHERE id = ?', [id]);
+        const [rows] = await db.query('SELECT imagen_url, tipo FROM galeria WHERE id = ?', [id]);
         
-        if (rows.length > 0 && rows[0].imagen_url) {
+        if (rows.length > 0 && rows[0].imagen_url && rows[0].tipo === 'foto') {
             const filePath = path.join(__dirname, '../uploads', rows[0].imagen_url);
-            // 2. Borrar archivo físico si existe
             if (fs.existsSync(filePath)) {
                 fs.unlinkSync(filePath);
                 console.log(`Archivo borrado: ${rows[0].imagen_url}`);
             }
         }
 
-        const sql = 'DELETE FROM galeria WHERE id = ?';
-        await db.query(sql, [id]);
-        res.json({ message: 'Imagen eliminada correctamente' });
+        await db.query('DELETE FROM galeria WHERE id = ?', [id]);
+        res.json({ message: 'Elemento eliminado correctamente' });
     } catch (err) {
         console.error("Error en deleteFoto:", err.message);
         return res.status(500).json({ error: err.message });

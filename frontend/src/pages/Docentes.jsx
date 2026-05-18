@@ -57,11 +57,17 @@ function DocenteCard({ doc, index }) {
         </div>
 
         {/* Badge cargo */}
-        <div className="absolute top-4 left-4">
+        <div className="absolute top-4 left-4 flex flex-col gap-2 items-start">
           <span className={`${cargoColor} text-white text-[9px] font-black px-3 py-1.5 rounded-xl uppercase tracking-wider shadow-lg flex items-center gap-1.5`}>
             <Award size={10} />
             {doc.cargo?.split(' ')[0] || 'Docente'}
           </span>
+          {doc.tutoria && (
+            <span className="bg-emerald-600 text-white text-[9px] font-black px-3 py-1.5 rounded-xl uppercase tracking-wider shadow-lg flex items-center gap-1.5 animate-bounce">
+              <Zap size={10} className="fill-white" />
+              Tutor de: {doc.tutoria}
+            </span>
+          )}
         </div>
       </div>
 

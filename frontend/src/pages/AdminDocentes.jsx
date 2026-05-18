@@ -29,6 +29,7 @@ function AdminDocentes() {
         cargo: '', 
         especialidad: '', 
         imagen_url: '',
+        tutoria: '',
         orden: 0 
     })
 
@@ -59,7 +60,7 @@ function AdminDocentes() {
                     icon: 'success'
                 })
             }
-            setForm({ nombre: '', cargo: '', especialidad: '', imagen_url: '', orden: 0 })
+            setForm({ nombre: '', cargo: '', especialidad: '', imagen_url: '', tutoria: '', orden: 0 })
             setShowForm(false)
             setEditMode(null)
             cargarDocentes()
@@ -75,6 +76,7 @@ function AdminDocentes() {
             cargo: d.cargo,
             especialidad: d.especialidad,
             imagen_url: d.imagen_url,
+            tutoria: d.tutoria || '',
             orden: d.orden
         })
         setShowForm(true)
@@ -171,6 +173,10 @@ function AdminDocentes() {
                                 </div>
                             </div>
                             <div className="space-y-2 group">
+                                <label className="text-[10px] font-black text-gray-400 uppercase ml-4 tracking-widest group-focus-within:text-primary transition-colors">Tutoría Asignada (Opcional)</label>
+                                <input type="text" className="w-full p-5 rounded-2xl bg-slate-50/50 border border-transparent focus:border-primary focus:bg-white focus:ring-4 focus:ring-blue-50 font-bold text-gray-800 outline-none transition-all" value={form.tutoria} onChange={e => setForm({...form, tutoria: e.target.value})} placeholder="Ej: 3er Año 'A'" />
+                            </div>
+                            <div className="space-y-2 group">
                                 <label className="text-[10px] font-black text-gray-400 uppercase ml-4 tracking-widest group-focus-within:text-primary transition-colors">Prioridad en Lista</label>
                                 <input type="number" className="w-full p-5 rounded-2xl bg-slate-50/50 border border-transparent focus:border-primary focus:bg-white focus:ring-4 focus:ring-blue-50 font-black text-gray-700 outline-none transition-all" value={form.orden} onChange={e => setForm({...form, orden: e.target.value})} />
                             </div>
@@ -227,8 +233,15 @@ function AdminDocentes() {
                                 <GraduationCap size={24} />
                             </div>
                             <div>
-                                <h4 className="text-xl font-black text-gray-900 leading-tight mb-2 group-hover:text-primary transition-colors tracking-tight">{d.nombre}</h4>
-                                <p className="text-gray-400 text-xs font-black uppercase tracking-widest bg-slate-50 px-3 py-1 rounded-lg w-fit border border-gray-100 group-hover:border-blue-100 transition-colors">{d.cargo}</p>
+                                <h4 className="text-xl font-black text-gray-900 dark:text-white leading-tight mb-2 group-hover:text-primary dark:group-hover:text-blue-400 transition-colors tracking-tight">{d.nombre}</h4>
+                                <div className="flex flex-wrap gap-2 items-center">
+                                    <p className="text-gray-400 dark:text-slate-400 text-xs font-black uppercase tracking-widest bg-slate-50 dark:bg-dark-input px-3 py-1 rounded-lg w-fit border border-gray-100 dark:border-dark-border group-hover:border-blue-100 transition-colors">{d.cargo}</p>
+                                    {d.tutoria && (
+                                        <span className="text-[10px] font-black uppercase tracking-widest bg-emerald-50 dark:bg-emerald-950/20 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-lg border border-emerald-100 dark:border-emerald-900/40">
+                                            Tutor: {d.tutoria}
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                             <div className="mt-8 pt-6 border-t border-dashed border-gray-100 flex justify-between items-center text-[9px] font-black text-gray-300 uppercase tracking-[0.3em]">
                                 <span className="flex items-center gap-2">
