@@ -1,16 +1,37 @@
-# React + Vite
+# 💻 Colegio Bandera del Perú — Frontend App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Este directorio contiene el código fuente de la aplicación del lado del cliente (Frontend) para la plataforma web del Colegio Bandera del Perú. 
 
-Currently, two official plugins are available:
+Esta aplicación está construida sobre **React 19**, **Vite** y **Tailwind CSS v4**.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+### 📖 Guía Completa de la Plataforma
+Para ver el detalle completo del proyecto, incluyendo:
+*   🌟 Características Generales.
+*   🔐 Funcionalidades del Portal Público y Panel de Administración.
+*   📊 Esquemas detallados de la Base de Datos (MySQL).
+*   🛡️ Arquitectura, Seguridad y Optimizaciones implementadas.
+*   🚀 Guía paso a paso de Instalación y Despliegue de Frontend y Backend.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Por favor, consulta el **README principal** del proyecto en la raíz del repositorio:
+👉 **[Ir al README.md Principal](../README.md)**
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### 🚀 Comandos Rápidos del Frontend
+
+1. **Instalar Dependencias**:
+   ```bash
+   npm install
+   ```
+
+2. **Iniciar Servidor de Desarrollo**:
+   ```bash
+   npm run dev
+   ```
+
+3. **Construir para Producción**:
+   ```bash
+   npm run build
+   ```
