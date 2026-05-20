@@ -25,31 +25,32 @@ const admisionRoutes = require('./routes/admisionRoutes')
 const administrativoRoutes = require('./routes/administrativoRoutes');
 const carruselRoutes = require('./routes/carruselRoutes');
 const configuracionRoutes = require('./routes/configuracionRoutes');
+const mesaPartesRoutes = require('./routes/mesaPartesRoutes'); // NUEVO
+const directivoRoutes = require('./routes/directivoRoutes'); // NUEVO V2
 
 const app = express()
 const PORT = process.env.PORT || 3000
 
 // Configuración de Seguridad
 app.use(helmet());
-// Permitir carga de imágenes locales desde el frontend
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 
-// Limitación de peticiones (Protección DoS y Fuerza Bruta)
+// Limitación de peticiones
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutos
-  max: 200, // Límite de 200 peticiones por IP (ajustado para ser más permisivo en desarrollo)
+  windowMs: 15 * 60 * 1000,
+  max: 200,
   message: { error: "Demasiadas peticiones desde esta IP, por favor intenta más tarde." },
   standardHeaders: true,
   legacyHeaders: false,
 });
-app.use('/api/', limiter);
+app.use('/api/', limiter)
 
 app.use(cors())
 app.use(express.json())
-app.use(compression()) // Comprime todas las respuestas HTTP
-app.use(morgan('dev')) // Logger de peticiones en consola
+app.use(compression())
+app.use(morgan('dev'))
 
-// Servir imágenes subidas como archivos estáticos
+// Servir archivos estáticos (imágenes, PDFs, etc.)
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')))
 
 // Ruta base
@@ -57,22 +58,50 @@ app.get('/', (req, res) => {
   res.json({ mensaje: 'Servidor Colegio Bandera del Perú ✅' })
 })
 
-// Rutas públicas
+// Rutas de la API
 app.use('/api/noticias', noticiaRoutes)
 app.use('/api/docentes', docenteRoutes)
 app.use('/api/eventos', eventoRoutes)
 app.use('/api/galeria', galeriaRoutes)
 app.use('/api/comunicados', comunicadoRoutes)
-app.use('/api/transparencia', require('./routes/transparenciaRoutes'));
+app.use('/api/transparencia', transparenciaRoutes)
 app.use('/api/admision', admisionRoutes)
-app.use('/api/administrativos', administrativoRoutes);
-app.use('/api/carrusel', carruselRoutes);
-app.use('/api/configuracion', configuracionRoutes);
+app.use('/api/administrativos', administrativoRoutes)
+app.use('/api/carrusel', carruselRoutes)
+app.use('/api/configuracion', configuracionRoutes)
+app.use('/api/mesa-partes', mesaPartesRoutes) // NUEVO
+app.use('/api/directivos', directivoRoutes) // NUEVO V2
 
 // Autenticación
 app.use('/api/auth', authRoutes)
 
-// Middleware global de manejo de errores (Captura errores no manejados)
+// Búsqueda global (endpoint para el buscador del Navbar)
+app.get('/api/buscar', async (req, res) => {
+  const { q } = req.query;
+  if (!q || q.trim().length < 2) return res.json({ resultados: [] });
+  const term = `%${q.trim()}%`;
+  try {
+    const [noticias] = await db.query(
+      `SELECT id, titulo, 'noticia' AS tipo FROM noticias WHERE titulo LIKE ? OR contenido LIKE ? LIMIT 3`,
+      [term, term]
+    );
+    const [comunicados] = await db.query(
+      `SELECT id, titulo, 'comunicado' AS tipo FROM comunicados WHERE titulo LIKE ? OR descripcion LIKE ? LIMIT 3`,
+      [term, term]
+    );
+    const [docentes] = await db.query(
+      `SELECT id, nombre AS titulo, 'docente' AS tipo FROM docentes WHERE nombre LIKE ? OR cargo LIKE ? LIMIT 3`,
+      [term, term]
+    );
+    const resultados = [...noticias, ...comunicados, ...docentes];
+    res.json({ resultados });
+  } catch (err) {
+    console.error('Error en búsqueda global:', err.message);
+    res.status(500).json({ resultados: [] });
+  }
+});
+
+// Middleware global de manejo de errores
 app.use((err, req, res, next) => {
   console.error('Error no manejado:', err.stack);
   res.status(500).json({ 
@@ -84,4 +113,3 @@ app.use((err, req, res, next) => {
 app.listen(PORT, () => {
   console.log(`Servidor corriendo en http://localhost:${PORT}`)
 })
-console.log('¿DB usa promesas?:', typeof db.query === 'function');
