@@ -1,6 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-primary: #003087;
   --color-primary-dark: #001D52;
@@ -82,12 +84,7 @@ html.dark .text-\[\#003087\],
 html.dark .text-\[\#001D52\] { 
   color: var(--color-dark-accent-text) !important; 
 }
-html.dark .bg-primary,
-html.dark .bg-primary-dark,
-html.dark .bg-\[\#003087\],
-html.dark .bg-\[\#001D52\] { 
-  background-color: var(--color-dark-accent) !important; 
-}
+/* Se eliminó la regla que forzaba bg-primary a volverse celeste (var(--color-dark-accent)). Ahora los fondos primarios conservan su elegancia oscura original. */
 
 /* Premium Card Style */
 html.dark .card-premium {
