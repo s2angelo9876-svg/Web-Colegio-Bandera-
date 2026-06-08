@@ -31,6 +31,9 @@ const directivoRoutes = require('./routes/directivoRoutes'); // NUEVO V2
 const app = express()
 const PORT = process.env.PORT || 3000
 
+// Habilitar CORS primero
+app.use(cors())
+
 // Configuración de Seguridad
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
@@ -45,7 +48,6 @@ const limiter = rateLimit({
 });
 app.use('/api/', limiter)
 
-app.use(cors())
 app.use(express.json())
 app.use(compression())
 app.use(morgan('dev'))
