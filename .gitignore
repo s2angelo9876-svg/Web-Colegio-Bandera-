@@ -9,3 +9,9 @@ backend/node_modules/
 frontend/node_modules/
 frontend/dist/
 *.log
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+!.env.example
