@@ -60,6 +60,29 @@ app.get('/', (req, res) => {
   res.json({ mensaje: 'Servidor Colegio Bandera del Perú ✅' })
 })
 
+// Endpoint de diagnóstico — TEMPORAL para depuración
+app.get('/api/health', async (req, res) => {
+  const info = {
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    env: {
+      DATABASE_URL: process.env.DATABASE_URL ? '✅ Configurada' : '❌ NO DEFINIDA',
+      NODE_ENV: process.env.NODE_ENV || 'no definido',
+    },
+    db: null,
+    error: null
+  };
+  try {
+    const [rows] = await db.query('SELECT NOW() as ahora');
+    info.db = { conectada: true, hora_servidor: rows[0]?.ahora };
+  } catch (err) {
+    info.status = 'error';
+    info.db = { conectada: false };
+    info.error = err.message;
+  }
+  res.json(info);
+});
+
 // Rutas de la API
 app.use('/api/noticias', noticiaRoutes)
 app.use('/api/docentes', docenteRoutes)
@@ -108,7 +131,7 @@ app.use((err, req, res, next) => {
   console.error('Error no manejado:', err.stack);
   res.status(500).json({ 
     error: 'Algo salió mal en el servidor',
-    detalle: process.env.NODE_ENV === 'development' ? err.message : undefined 
+    detalle: err.message  // Visible siempre para facilitar el diagnóstico
   });
 });
 
