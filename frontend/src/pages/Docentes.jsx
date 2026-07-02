@@ -1,95 +1,84 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
+import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
 import {
-  GraduationCap, BookOpen, Award, Star, Users,
-  UserX, RefreshCw, Zap, ArrowRight, Shield, Search
+  GraduationCap, BookOpen, Award, Users,
+  UserX, RefreshCw, Search
 } from 'lucide-react';
 import Footer from '../components/Footer';
 
-/* ── Skeleton card ── */
 function SkeletonDocente() {
   return (
-    <div className="bg-white rounded-[2rem] overflow-hidden border border-gray-100 shadow-sm animate-pulse">
+    <div className="bg-white rounded-xl overflow-hidden border border-slate-100 shadow-sm animate-pulse">
       <div className="bg-slate-100 aspect-[3/4]" />
-      <div className="p-6 space-y-3">
-        <div className="h-5 bg-slate-100 w-3/4 rounded-lg mx-auto" />
+      <div className="p-4 space-y-2">
+        <div className="h-4 bg-slate-100 w-3/4 rounded mx-auto" />
         <div className="h-3 bg-slate-50 w-1/2 rounded-full mx-auto" />
-        <div className="h-10 bg-slate-50 w-full rounded-xl mx-auto" />
       </div>
     </div>
   );
 }
 
-/* ── Card docente ── */
+SkeletonDocente.propTypes = {};
+
 function DocenteCard({ doc, index }) {
-  const cargoColor =
-    doc.cargo?.toLowerCase().includes('director') ? 'bg-red-600 shadow-red-900/40' :
-    doc.cargo?.toLowerCase().includes('coordinad') ? 'bg-blue-700 shadow-blue-900/40' :
-    'bg-primary shadow-blue-900/40';
+  const isDirector = doc.cargo?.toLowerCase().includes('director');
+  const isCoordinador = doc.cargo?.toLowerCase().includes('coordinad');
 
   return (
     <div
-      className="group bg-white rounded-[2rem] overflow-hidden border border-gray-100 hover:border-blue-200 hover:shadow-[0_20px_60px_rgba(0,48,135,0.12)] transition-all duration-500 animate-fade-in-up"
-      style={{ animationDelay: `${index * 0.06}s` }}
+      className="group bg-white rounded-xl overflow-hidden border border-slate-100 hover:border-slate-200 hover:shadow-md transition-all duration-300 animate-fade-in"
+      style={{ animationDelay: `${index * 0.04}s` }}
     >
-      {/* Imagen con overlay en hover */}
-      <div className="aspect-[3/4] overflow-hidden bg-slate-50 relative">
+      <div className="aspect-[3/4] overflow-hidden bg-slate-100 relative">
         <img
-          src={doc.imagen_url?.startsWith('http') ? doc.imagen_url : `${UPLOADS_URL}/${doc.imagen_url}`}
-          alt={doc.nombre}
-          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          src={doc.imagen_url?.startsWith('http') ? doc.imagen_url : (doc.imagen_url ? `${UPLOADS_URL}/${doc.imagen_url}` : '')}
+          alt={doc.nombre || 'Docente'}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          loading="lazy"
           onError={(e) => {
-              e.target.src = "https://placehold.co/600x800/f8fafc/64748b?text=Docente";
+            e.currentTarget.src = 'https://placehold.co/400x500/f1f5f9/64748b?text=Docente';
           }}
         />
-
-        {/* Overlay de hover */}
-        <div className="absolute inset-0 bg-gradient-to-t from-primary-dark/90 via-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-        {/* Info en overlay */}
-        <div className="absolute bottom-0 left-0 right-0 p-6 translate-y-3 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-400">
-          <div className="flex items-center gap-2">
-            <BookOpen size={13} className="text-blue-300 flex-shrink-0" />
-            <span className="text-white text-[10px] font-black uppercase tracking-widest leading-tight">
-              {doc.especialidad || 'Especialista'}
-            </span>
-          </div>
-        </div>
-
-        {/* Badge cargo */}
-        <div className="absolute top-4 left-4 flex flex-col gap-2 items-start">
-          <span className={`${cargoColor} text-white text-[9px] font-black px-3 py-1.5 rounded-xl uppercase tracking-wider shadow-lg flex items-center gap-1.5`}>
-            <Award size={10} />
-            {doc.cargo?.split(' ')[0] || 'Docente'}
-          </span>
-          {doc.tutoria && (
-            <span className="bg-emerald-600 text-white text-[9px] font-black px-3 py-1.5 rounded-xl uppercase tracking-wider shadow-lg flex items-center gap-1.5 animate-bounce">
-              <Zap size={10} className="fill-white" />
-              Tutor de: {doc.tutoria}
-            </span>
-          )}
-        </div>
+        <span className={`absolute top-3 left-3 inline-flex items-center gap-1 text-[9px] font-bold px-2.5 py-1 rounded uppercase tracking-wider text-white ${
+          isDirector ? 'bg-red-600' : isCoordinador ? 'bg-blue-700' : 'bg-primary'
+        }`}>
+          <Award size={9} />
+          {doc.cargo?.split(' ')[0] || 'Docente'}
+        </span>
       </div>
 
-      {/* Info inferior */}
-      <div className="p-6 text-center relative">
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-8 h-1 bg-red-500 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-500" />
-        
-        <h3 className="text-primary font-black text-base leading-tight uppercase tracking-tight mb-1 group-hover:text-red-600 transition-colors">
+      <div className="p-4 text-center">
+        <h3 className="text-primary font-bold text-sm leading-tight mb-1 group-hover:text-red-600 transition-colors">
           {doc.nombre}
         </h3>
-        <p className="text-gray-400 font-bold text-[10px] uppercase tracking-[0.2em] mb-3">
+        <p className="text-slate-400 text-[10px] font-semibold uppercase tracking-wider mb-2">
           {doc.cargo}
         </p>
-        
-        <div className="bg-slate-50 rounded-xl py-2 px-4 inline-flex items-center gap-2 border border-slate-100 group-hover:bg-blue-50 group-hover:border-blue-100 transition-all">
-          <Star size={10} className="text-amber-400 fill-amber-400" />
-          <p className="text-[10px] font-black uppercase tracking-tighter text-gray-500">{doc.especialidad || 'Institucional'}</p>
-        </div>
+        {doc.especialidad && (
+          <div className="bg-slate-50 rounded-lg py-1.5 px-2 inline-flex items-center gap-1.5 border border-slate-100">
+            <BookOpen size={10} className="text-primary" />
+            <span className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+              {doc.especialidad}
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
 }
+
+DocenteCard.propTypes = {
+  doc: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    nombre: PropTypes.string,
+    cargo: PropTypes.string,
+    especialidad: PropTypes.string,
+    imagen_url: PropTypes.string,
+    tutoria: PropTypes.string,
+  }).isRequired,
+  index: PropTypes.number.isRequired,
+};
 
 const Docentes = () => {
   const [docentes, setDocentes] = useState([]);
@@ -97,144 +86,130 @@ const Docentes = () => {
   const [error, setError] = useState(false);
   const [busqueda, setBusqueda] = useState('');
 
-  const cargar = () => {
+  const cargar = useCallback(() => {
     setCargando(true);
     setError(false);
     API.get('/docentes')
-      .then(res => { setDocentes(res.data); setCargando(false); })
-      .catch(() => { setCargando(false); setError(true); });
-  };
+      .then(res => { setDocentes(res.data || []); })
+      .catch(() => { setError(true); })
+      .finally(() => setCargando(false));
+  }, []);
 
-  useEffect(() => { cargar(); }, []);
+  useEffect(() => { cargar(); }, [cargar]);
 
-  const filtrados = docentes.filter(d => 
-    d.nombre.toLowerCase().includes(busqueda.toLowerCase()) || 
-    d.cargo.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  const filtrados = useMemo(() => {
+    if (!busqueda.trim()) return docentes;
+    const q = busqueda.toLowerCase();
+    return docentes.filter(d =>
+      (d.nombre || '').toLowerCase().includes(q) ||
+      (d.cargo || '').toLowerCase().includes(q)
+    );
+  }, [docentes, busqueda]);
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
+    <div className="min-h-screen bg-slate-50 font-sans pt-20">
 
-      {/* ── Page Header ── */}
-      <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-primary to-primary-dark">
-        {/* Decoraciones de fondo */}
-        <div className="absolute top-0 left-0 w-full h-full">
-           <div className="absolute top-10 right-10 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
-           <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-black/10 rounded-full blur-3xl" />
-        </div>
-        
-        <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center">
-          <div className="animate-badge-pop mb-6">
-            <div className="w-20 h-20 bg-white/10 border border-white/20 rounded-[2rem] flex items-center justify-center animate-float backdrop-blur-sm">
-                <GraduationCap size={40} className="text-white" />
-            </div>
+      <section className="relative py-20 px-6 overflow-hidden bg-primary">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-white/5 skew-x-12 transform translate-x-20" />
+        <div className="max-w-5xl mx-auto text-center relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-white/90 text-xs font-semibold uppercase tracking-widest mb-6">
+            <GraduationCap size={14} />
+            Plana Académica
           </div>
-          <h1 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-4 animate-fade-in-up">
-            Plana Docente
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
+            Nuestros Docentes
           </h1>
-          <div className="w-24 h-1.5 bg-red-500 mx-auto mb-8 rounded-full shadow-lg shadow-red-900/40" />
-          <p className="text-xl md:text-2xl text-blue-100 font-light italic max-w-2xl px-4 animate-fade-in-up delay-100 leading-relaxed">
+          <p className="text-white/80 max-w-2xl mx-auto">
             Profesionales comprometidos con la excelencia educativa y la formación integral de nuestros alumnos.
           </p>
         </div>
-
-        {/* Onda decorativa inferior */}
-        <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none rotate-180">
-            <svg className="relative block w-full h-[60px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" className="fill-slate-50"></path>
-            </svg>
-        </div>
       </section>
 
-      {/* ── Grid docentes ── */}
-      <section className="max-w-7xl mx-auto px-6 -mt-10 pb-32 relative z-20">
-        
-        {/* Toolbar */}
-        <div className="bg-white rounded-[2.5rem] p-6 md:p-8 shadow-xl shadow-blue-900/5 border border-white/60 backdrop-blur-sm flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-primary">
-                <Users size={24} />
+      <section className="max-w-7xl mx-auto px-6 -mt-10 pb-20 relative z-20">
+
+        <div className="bg-white rounded-xl p-5 md:p-6 shadow-md border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-primary">
+              <Users size={18} />
             </div>
             <div>
-              <h2 className="text-xl font-black text-gray-900 tracking-tight leading-none mb-1">
-                {cargando ? 'Cargando docentes...' : `${filtrados.length} Miembros Activos`}
+              <h2 className="text-base font-bold text-slate-900 leading-none">
+                {cargando ? 'Cargando...' : `${filtrados.length} Miembros Activos`}
               </h2>
-              <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest">Personal académico calificado</p>
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1">Personal académico calificado</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
-                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input 
-                    type="text"
-                    placeholder="Buscar docente..."
-                    value={busqueda}
-                    onChange={(e) => setBusqueda(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-xl text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
-                />
+              <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Buscar docente..."
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                aria-label="Buscar docente"
+              />
             </div>
             <button
-                onClick={cargar}
-                disabled={cargando}
-                className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 text-gray-400 hover:text-primary hover:border-blue-100 transition-all rounded-xl shadow-sm disabled:opacity-50"
+              onClick={cargar}
+              disabled={cargando}
+              className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-primary hover:border-primary/20 rounded-lg transition-all disabled:opacity-50"
+              aria-label="Actualizar"
             >
-                <RefreshCw size={20} className={cargando ? 'animate-spin' : ''} />
+              <RefreshCw size={16} className={cargando ? 'animate-spin' : ''} />
             </button>
           </div>
         </div>
 
-        {/* Skeletons */}
         {cargando && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 lg:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
             {[...Array(10)].map((_, i) => <SkeletonDocente key={i} />)}
           </div>
         )}
 
-        {/* Grid real */}
         {!cargando && !error && filtrados.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 lg:gap-8">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
             {filtrados.map((doc, i) => (
               <DocenteCard key={doc.id} doc={doc} index={i} />
             ))}
           </div>
         )}
 
-        {/* Error */}
         {!cargando && error && (
-          <div className="bg-white rounded-[3rem] p-20 text-center shadow-xl border border-red-50 flex flex-col items-center animate-fade-in">
-            <div className="w-24 h-24 bg-red-50 rounded-[2rem] flex items-center justify-center mb-8">
-              <UserX size={48} className="text-red-300" />
+          <div className="bg-white rounded-xl p-16 text-center border border-red-100 flex flex-col items-center">
+            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
+              <UserX size={32} className="text-red-300" />
             </div>
-            <h3 className="text-2xl font-black text-gray-800 mb-2 uppercase tracking-tighter">Error de conexión</h3>
-            <p className="text-gray-400 text-sm max-w-sm mb-10 font-medium leading-relaxed">
-              No se pudo establecer conexión con el servidor institucional. Por favor, verifica tu conexión a internet o intenta más tarde.
+            <h3 className="text-lg font-bold text-slate-800 mb-2">Error de conexión</h3>
+            <p className="text-slate-500 text-sm max-w-sm mb-6">
+              No se pudo establecer conexión con el servidor institucional. Por favor, intenta más tarde.
             </p>
             <button
               onClick={cargar}
-              className="flex items-center gap-3 bg-primary text-white font-black px-10 py-5 rounded-2xl hover:bg-red-600 transition-all shadow-xl shadow-blue-900/20 active:scale-95 uppercase tracking-widest text-[11px]"
+              className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-red-600 transition-all"
             >
               <RefreshCw size={16} />
-              Reintentar Conexión
+              Reintentar
             </button>
           </div>
         )}
 
-        {/* Vacío */}
         {!cargando && !error && filtrados.length === 0 && (
-          <div className="bg-white rounded-[3rem] p-20 text-center shadow-xl border border-slate-50 flex flex-col items-center animate-fade-in">
-            <div className="w-24 h-24 bg-slate-50 rounded-[2rem] flex items-center justify-center mb-8">
-              <Search size={48} className="text-slate-200" />
+          <div className="bg-white rounded-xl p-16 text-center border border-slate-100 flex flex-col items-center">
+            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+              <Search size={32} className="text-slate-300" />
             </div>
-            <h3 className="text-2xl font-black text-gray-800 mb-2 uppercase tracking-tighter">Sin coincidencias</h3>
-            <p className="text-gray-400 text-sm max-w-sm mb-8 font-medium">
-              No hemos encontrado ningún docente que coincida con tu búsqueda. Prueba con otros términos.
+            <h3 className="text-lg font-bold text-slate-800 mb-2">Sin coincidencias</h3>
+            <p className="text-slate-500 text-sm max-w-sm mb-6">
+              No hemos encontrado ningún docente que coincida con tu búsqueda.
             </p>
-            <button 
-                onClick={() => setBusqueda('')} 
-                className="text-primary font-black text-[11px] uppercase tracking-widest hover:text-red-600 transition-colors underline underline-offset-4"
+            <button
+              onClick={() => setBusqueda('')}
+              className="text-primary font-semibold text-xs uppercase tracking-wider hover:text-red-600 transition-colors underline underline-offset-4"
             >
-                Limpiar filtros
+              Limpiar filtros
             </button>
           </div>
         )}

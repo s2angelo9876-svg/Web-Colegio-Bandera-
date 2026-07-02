@@ -1,94 +1,89 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { getComunicados } from '../services/api';
 import {
   Bell, Calendar, Tag, FileX, RefreshCw,
-  Zap, ChevronDown, ChevronUp, Search, Info, Shield, Filter
+  ChevronDown, ChevronUp, Search, Shield, Filter
 } from 'lucide-react';
 import Footer from '../components/Footer';
 
 const categoryColors = {
   general:    'bg-slate-100 text-slate-700',
-  urgente:    'bg-red-100 text-red-700 border-red-200',
-  académico:  'bg-blue-100 text-blue-700 border-blue-200',
-  social:     'bg-emerald-100 text-emerald-700 border-emerald-200',
+  urgente:    'bg-red-100 text-red-700',
+  academico:  'bg-blue-100 text-blue-700',
+  academico2: 'bg-blue-100 text-blue-700',
+  social:     'bg-emerald-100 text-emerald-700',
 };
 
 function ComunicadoCard({ c, index }) {
   const [expanded, setExpanded] = useState(false);
-  const cat = (c.categoria || 'general').toLowerCase();
+  const cat = (c.categoria || 'general').toLowerCase().replace('á', 'a');
   const colorClass = categoryColors[cat] || categoryColors.general;
   const fecha = new Date(c.fecha);
+  const isUrgent = cat === 'urgente';
 
   return (
     <div
-      className="bg-white rounded-[2.5rem] border border-white shadow-xl shadow-blue-900/5 hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 overflow-hidden animate-fade-in-up mb-6 group"
-      style={{ animationDelay: `${index * 0.07}s` }}
+      className="bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden animate-fade-in"
+      style={{ animationDelay: `${index * 0.05}s` }}
     >
       <div className="flex">
-        {/* Franja lateral dinámica */}
-        <div className={`w-2 ${cat === 'urgente' ? 'bg-red-600' : 'bg-primary'} flex-shrink-0 rounded-l-[2.5rem] group-hover:w-3 transition-all duration-500`} />
+        <div className={`w-1.5 ${isUrgent ? 'bg-red-600' : 'bg-primary'} flex-shrink-0`} />
 
-        <div className="flex-1 p-8 md:p-10">
-          {/* Header card */}
-          <div className="flex items-start justify-between gap-4 mb-6">
-            <div className="flex items-center gap-4 flex-wrap">
-              {/* Categoría badge */}
-              <span className={`flex items-center gap-2 text-[10px] font-black px-4 py-2 rounded-xl uppercase tracking-widest border ${colorClass}`}>
-                <Tag size={10} />
+        <div className="flex-1 p-6 md:p-8">
+          <div className="flex items-start justify-between gap-4 mb-4">
+            <div className="flex items-center gap-3 flex-wrap">
+              <span className={`inline-flex items-center gap-1.5 text-[10px] font-bold px-3 py-1.5 rounded-lg uppercase tracking-wider ${colorClass}`}>
+                <Tag size={11} />
                 {c.categoria || 'General'}
               </span>
-              {/* Fecha */}
-              <div className="flex items-center gap-2 text-gray-400 group-hover:text-primary transition-colors">
+              <div className="flex items-center gap-1.5 text-slate-400">
                 <Calendar size={13} />
-                <span className="text-[11px] font-black uppercase tracking-wider">
+                <span className="text-xs font-medium">
                   {!isNaN(fecha) ? fecha.toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' }) : 'Fecha por confirmar'}
                 </span>
               </div>
             </div>
 
-            {/* Icono decorativo de campana */}
-            <div className="w-10 h-10 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-300 group-hover:text-red-600 group-hover:bg-red-50 transition-all">
-               <Bell size={18} />
+            <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${isUrgent ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-400'}`}>
+              <Bell size={16} />
             </div>
           </div>
 
-          {/* Título */}
-          <h3 className="text-xl md:text-2xl font-black text-primary mb-4 leading-tight uppercase tracking-tight group-hover:text-red-600 transition-colors">
+          <h3 className={`text-lg md:text-xl font-bold mb-3 leading-tight ${isUrgent ? 'text-red-600' : 'text-slate-900'}`}>
             {c.titulo}
           </h3>
 
-          {/* Contenido (colapsable) */}
-          <div className={`overflow-hidden transition-all duration-700 ease-in-out ${expanded ? 'max-h-[1000px] opacity-100' : 'max-h-16 opacity-70'}`}>
-            <p className="text-gray-600 text-base md:text-lg leading-relaxed whitespace-pre-line font-medium">
+          <div className={`overflow-hidden transition-all duration-500 ease-in-out ${expanded ? 'max-h-[2000px] opacity-100' : 'max-h-20 opacity-70'}`}>
+            <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">
               {c.contenido}
             </p>
           </div>
 
-          {/* Botón de expansión mejorado */}
-          <div className="mt-8 flex justify-between items-center pt-6 border-t border-slate-50">
-             <button
-                onClick={() => setExpanded(!expanded)}
-                className="flex items-center gap-3 text-primary text-[10px] font-black uppercase tracking-[0.2em] hover:text-red-600 transition-all group/btn"
-              >
-                {expanded ? (
-                  <>
-                    <ChevronUp size={14} className="group-hover/btn:-translate-y-1 transition-transform" />
-                    Contraer Información
-                  </>
-                ) : (
-                  <>
-                    <ChevronDown size={14} className="group-hover/btn:translate-y-1 transition-transform" />
-                    Leer comunicado completo
-                  </>
-                )}
-              </button>
-
-              {cat === 'urgente' && (
-                 <div className="flex items-center gap-2 text-red-600 animate-pulse">
-                    <Shield size={14} />
-                    <span className="text-[10px] font-black uppercase tracking-widest">Prioridad Alta</span>
-                 </div>
+          <div className="mt-6 flex justify-between items-center pt-4 border-t border-slate-100">
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="inline-flex items-center gap-1.5 text-primary text-xs font-semibold uppercase tracking-wider hover:text-red-600 transition-colors"
+            >
+              {expanded ? (
+                <>
+                  <ChevronUp size={14} />
+                  Contraer
+                </>
+              ) : (
+                <>
+                  <ChevronDown size={14} />
+                  Leer completo
+                </>
               )}
+            </button>
+
+            {isUrgent && (
+              <div className="flex items-center gap-1.5 text-red-600">
+                <Shield size={13} />
+                <span className="text-[10px] font-bold uppercase tracking-wider">Prioridad Alta</span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -96,127 +91,128 @@ function ComunicadoCard({ c, index }) {
   );
 }
 
+ComunicadoCard.propTypes = {
+  c: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    titulo: PropTypes.string,
+    contenido: PropTypes.string,
+    categoria: PropTypes.string,
+    fecha: PropTypes.string,
+  }).isRequired,
+  index: PropTypes.number.isRequired,
+};
+
 function Comunicados() {
   const [comunicados, setComunicados] = useState([]);
   const [cargando, setCargando]       = useState(true);
   const [busqueda, setBusqueda]       = useState('');
   const [categoria, setCategoria]     = useState('todos');
 
-  useEffect(() => { cargar(); }, []);
-
-  const cargar = async () => {
+  const cargar = useCallback(async () => {
     setCargando(true);
     try {
       const res = await getComunicados();
-      setComunicados(res.data);
+      setComunicados(res.data || []);
     } catch { /* ignore error */ } finally {
       setCargando(false);
     }
-  };
+  }, []);
+
+  useEffect(() => { cargar(); }, [cargar]);
 
   const filtrados = comunicados.filter(c => {
-    const matchesBusqueda = c.titulo.toLowerCase().includes(busqueda.toLowerCase()) || 
-                          c.contenido.toLowerCase().includes(busqueda.toLowerCase());
-    const matchesCategoria = categoria === 'todos' || c.categoria?.toLowerCase() === categoria.toLowerCase();
+    const matchesBusqueda = (c.titulo || '').toLowerCase().includes(busqueda.toLowerCase()) ||
+                          (c.contenido || '').toLowerCase().includes(busqueda.toLowerCase());
+    const matchesCategoria = categoria === 'todos' || (c.categoria || '').toLowerCase() === categoria.toLowerCase();
     return matchesBusqueda && matchesCategoria;
   });
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
+    <div className="min-h-screen bg-slate-50 font-sans pt-20">
 
-      {/* ── Page Header ── */}
-      <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-primary to-primary-dark">
-        <div className="absolute top-0 left-0 w-full h-full">
-           <div className="absolute top-10 right-10 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
-           <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-black/10 rounded-full blur-3xl" />
-        </div>
-        
-        <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center">
-          <div className="animate-badge-pop mb-6">
-            <div className="w-20 h-20 bg-white/10 border border-white/20 rounded-[2rem] flex items-center justify-center animate-float backdrop-blur-sm">
-                <Bell size={40} className="text-white" />
-            </div>
+      {/* Page Header */}
+      <section className="relative py-20 px-6 overflow-hidden bg-primary">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-white/5 skew-x-12 transform translate-x-20" />
+        <div className="max-w-5xl mx-auto text-center relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-white/90 text-xs font-semibold uppercase tracking-widest mb-6">
+            <Bell size={14} />
+            Avisos Oficiales
           </div>
-          <h1 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-4 animate-fade-in-up">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
             Comunicados
           </h1>
-          <div className="w-24 h-1.5 bg-red-500 mx-auto mb-8 rounded-full shadow-lg" />
-          <p className="text-xl md:text-2xl text-blue-100 font-light italic max-w-2xl px-4 animate-fade-in-up delay-100 leading-relaxed">
+          <p className="text-white/80 max-w-2xl mx-auto">
             Mantente al día con los avisos oficiales y circulares emitidas por la Dirección General.
           </p>
         </div>
-
-        <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none rotate-180">
-            <svg className="relative block w-full h-[60px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" className="fill-slate-50"></path>
-            </svg>
-        </div>
       </section>
 
-      <section className="max-w-5xl mx-auto px-6 -mt-10 pb-32 relative z-20">
-        
+      <section className="max-w-5xl mx-auto px-6 -mt-10 pb-20 relative z-20">
+
         {/* Toolbar */}
-        <div className="bg-white rounded-[2.5rem] p-6 md:p-8 shadow-xl shadow-blue-900/5 border border-white/60 backdrop-blur-sm flex flex-col lg:flex-row items-center justify-between gap-6 mb-12">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-primary">
-                <Shield size={24} />
+        <div className="bg-white rounded-xl p-5 md:p-6 shadow-md border border-slate-100 flex flex-col lg:flex-row items-center justify-between gap-4 mb-8">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-50 rounded-lg flex items-center justify-center text-primary">
+              <Shield size={18} />
             </div>
             <div>
-              <h2 className="text-xl font-black text-gray-900 tracking-tight leading-none mb-1">
-                {cargando ? 'Cargando avisos...' : `${filtrados.length} Comunicados`}
+              <h2 className="text-base font-bold text-slate-900 leading-none">
+                {cargando ? 'Cargando...' : `${filtrados.length} Comunicados`}
               </h2>
-              <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest">Información para Padres y Alumnos</p>
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1">Para Padres y Alumnos</p>
             </div>
           </div>
 
           <div className="flex flex-col md:flex-row items-center gap-3 w-full lg:w-auto">
             <div className="relative w-full md:w-64">
-                <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input 
-                    type="text"
-                    placeholder="Filtrar por título..."
-                    value={busqueda}
-                    onChange={(e) => setBusqueda(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-xl text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
-                />
+              <Search size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Buscar comunicado..."
+                value={busqueda}
+                onChange={(e) => setBusqueda(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20"
+                aria-label="Buscar comunicado"
+              />
             </div>
-            
-            <div className="flex items-center gap-2 w-full md:w-auto">
-               <div className="relative flex-1 md:w-40">
-                  <Filter size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <select 
-                    value={categoria}
-                    onChange={(e) => setCategoria(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-xl text-sm font-bold text-gray-700 appearance-none outline-none shadow-inner cursor-pointer"
-                  >
-                    <option value="todos">Todas las categorías</option>
-                    <option value="general">General</option>
-                    <option value="urgente">Urgente</option>
-                    <option value="académico">Académico</option>
-                    <option value="social">Social</option>
-                  </select>
-               </div>
-               <button
-                  onClick={cargar}
-                  disabled={cargando}
-                  className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 text-gray-400 hover:text-primary hover:border-blue-100 transition-all rounded-xl shadow-sm disabled:opacity-50"
-                >
-                  <RefreshCw size={20} className={cargando ? 'animate-spin' : ''} />
-                </button>
+
+            <div className="relative w-full md:w-44">
+              <Filter size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+              <select
+                value={categoria}
+                onChange={(e) => setCategoria(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 appearance-none cursor-pointer"
+                aria-label="Filtrar por categoría"
+              >
+                <option value="todos">Todas las categorías</option>
+                <option value="general">General</option>
+                <option value="urgente">Urgente</option>
+                <option value="académico">Académico</option>
+                <option value="social">Social</option>
+              </select>
             </div>
+
+            <button
+              onClick={cargar}
+              disabled={cargando}
+              className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-primary hover:border-primary/20 rounded-lg transition-all disabled:opacity-50"
+              aria-label="Actualizar"
+            >
+              <RefreshCw size={16} className={cargando ? 'animate-spin' : ''} />
+            </button>
           </div>
         </div>
 
         {/* Skeletons */}
         {cargando && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
-              <div key={i} className="bg-white rounded-[2.5rem] border border-slate-100 p-10 flex gap-6 animate-pulse">
-                <div className="w-2 bg-slate-100 rounded-full h-32" />
-                <div className="flex-1 space-y-4">
-                  <div className="h-6 bg-slate-100 w-32 rounded-lg" />
-                  <div className="h-10 bg-slate-100 w-3/4 rounded-xl" />
-                  <div className="h-4 bg-slate-50 w-full rounded" />
+              <div key={i} className="bg-white rounded-xl p-8 flex gap-4 animate-pulse">
+                <div className="w-1.5 bg-slate-100 rounded-full" />
+                <div className="flex-1 space-y-3">
+                  <div className="h-4 bg-slate-100 w-32 rounded" />
+                  <div className="h-6 bg-slate-100 w-3/4 rounded" />
+                  <div className="h-3 bg-slate-50 w-full rounded" />
                 </div>
               </div>
             ))}
@@ -225,28 +221,28 @@ function Comunicados() {
 
         {/* Lista */}
         {!cargando && filtrados.length > 0 && (
-          <div className="space-y-6">
+          <div className="space-y-4">
             {filtrados.map((c, i) => (
-              <ComunicadoCard key={c.id} c={c} index={i} />
+              <ComunicadoCard key={c.id || i} c={c} index={i} />
             ))}
           </div>
         )}
 
         {/* Vacío */}
         {!cargando && filtrados.length === 0 && (
-          <div className="bg-white rounded-[3rem] p-20 text-center shadow-xl border border-slate-50 flex flex-col items-center animate-fade-in">
-            <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center mb-8">
-              <FileX size={48} className="text-slate-200" />
+          <div className="bg-white rounded-xl p-16 text-center border border-slate-100 flex flex-col items-center">
+            <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+              <FileX size={32} className="text-slate-300" />
             </div>
-            <h3 className="text-2xl font-black text-gray-800 mb-2 uppercase tracking-tighter">Sin comunicados</h3>
-            <p className="text-gray-400 text-sm max-w-sm mb-8 font-medium">
-              No hemos encontrado comunicados que coincidan con los filtros seleccionados en este momento.
+            <h3 className="text-lg font-bold text-slate-800 mb-2">Sin comunicados</h3>
+            <p className="text-slate-500 text-sm max-w-sm mb-6">
+              No hemos encontrado comunicados que coincidan con los filtros seleccionados.
             </p>
-            <button 
-                onClick={() => { setBusqueda(''); setCategoria('todos'); }} 
-                className="text-primary font-black text-[11px] uppercase tracking-widest hover:text-red-600 transition-colors underline underline-offset-4"
+            <button
+              onClick={() => { setBusqueda(''); setCategoria('todos'); }}
+              className="text-primary font-semibold text-xs uppercase tracking-wider hover:text-red-600 transition-colors underline underline-offset-4"
             >
-                Restablecer filtros
+              Restablecer filtros
             </button>
           </div>
         )}

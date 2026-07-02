@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { API } from '../services/api';
 import { validateDNI, validateEmail, validatePhone } from '../utils/sanitize';
@@ -8,8 +8,105 @@ import {
 } from 'lucide-react';
 import Footer from '../components/Footer';
 
+const GuiaItem = ({ step, title, desc }) => (
+  <div className="flex gap-3">
+    <div className="w-7 h-7 rounded-full bg-blue-50 text-primary font-bold flex items-center justify-center flex-shrink-0 text-xs">
+      {step}
+    </div>
+    <div>
+      <h3 className="font-semibold text-slate-800 text-sm">{title}</h3>
+      <p className="text-slate-500 text-xs leading-relaxed mt-0.5">{desc}</p>
+    </div>
+  </div>
+);
+
+GuiaItem.propTypes = {
+  step: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  desc: PropTypes.string.isRequired,
+};
+
+const InputField = ({ id, name, label, type = 'text', value, onChange, placeholder, error, icon: Icon, required, inputMode, pattern, maxLength, autoComplete, optional }) => (
+  <div className="space-y-1.5">
+    <label htmlFor={id} className="block text-xs font-semibold text-slate-700">
+      {label} {optional && <span className="text-slate-400 font-normal italic text-[10px]">(opcional)</span>}
+    </label>
+    <div className="relative">
+      {Icon && (
+        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+          <Icon size={15} />
+        </div>
+      )}
+      <input
+        id={id}
+        type={type}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        inputMode={inputMode}
+        pattern={pattern}
+        maxLength={maxLength}
+        autoComplete={autoComplete}
+        required={required}
+        className={`w-full ${Icon ? 'pl-11' : 'pl-4'} pr-4 py-3 bg-slate-50 border ${error ? 'border-red-400' : 'border-slate-200'} rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all`}
+        aria-describedby={error ? `${id}-error` : undefined}
+      />
+    </div>
+    {error && <p id={`${id}-error`} className="text-red-500 text-xs mt-0.5">{error}</p>}
+  </div>
+);
+
+InputField.propTypes = {
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  type: PropTypes.string,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
+  error: PropTypes.string,
+  icon: PropTypes.elementType,
+  required: PropTypes.bool,
+  inputMode: PropTypes.string,
+  pattern: PropTypes.string,
+  maxLength: PropTypes.string,
+  autoComplete: PropTypes.string,
+  optional: PropTypes.bool,
+};
+
+const TextAreaField = ({ id, name, label, value, onChange, placeholder, error, required, rows = 4 }) => (
+  <div className="space-y-1.5">
+    <label htmlFor={id} className="block text-xs font-semibold text-slate-700">{label}</label>
+    <textarea
+      id={id}
+      name={name}
+      rows={rows}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      required={required}
+      className={`w-full px-4 py-3 bg-slate-50 border ${error ? 'border-red-400' : 'border-slate-200'} rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none`}
+      aria-describedby={error ? `${id}-error` : undefined}
+    />
+    {error && <p id={`${id}-error`} className="text-red-500 text-xs mt-0.5">{error}</p>}
+  </div>
+);
+
+TextAreaField.propTypes = {
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  label: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
+  onChange: PropTypes.func.isRequired,
+  placeholder: PropTypes.string,
+  error: PropTypes.string,
+  required: PropTypes.bool,
+  rows: PropTypes.number,
+};
+
 const MesaPartes = () => {
-  const [formData, setFormData] = useState({
+  const initialForm = {
     asunto:             '',
     nombres_completos:  '',
     dni:                '',
@@ -17,7 +114,8 @@ const MesaPartes = () => {
     telefono:           '',
     correo:             '',
     fundamentacion:     '',
-  });
+  };
+  const [formData, setFormData] = useState(initialForm);
   const [errors, setErrors] = useState({});
   const [archivo, setArchivo] = useState(null);
   const [enviando, setEnviando] = useState(false);
@@ -77,15 +175,7 @@ const MesaPartes = () => {
   };
 
   const resetForm = () => {
-    setFormData({
-      asunto:             '',
-      nombres_completos:  '',
-      dni:                '',
-      direccion:          '',
-      telefono:           '',
-      correo:             '',
-      fundamentacion:     '',
-    });
+    setFormData(initialForm);
     setArchivo(null);
     const fileInput = document.getElementById('archivo-adjunto-input');
     if (fileInput) fileInput.value = '';
@@ -93,32 +183,19 @@ const MesaPartes = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
+    if (!validateForm()) return;
 
     setEnviando(true);
     setStatus(null);
     setMessage('');
 
     const data = new FormData();
-    data.append('asunto', formData.asunto);
-    data.append('nombres_completos', formData.nombres_completos);
-    data.append('dni', formData.dni);
-    data.append('direccion', formData.direccion);
-    data.append('telefono', formData.telefono);
-    data.append('correo', formData.correo);
-    data.append('fundamentacion', formData.fundamentacion);
-    if (archivo) {
-      data.append('archivo_adjunto', archivo);
-    }
+    Object.entries(formData).forEach(([k, v]) => data.append(k, v));
+    if (archivo) data.append('archivo_adjunto', archivo);
 
     try {
       const res = await API.post('/mesa-partes', data, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        headers: { 'Content-Type': 'multipart/form-data' },
       });
       setStatus('success');
       setMessage(res.data.mensaje || 'Su solicitud ha sido registrada exitosamente.');
@@ -132,267 +209,162 @@ const MesaPartes = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans">
-      <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-primary to-primary-dark">
-        <div className="absolute top-0 left-0 w-full h-full">
-           <div className="absolute top-10 right-10 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
-           <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-black/10 rounded-full blur-3xl" />
-        </div>
+    <div className="min-h-screen bg-slate-50 font-sans pt-20">
 
-        <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center">
-          <div className="animate-badge-pop mb-6">
-            <div className="w-20 h-20 bg-white/10 border border-white/20 rounded-[2rem] flex items-center justify-center animate-float backdrop-blur-sm">
-                <ClipboardList size={40} className="text-white" />
-            </div>
+      <section className="relative py-20 px-6 overflow-hidden bg-primary">
+        <div className="absolute top-0 right-0 w-1/3 h-full bg-white/5 skew-x-12 transform translate-x-20" />
+        <div className="max-w-5xl mx-auto text-center relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-white/10 rounded-full text-white/90 text-xs font-semibold uppercase tracking-widest mb-6">
+            <ClipboardList size={14} />
+            Trámites en Línea
           </div>
-          <h1 className="text-4xl md:text-6xl font-black text-white uppercase tracking-tighter mb-4 animate-fade-in-up">
+          <h1 className="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4">
             Mesa de Partes Virtual
           </h1>
-          <div className="w-24 h-1.5 bg-red-500 mx-auto mb-8 rounded-full shadow-lg shadow-red-900/40" />
-          <p className="text-xl md:text-2xl text-blue-100 font-light italic max-w-2xl px-4 animate-fade-in-up delay-100 leading-relaxed">
+          <p className="text-white/80 max-w-2xl mx-auto">
             Presenta solicitudes oficiales, trámites y peticiones formales a nuestra mesa de partes digital de manera inmediata y segura.
           </p>
         </div>
-
-        <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none rotate-180">
-            <svg className="relative block w-full h-[60px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
-                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" className="fill-slate-50"></path>
-            </svg>
-        </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-6 -mt-10 pb-32 relative z-20">
-        <div className="grid lg:grid-cols-12 gap-12 items-start">
+      <div className="max-w-7xl mx-auto px-6 -mt-10 pb-20 relative z-20">
+        <div className="grid lg:grid-cols-12 gap-8 items-start">
 
-          <div className="lg:col-span-5 space-y-8 animate-fade-in-up">
-            <div className="bg-white rounded-[2.5rem] p-10 shadow-xl shadow-blue-900/5 border border-white">
-              <h2 className="text-2xl font-black text-gray-900 tracking-tight mb-6 uppercase flex items-center gap-3">
-                <Info className="text-primary" size={24} />
+          <div className="lg:col-span-5 space-y-6">
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-slate-100">
+              <h2 className="text-lg font-bold text-slate-900 tracking-tight mb-5 flex items-center gap-2">
+                <Info className="text-primary" size={18} />
                 Guía de Presentación
               </h2>
-              <div className="space-y-6">
+              <div className="space-y-5">
                 {[
                   { step: '1', title: 'Datos del Remitente', desc: 'Ingresa nombres, DNI, dirección y número de teléfono válidos.' },
                   { step: '2', title: 'Fundamento claro', desc: 'Describe con claridad y detalle el motivo de tu petición o asunto.' },
                   { step: '3', title: 'Adjuntos Opcionales', desc: 'Puedes subir una foto legible o archivo PDF si deseas respaldar tu pedido.' },
                   { step: '4', title: 'Código de Seguimiento', desc: 'Al finalizar, recibirás un expediente (#) para consultar el estado del trámite.' },
-                ].map(({ step, title, desc }) => (
-                  <div key={step} className="flex gap-4">
-                    <div className="w-8 h-8 rounded-full bg-blue-50 text-primary font-black flex items-center justify-center flex-shrink-0 text-sm">
-                      {step}
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-gray-800 text-sm">{title}</h3>
-                      <p className="text-gray-400 text-xs font-medium leading-relaxed mt-0.5">{desc}</p>
-                    </div>
-                  </div>
+                ].map((item) => (
+                  <GuiaItem key={item.step} {...item} />
                 ))}
               </div>
             </div>
 
-            <div className="bg-gradient-to-br from-primary-dark to-slate-900 rounded-[2.5rem] p-10 text-white shadow-xl relative overflow-hidden group">
-              <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-700">
-                  <Shield size={120} strokeWidth={1} />
+            <div className="bg-primary rounded-xl p-6 text-white shadow-md relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                <Shield size={80} strokeWidth={1} />
               </div>
-              <div className="relative z-10 space-y-4">
-                <h3 className="font-black text-xl flex items-center gap-3">
-                  <Sparkles size={22} className="text-blue-400 animate-pulse" />
+              <div className="relative z-10 space-y-3">
+                <h3 className="font-bold text-base flex items-center gap-2">
+                  <Sparkles size={18} className="text-blue-300" />
                   Horarios de Atención
                 </h3>
-                <p className="text-blue-200/80 text-sm leading-relaxed font-medium">
-                  Nuestra mesa de partes virtual recibe documentos las 24 horas del día. Sin embargo, la revisión oficial por secretaría general se efectúa de lunes a viernes en el horario de 8:00 AM a 2:00 PM.
+                <p className="text-blue-100 text-sm leading-relaxed">
+                  Nuestra mesa de partes virtual recibe documentos las 24 horas. La revisión oficial se efectúa de lunes a viernes de 8:00 AM a 2:00 PM.
                 </p>
-                <div className="pt-2 flex items-center gap-3 text-blue-300 font-bold text-xs uppercase tracking-wider">
-                  <span>I.E. Emblemática Bandera del Perú</span>
+                <div className="text-blue-300 font-semibold text-xs uppercase tracking-wider">
+                  I.E. Emblemática Bandera del Perú
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="lg:col-span-7 animate-fade-in-up delay-200">
-            <div className="bg-white rounded-[3rem] shadow-2xl shadow-blue-900/10 border border-white overflow-hidden">
+          <div className="lg:col-span-7">
+            <div className="bg-white rounded-xl shadow-md border border-slate-100 overflow-hidden">
 
-              <div className="bg-slate-50 p-10 border-b border-slate-100 flex items-center gap-4">
-                <div className="w-14 h-14 bg-primary rounded-[1.25rem] flex items-center justify-center shadow-xl shadow-blue-900/20">
-                  <FileText size={24} className="text-white" />
+              <div className="bg-slate-50 p-6 border-b border-slate-100 flex items-center gap-3">
+                <div className="w-11 h-11 bg-primary rounded-lg flex items-center justify-center shadow-sm">
+                  <FileText size={20} className="text-white" />
                 </div>
                 <div>
-                  <h2 className="text-gray-900 font-black text-2xl uppercase tracking-tighter">Registrar Solicitud</h2>
-                  <p className="text-gray-400 text-xs font-black uppercase tracking-widest mt-1">Formulario Digital Oficial</p>
+                  <h2 className="text-slate-900 font-bold text-lg">Registrar Solicitud</h2>
+                  <p className="text-slate-500 text-xs font-semibold uppercase tracking-wider mt-0.5">Formulario Digital Oficial</p>
                 </div>
               </div>
 
-              <div className="p-10 md:p-12">
+              <div className="p-6 md:p-8">
                 {status === 'success' && (
-                  <div className="flex items-start gap-5 bg-emerald-50 border border-emerald-100 text-emerald-800 rounded-[2rem] p-6 mb-8 animate-badge-pop" role="alert">
-                    <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                        <CheckCircle2 size={24} className="text-emerald-600" />
+                  <div className="flex items-start gap-3 bg-emerald-50 border border-emerald-100 text-emerald-800 rounded-lg p-4 mb-6" role="alert">
+                    <div className="w-9 h-9 bg-emerald-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <CheckCircle2 size={18} className="text-emerald-600" />
                     </div>
                     <div>
-                      <p className="font-black text-lg leading-tight mb-1 uppercase tracking-tight">¡Trámite Registrado!</p>
-                      <p className="text-sm text-emerald-600 font-bold leading-normal">
-                        {message}
-                      </p>
+                      <p className="font-bold text-sm leading-tight mb-1">¡Trámite Registrado!</p>
+                      <p className="text-xs text-emerald-700 leading-relaxed">{message}</p>
                     </div>
                   </div>
                 )}
 
                 {status === 'error' && (
-                  <div className="flex items-start gap-5 bg-red-50 border border-red-100 text-red-800 rounded-[2rem] p-6 mb-8 animate-badge-pop" role="alert">
-                    <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center flex-shrink-0">
-                        <AlertCircle size={24} className="text-red-600" />
+                  <div className="flex items-start gap-3 bg-red-50 border border-red-100 text-red-800 rounded-lg p-4 mb-6" role="alert">
+                    <div className="w-9 h-9 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <AlertCircle size={18} className="text-red-600" />
                     </div>
                     <div>
-                      <p className="font-black text-lg leading-tight mb-1 uppercase tracking-tight">Error de Registro</p>
-                      <p className="text-sm text-red-600 font-semibold leading-normal">
-                        {message}
-                      </p>
+                      <p className="font-bold text-sm leading-tight mb-1">Error de Registro</p>
+                      <p className="text-xs text-red-700 leading-relaxed">{message}</p>
                     </div>
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-                  <div className="space-y-2">
-                    <label htmlFor="asunto" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Asunto del Trámite *</label>
-                    <input
-                      type="text"
-                      id="asunto"
-                      name="asunto"
-                      value={formData.asunto}
-                      onChange={handleChange}
-                      placeholder="Ej: Solicitud de Certificado de Estudios"
-                      className={`w-full px-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner ${errors.asunto ? 'ring-2 ring-red-500' : ''}`}
-                      required
-                      aria-describedby={errors.asunto ? 'asunto-error' : undefined}
+                <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+                  <InputField
+                    id="asunto" name="asunto" label="Asunto del Trámite"
+                    value={formData.asunto} onChange={handleChange}
+                    placeholder="Ej: Solicitud de Certificado de Estudios"
+                    error={errors.asunto} required
+                  />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <InputField
+                      id="nombres_completos" name="nombres_completos" label="Nombres Completos"
+                      value={formData.nombres_completos} onChange={handleChange}
+                      placeholder="Tu nombre completo" icon={User}
+                      error={errors.nombres_completos} required autoComplete="name"
                     />
-                    {errors.asunto && <p id="asunto-error" className="text-red-500 text-xs mt-1 ml-2">{errors.asunto}</p>}
+                    <InputField
+                      id="dni" name="dni" label="Número de DNI"
+                      value={formData.dni} onChange={handleChange}
+                      placeholder="DNI de 8 dígitos"
+                      error={errors.dni} required inputMode="numeric" pattern="[0-9]{8}" maxLength="8" autoComplete="off"
+                    />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label htmlFor="nombres_completos" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Nombres Completos *</label>
-                      <div className="relative group">
-                        <User size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
-                        <input
-                          type="text"
-                          id="nombres_completos"
-                          name="nombres_completos"
-                          value={formData.nombres_completos}
-                          onChange={handleChange}
-                          placeholder="Tu nombre completo"
-                          className={`w-full pl-14 pr-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner ${errors.nombres_completos ? 'ring-2 ring-red-500' : ''}`}
-                          required
-                          aria-describedby={errors.nombres_completos ? 'nombres-error' : undefined}
-                        />
-                      </div>
-                      {errors.nombres_completos && <p id="nombres-error" className="text-red-500 text-xs mt-1 ml-2">{errors.nombres_completos}</p>}
-                    </div>
-
-                    <div className="space-y-2">
-                      <label htmlFor="dni" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Número de DNI *</label>
-                      <input
-                        type="text"
-                        id="dni"
-                        name="dni"
-                        value={formData.dni}
-                        onChange={handleChange}
-                        placeholder="DNI de 8 dígitos"
-                        maxLength="8"
-                        pattern="[0-9]{8}"
-                        inputMode="numeric"
-                        className={`w-full px-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner ${errors.dni ? 'ring-2 ring-red-500' : ''}`}
-                        required
-                        aria-describedby={errors.dni ? 'dni-error' : undefined}
-                      />
-                      {errors.dni && <p id="dni-error" className="text-red-500 text-xs mt-1 ml-2">{errors.dni}</p>}
-                    </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <InputField
+                      id="direccion" name="direccion" label="Dirección Domiciliaria"
+                      value={formData.direccion} onChange={handleChange}
+                      placeholder="Av / Calle / N° / Distrito" icon={MapPin}
+                      error={errors.direccion} required autoComplete="street-address"
+                    />
+                    <InputField
+                      id="telefono" name="telefono" label="Teléfono Celular"
+                      value={formData.telefono} onChange={handleChange}
+                      placeholder="999 999 999" icon={Phone} type="tel"
+                      error={errors.telefono} required inputMode="tel" autoComplete="tel"
+                    />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
-                      <label htmlFor="direccion" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Dirección Domiciliaria *</label>
-                      <div className="relative group">
-                        <MapPin size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
-                        <input
-                          type="text"
-                          id="direccion"
-                          name="direccion"
-                          value={formData.direccion}
-                          onChange={handleChange}
-                          placeholder="Av / Calle / N° / Distrito"
-                          className={`w-full pl-14 pr-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner ${errors.direccion ? 'ring-2 ring-red-500' : ''}`}
-                          required
-                          aria-describedby={errors.direccion ? 'direccion-error' : undefined}
-                        />
-                      </div>
-                      {errors.direccion && <p id="direccion-error" className="text-red-500 text-xs mt-1 ml-2">{errors.direccion}</p>}
-                    </div>
+                  <InputField
+                    id="correo" name="correo" label="Correo Electrónico"
+                    value={formData.correo} onChange={handleChange}
+                    placeholder="tu-correo@ejemplo.com" icon={Mail} type="email"
+                    error={errors.correo} optional autoComplete="email"
+                  />
 
-                    <div className="space-y-2">
-                      <label htmlFor="telefono" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Teléfono Celular *</label>
-                      <div className="relative group">
-                        <Phone size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
-                        <input
-                          type="tel"
-                          id="telefono"
-                          name="telefono"
-                          value={formData.telefono}
-                          onChange={handleChange}
-                          placeholder="999 999 999"
-                          inputMode="tel"
-                          className={`w-full pl-14 pr-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner ${errors.telefono ? 'ring-2 ring-red-500' : ''}`}
-                          required
-                          aria-describedby={errors.telefono ? 'telefono-error' : undefined}
-                        />
-                      </div>
-                      {errors.telefono && <p id="telefono-error" className="text-red-500 text-xs mt-1 ml-2">{errors.telefono}</p>}
-                    </div>
-                  </div>
+                  <TextAreaField
+                    id="fundamentacion" name="fundamentacion" label="Fundamentación del Pedido"
+                    value={formData.fundamentacion} onChange={handleChange}
+                    placeholder="Redacte detalladamente los motivos y sustento de su solicitud..."
+                    error={errors.fundamentacion} required
+                  />
 
-                  <div className="space-y-2">
-                    <label htmlFor="correo" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">
-                      Correo Electrónico <span className="text-gray-300 font-bold lowercase italic">(opcional)</span>
+                  <div className="space-y-1.5">
+                    <label className="block text-xs font-semibold text-slate-700">
+                      Documento de Sustento <span className="text-slate-400 font-normal italic text-[10px]">(opcional)</span>
                     </label>
-                    <div className="relative group">
-                      <Mail size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
-                      <input
-                        type="email"
-                        id="correo"
-                        name="correo"
-                        value={formData.correo}
-                        onChange={handleChange}
-                        placeholder="tu-correo@ejemplo.com"
-                        className={`w-full pl-14 pr-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner ${errors.correo ? 'ring-2 ring-red-500' : ''}`}
-                        aria-describedby={errors.correo ? 'correo-error' : undefined}
-                      />
-                    </div>
-                    {errors.correo && <p id="correo-error" className="text-red-500 text-xs mt-1 ml-2">{errors.correo}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <label htmlFor="fundamentacion" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Fundamentación del Pedido *</label>
-                    <textarea
-                      id="fundamentacion"
-                      name="fundamentacion"
-                      rows="4"
-                      value={formData.fundamentacion}
-                      onChange={handleChange}
-                      placeholder="Redacte detalladamente los motivos y sustento de su solicitud..."
-                      className={`w-full px-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner resize-none ${errors.fundamentacion ? 'ring-2 ring-red-500' : ''}`}
-                      required
-                      aria-describedby={errors.fundamentacion ? 'fundamentacion-error' : undefined}
-                    ></textarea>
-                    {errors.fundamentacion && <p id="fundamentacion-error" className="text-red-500 text-xs mt-1 ml-2">{errors.fundamentacion}</p>}
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">
-                      Documento de Sustento Adjunto <span className="text-gray-300 font-bold lowercase italic">(opcional)</span>
-                    </label>
-                    <div className="w-full p-6 bg-slate-50 border-2 border-dashed border-slate-200 rounded-[1.25rem] flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-100 transition-all relative">
-                      <Upload size={24} className="text-gray-400 mb-2" />
-                      <p className="text-xs font-black uppercase text-gray-500 tracking-wider">Cargar PDF, JPG o PNG</p>
-                      <p className="text-[10px] text-gray-400 mt-1">Límite de tamaño: 10MB</p>
+                    <div className="w-full p-5 bg-slate-50 border-2 border-dashed border-slate-200 rounded-lg flex flex-col items-center justify-center text-center cursor-pointer hover:bg-slate-100 transition-colors relative">
+                      <Upload size={20} className="text-slate-400 mb-1.5" />
+                      <p className="text-xs font-semibold uppercase text-slate-500 tracking-wider">Cargar PDF, JPG o PNG</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">Límite: 10MB</p>
                       <input
                         id="archivo-adjunto-input"
                         type="file"
@@ -402,15 +374,15 @@ const MesaPartes = () => {
                       />
                     </div>
                     {archivo && (
-                      <div className="bg-blue-50/50 border border-blue-100 text-blue-800 rounded-xl px-4 py-2.5 flex items-center justify-between text-xs font-bold animate-badge-pop">
-                        <span className="truncate pr-4 flex items-center gap-2">
-                          <FileText size={14} className="text-blue-500 flex-shrink-0" />
+                      <div className="bg-blue-50/50 border border-blue-100 text-blue-800 rounded-lg px-3 py-2 flex items-center justify-between text-xs font-semibold">
+                        <span className="truncate pr-3 flex items-center gap-2">
+                          <FileText size={13} className="text-blue-500 flex-shrink-0" />
                           {archivo.name}
                         </span>
                         <button
                           type="button"
                           onClick={() => { setArchivo(null); document.getElementById('archivo-adjunto-input').value = ''; }}
-                          className="text-red-500 hover:text-red-700 font-black uppercase text-[10px] tracking-wider transition-colors ml-auto"
+                          className="text-red-500 hover:text-red-700 font-bold uppercase text-[10px] tracking-wider"
                         >
                           Quitar
                         </button>
@@ -421,24 +393,24 @@ const MesaPartes = () => {
                   <button
                     type="submit"
                     disabled={enviando}
-                    className="w-full flex items-center justify-center gap-4 bg-primary hover:bg-red-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-black py-5 rounded-[1.5rem] shadow-xl shadow-blue-900/20 hover:shadow-red-500/30 transition-all duration-500 transform active:scale-95 uppercase tracking-widest text-xs"
+                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-red-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-lg shadow-md transition-all active:scale-[0.98] text-sm"
                   >
                     {enviando ? (
                       <>
-                        <Loader2 size={20} className="animate-spin" />
-                        Enviando Expediente...
+                        <Loader2 size={16} className="animate-spin" />
+                        Enviando...
                       </>
                     ) : (
                       <>
-                        <Send size={18} />
+                        <Send size={16} />
                         Enviar Solicitud Oficial
                       </>
                     )}
                   </button>
 
-                  <div className="flex items-center gap-3 justify-center text-gray-400">
-                     <Shield size={14} />
-                     <p className="text-[10px] font-black uppercase tracking-widest">Plataforma Certificada por la I.E.</p>
+                  <div className="flex items-center gap-2 justify-center text-slate-400">
+                    <Shield size={12} />
+                    <p className="text-[10px] font-semibold uppercase tracking-wider">Plataforma Certificada por la I.E.</p>
                   </div>
                 </form>
               </div>
@@ -453,5 +425,7 @@ const MesaPartes = () => {
     </div>
   );
 };
+
+MesaPartes.propTypes = {};
 
 export default MesaPartes;
