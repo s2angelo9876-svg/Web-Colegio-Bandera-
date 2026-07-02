@@ -18,9 +18,7 @@ function AdminMesaPartes() {
             setCargando(true);
             const res = await API.get('/mesa-partes');
             setTramites(res.data || []);
-        } catch (error) {
-            console.error("Error al cargar trámites de Mesa de Partes:", error);
-        } finally {
+        } catch { /* ignore error */ } finally {
             setCargando(false);
         }
     };

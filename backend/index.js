@@ -7,7 +7,7 @@ const compression = require('compression');
 const morgan = require('morgan');
 require('dotenv').config()
 
-const db = require('./config/db') 
+const db = require('./config/db')
 const initDb = require('./config/initDb')
 
 // Inicializar esquemas de base de datos
@@ -60,7 +60,7 @@ app.get('/', (req, res) => {
   res.json({ mensaje: 'Servidor Colegio Bandera del Perú ✅' })
 })
 
-// Endpoint de diagnóstico — TEMPORAL para depuración
+// Endpoint de diagnóstico — TEMPORAL para depuración (Corregido para Postgres)
 app.get('/api/health', async (req, res) => {
   const info = {
     status: 'ok',
@@ -72,14 +72,22 @@ app.get('/api/health', async (req, res) => {
     db: null,
     error: null
   };
+
   try {
-    const [rows] = await db.query('SELECT NOW() as ahora');
-    info.db = { conectada: true, hora_servidor: rows[0]?.ahora };
+    // En Postgres ('pg'), db.query devuelve un objeto. Las filas están en res.rows
+    const result = await db.query('SELECT NOW() as ahora');
+
+    info.db = {
+      conectada: true,
+      hora_servidor: result.rows[0]?.ahora // Cambiado rows[0] por result.rows[0]
+    };
   } catch (err) {
     info.status = 'error';
     info.db = { conectada: false };
+    // Esto es vital: nos dirá el error exacto (ej. si la contraseña está mal o si es SSL)
     info.error = err.message;
   }
+
   res.json(info);
 });
 
@@ -129,7 +137,7 @@ app.get('/api/buscar', async (req, res) => {
 // Middleware global de manejo de errores
 app.use((err, req, res, next) => {
   console.error('Error no manejado:', err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Algo salió mal en el servidor',
     detalle: err.message  // Visible siempre para facilitar el diagnóstico
   });

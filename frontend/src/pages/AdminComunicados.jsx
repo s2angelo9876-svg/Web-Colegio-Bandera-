@@ -11,16 +11,14 @@ function AdminComunicados() {
     const [descripcion, setDescripcion] = useState('') 
     const [tipo, setTipo] = useState('aviso') 
 
-    useEffect(() => { cargarComunicados() }, [])
-
     const cargarComunicados = async () => {
         try {
             const res = await getComunicados()
             setComunicados(res.data)
-        } catch (error) {
-            console.error("Error al cargar comunicados:", error)
-        }
+        } catch { }
     }
+
+    useEffect(() => { cargarComunicados() }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault()

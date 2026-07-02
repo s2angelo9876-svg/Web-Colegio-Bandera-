@@ -97,8 +97,6 @@ const Docentes = () => {
   const [error, setError] = useState(false);
   const [busqueda, setBusqueda] = useState('');
 
-  useEffect(() => { cargar(); }, []);
-
   const cargar = () => {
     setCargando(true);
     setError(false);
@@ -106,6 +104,8 @@ const Docentes = () => {
       .then(res => { setDocentes(res.data); setCargando(false); })
       .catch(() => { setCargando(false); setError(true); });
   };
+
+  useEffect(() => { cargar(); }, []);
 
   const filtrados = docentes.filter(d => 
     d.nombre.toLowerCase().includes(busqueda.toLowerCase()) || 

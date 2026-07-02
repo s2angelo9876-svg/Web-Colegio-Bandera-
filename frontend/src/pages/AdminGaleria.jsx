@@ -45,9 +45,7 @@ function AdminGaleria() {
         try {
             const res = await API.get('/galeria')
             setMediaItems(res.data || [])
-        } catch (error) {
-            console.error("Error al cargar la galería:", error)
-        }
+        } catch { /* ignore error */ }
     }
 
     const handleSubmit = async (e) => {
@@ -91,8 +89,7 @@ function AdminGaleria() {
             setPreview(null)
             setShowForm(false)
             cargarGaleria()
-        } catch (error) {
-            console.error("Error submit:", error)
+        } catch {
             Swal.fire('Error', 'No se pudo publicar el elemento multimedia.', 'error')
         } finally {
             setSubiendo(false)

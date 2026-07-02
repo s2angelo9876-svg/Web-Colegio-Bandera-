@@ -9,12 +9,12 @@ function AdminEventos() {
     // El estado del formulario ahora coincide con las columnas de tu DB
     const [form, setForm] = useState({ titulo: '', descripcion: '', fecha_evento: '', hora_evento: '', lugar: '' })
 
-    useEffect(() => { cargarEventos() }, [])
-
     const cargarEventos = async () => {
         const res = await getEventos()
         setEventos(res.data)
     }
+
+    useEffect(() => { cargarEventos() }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -24,7 +24,7 @@ function AdminEventos() {
             setShowForm(false)
             setForm({ titulo: '', descripcion: '', fecha_evento: '', hora_evento: '', lugar: '' })
             cargarEventos()
-        } catch (error) {
+        } catch {
             Swal.fire('Error', 'No se pudo guardar el evento', 'error')
         }
     }

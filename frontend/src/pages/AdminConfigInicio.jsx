@@ -42,9 +42,7 @@ function AdminConfigInicio() {
             if (Object.keys(res.data).length > 0) {
                 setConfig(prev => ({ ...prev, ...res.data }));
             }
-        } catch (error) {
-            console.error("Error al cargar config:", error);
-        } finally {
+        } catch { /* ignore error */ } finally {
             setLoading(false);
         }
     };
@@ -65,8 +63,7 @@ function AdminConfigInicio() {
                 icon: 'success',
                 confirmButtonColor: '#003087'
             });
-        } catch (error) {
-            console.error("Error guardando config:", error);
+        } catch {
             Swal.fire('Error', 'No se pudo guardar la configuración.', 'error');
         } finally {
             setSaving(false);

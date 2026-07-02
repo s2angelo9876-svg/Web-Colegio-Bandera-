@@ -45,9 +45,7 @@ function AdminNoticias() {
       const res = await getNoticias({ page, limit: 10 })
       setNoticias(res.data.data)
       setPagination(prev => ({ ...prev, totalPages: res.data.pagination.totalPages }))
-    } catch (error) {
-      console.error(error)
-    } finally { setCargando(false) }
+    } catch { /* ignore error */ } finally { setCargando(false) }
   }
 
   // Activar modo edición

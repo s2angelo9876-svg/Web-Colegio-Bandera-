@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { getNoticias, UPLOADS_URL } from '../services/api';
-import { 
-  Newspaper, Zap, ArrowRight, Calendar, 
-  FileX, RefreshCw, Search, Shield, Info 
+import {
+  Newspaper, Zap, ArrowRight, Calendar,
+  FileX, RefreshCw, Search
 } from 'lucide-react';
 import Footer from '../components/Footer';
 
-/* ── Skeleton card ── */
 function SkeletonCard() {
   return (
     <div className="bg-white rounded-[2.5rem] overflow-hidden border border-gray-100 shadow-sm animate-pulse">
@@ -21,14 +21,14 @@ function SkeletonCard() {
   );
 }
 
-/* ── Noticia card ── */
+SkeletonCard.propTypes = {};
+
 function NoticiaCard({ n, index }) {
   return (
     <article
       className="bg-white rounded-[2.5rem] shadow-xl shadow-blue-900/5 overflow-hidden border border-white group hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-900/10 transition-all duration-500 animate-fade-in-up flex flex-col"
       style={{ animationDelay: `${index * 0.08}s` }}
     >
-      {/* Imagen */}
       <div className="h-60 overflow-hidden relative flex-shrink-0">
         <img
           src={
@@ -36,15 +36,15 @@ function NoticiaCard({ n, index }) {
               ? `${UPLOADS_URL}/${n.imagen}`
               : 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=1000'
           }
-          alt={n.titulo}
+          alt={n.titulo || 'Noticia institucional'}
           className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+          loading="lazy"
           onError={(e) => {
-              e.target.src = "https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=1000";
+            e.currentTarget.src = 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?q=80&w=1000';
           }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-        
-        {/* Badge categoría */}
+
         <div className="absolute top-6 left-6">
           <span className="flex items-center gap-1.5 bg-red-600 text-white text-[9px] font-black px-4 py-2 rounded-xl uppercase tracking-widest shadow-lg shadow-red-900/30">
             <Zap size={9} />
@@ -53,39 +53,31 @@ function NoticiaCard({ n, index }) {
         </div>
       </div>
 
-      {/* Contenido */}
       <div className="p-8 md:p-10 flex flex-col flex-1">
-        {/* Meta */}
         <div className="flex items-center gap-3 mb-4">
           <div className="w-8 h-8 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400 group-hover:text-primary group-hover:bg-blue-50 transition-all">
-             <Calendar size={14} />
+            <Calendar size={14} />
           </div>
           <span className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em]">
-            {new Date(n.fecha).toLocaleDateString('es-PE', {
+            {n.fecha ? new Date(n.fecha).toLocaleDateString('es-PE', {
               day: '2-digit', month: 'long', year: 'numeric'
-            })}
+            }) : 'Fecha no disponible'}
           </span>
         </div>
 
-        {/* Título */}
         <h2 className="text-xl md:text-2xl font-black text-gray-900 mb-4 leading-tight group-hover:text-primary transition-colors line-clamp-2 uppercase tracking-tight">
-          {n.titulo}
+          {n.titulo || 'Sin título'}
         </h2>
 
-        {/* Extracto */}
         <p className="text-gray-500 text-sm leading-relaxed line-clamp-3 mb-8 font-medium flex-1">
-          {n.contenido}
+          {n.contenido ? n.contenido.replace(/<[^>]*>/g, '') : ''}
         </p>
 
-        {/* CTA */}
         <div className="pt-6 border-t border-slate-50">
           <button className="group/btn flex items-center gap-3 text-primary text-[11px] font-black uppercase tracking-[0.15em] hover:text-red-600 transition-colors">
             Expandir Noticia
             <div className="w-8 h-8 bg-blue-50 group-hover/btn:bg-red-50 rounded-xl flex items-center justify-center transition-all">
-                <ArrowRight
-                  size={14}
-                  className="group-hover/btn:translate-x-1 transition-transform"
-                />
+              <ArrowRight size={14} className="group-hover/btn:translate-x-1 transition-transform" />
             </div>
           </button>
         </div>
@@ -94,43 +86,59 @@ function NoticiaCard({ n, index }) {
   );
 }
 
+NoticiaCard.propTypes = {
+  n: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    titulo: PropTypes.string,
+    contenido: PropTypes.string,
+    imagen: PropTypes.string,
+    fecha: PropTypes.string,
+  }).isRequired,
+  index: PropTypes.number.isRequired,
+};
+
 function Noticias() {
   const [noticias, setNoticias] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState('');
 
+  const cargarNoticias = useCallback((page = 1) => {
+    setCargando(true);
+    getNoticias({ page, limit: 6 })
+      .then(res => {
+        setNoticias(res.data.data || []);
+        setPagination(prev => ({ ...prev, totalPages: res.data.pagination?.totalPages || 1 }));
+      })
+      .catch(() => setNoticias([]))
+      .finally(() => setCargando(false));
+  }, []);
+
   useEffect(() => {
     cargarNoticias(pagination.page);
-  }, [pagination.page]);
+  }, [pagination.page, cargarNoticias]);
 
-  const cargarNoticias = (page = 1) => {
-    setCargando(true);
-    getNoticias({ page, limit: 6 }) // Limitamos a 6 por página para que se note la paginación
-      .then(res => { 
-        setNoticias(res.data.data); 
-        setPagination(prev => ({ ...prev, totalPages: res.data.pagination.totalPages }));
-        setCargando(false); 
-      })
-      .catch(() => setCargando(false));
-  };
+  const filtradas = useMemo(() => {
+    if (!busqueda.trim()) return noticias;
+    const query = busqueda.toLowerCase();
+    return noticias.filter(n =>
+      (n.titulo || '').toLowerCase().includes(query) ||
+      (n.contenido || '').toLowerCase().includes(query)
+    );
+  }, [noticias, busqueda]);
 
-  const filtradas = noticias.filter(n => 
-    n.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||
-    n.contenido.toLowerCase().includes(busqueda.toLowerCase())
-  );
+  const handlePageChange = useCallback((newPage) => {
+    setPagination(p => ({ ...p, page: newPage }));
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
-
-      {/* ── Page Header ── */}
       <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-primary to-primary-dark">
-        {/* Decoraciones de fondo */}
         <div className="absolute top-0 left-0 w-full h-full">
            <div className="absolute top-10 right-10 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
            <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-black/10 rounded-full blur-3xl" />
         </div>
-        
+
         <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center">
           <div className="animate-badge-pop mb-6">
             <div className="w-20 h-20 bg-white/10 border border-white/20 rounded-[2rem] flex items-center justify-center animate-float backdrop-blur-sm">
@@ -146,7 +154,6 @@ function Noticias() {
           </p>
         </div>
 
-        {/* Onda decorativa inferior */}
         <div className="absolute bottom-0 left-0 w-full overflow-hidden leading-none rotate-180">
             <svg className="relative block w-full h-[60px]" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
                 <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" className="fill-slate-50"></path>
@@ -154,10 +161,8 @@ function Noticias() {
         </div>
       </section>
 
-      {/* ── Grid noticias ── */}
       <section className="max-w-7xl mx-auto px-6 -mt-10 pb-32 relative z-20">
-        
-        {/* Toolbar */}
+
         <div className="bg-white rounded-[2.5rem] p-6 md:p-8 shadow-xl shadow-blue-900/5 border border-white/60 backdrop-blur-sm flex flex-col md:flex-row items-center justify-between gap-6 mb-12">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center text-primary">
@@ -174,47 +179,47 @@ function Noticias() {
           <div className="flex items-center gap-3 w-full md:w-auto">
             <div className="relative flex-1 md:w-64">
                 <Search size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                <input 
+                <input
                     type="text"
                     placeholder="Buscar noticias..."
                     value={busqueda}
                     onChange={(e) => setBusqueda(e.target.value)}
                     className="w-full pl-11 pr-4 py-3 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-xl text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
+                    aria-label="Buscar noticias"
                 />
             </div>
             <button
-                onClick={cargarNoticias}
+                onClick={() => cargarNoticias()}
                 disabled={cargando}
                 className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 text-gray-400 hover:text-primary hover:border-blue-100 transition-all rounded-xl shadow-sm disabled:opacity-50"
+                aria-label="Actualizar noticias"
             >
                 <RefreshCw size={20} className={cargando ? 'animate-spin' : ''} />
             </button>
           </div>
         </div>
 
-        {/* Skeletons mientras carga */}
         {cargando && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
             {[...Array(6)].map((_, i) => <SkeletonCard key={i} />)}
           </div>
         )}
 
-        {/* Grid de noticias */}
         {!cargando && filtradas.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
             {filtradas.map((n, i) => (
-              <NoticiaCard key={n.id} n={n} index={i} />
+              <NoticiaCard key={n.id || i} n={n} index={i} />
             ))}
           </div>
         )}
 
-        {/* Paginación */}
         {!cargando && pagination.totalPages > 1 && (
           <div className="flex justify-center items-center gap-4 mt-16">
             <button
-              onClick={() => setPagination(p => ({ ...p, page: Math.max(1, p.page - 1) }))}
+              onClick={() => handlePageChange(Math.max(1, pagination.page - 1))}
               disabled={pagination.page === 1}
               className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 rounded-xl text-gray-400 hover:text-primary disabled:opacity-30 transition-all shadow-sm"
+              aria-label="Página anterior"
             >
               <ArrowRight size={20} className="rotate-180" />
             </button>
@@ -222,16 +227,16 @@ function Noticias() {
               Página {pagination.page} de {pagination.totalPages}
             </span>
             <button
-              onClick={() => setPagination(p => ({ ...p, page: Math.min(pagination.totalPages, p.page + 1) }))}
+              onClick={() => handlePageChange(Math.min(pagination.totalPages, pagination.page + 1))}
               disabled={pagination.page === pagination.totalPages}
               className="w-12 h-12 flex items-center justify-center bg-white border border-slate-100 rounded-xl text-gray-400 hover:text-primary disabled:opacity-30 transition-all shadow-sm"
+              aria-label="Página siguiente"
             >
               <ArrowRight size={20} />
             </button>
           </div>
         )}
 
-        {/* Estado vacío */}
         {!cargando && filtradas.length === 0 && (
           <div className="bg-white rounded-[3rem] p-20 text-center shadow-xl border border-slate-50 flex flex-col items-center animate-fade-in">
             <div className="w-24 h-24 bg-slate-50 rounded-[2.5rem] flex items-center justify-center mb-8">
@@ -241,8 +246,8 @@ function Noticias() {
             <p className="text-gray-400 text-sm max-w-sm mb-8 font-medium">
               No hemos encontrado noticias que coincidan con tu búsqueda en esta página.
             </p>
-            <button 
-                onClick={() => { setBusqueda(''); setPagination(p => ({...p, page: 1})); }} 
+            <button
+                onClick={() => { setBusqueda(''); setPagination(p => ({...p, page: 1})); }}
                 className="text-primary font-black text-[11px] uppercase tracking-widest hover:text-red-600 transition-colors underline underline-offset-4"
             >
                 Reiniciar filtros

@@ -32,16 +32,13 @@ const AdminCarrusel = () => {
         try {
             const res = await API.get('/carrusel');
             setSlides(res.data);
-        } catch (error) {
-            console.error('Error:', error);
-        }
+        } catch { /* ignore error */ }
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
-        const token = localStorage.getItem('token');
-        
+
         const formData = new FormData();
         formData.append('titulo', form.titulo);
         formData.append('subtitulo', form.subtitulo);
@@ -53,7 +50,7 @@ const AdminCarrusel = () => {
             Toast.fire({ title: 'Slide añadido', icon: 'success' });
             setForm({ titulo: '', subtitulo: '', orden: 0, imagen: null });
             fetchSlides();
-        } catch (error) {
+        } catch {
             Swal.fire('Error', 'No se pudo añadir el slide', 'error');
         } finally {
             setLoading(false);
@@ -77,7 +74,7 @@ const AdminCarrusel = () => {
                 await API.delete(`/carrusel/${id}`);
                 Toast.fire({ title: 'Slide borrado', icon: 'success' });
                 fetchSlides();
-            } catch (error) {
+            } catch {
                 Swal.fire('Error', 'Hubo un problema al eliminar', 'error');
             }
         }

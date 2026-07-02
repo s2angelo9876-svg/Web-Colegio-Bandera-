@@ -23,9 +23,20 @@ const Galeria = () => {
   useEffect(() => {
     API.get('/galeria')
       .then(res => setItems(res.data || []))
-      .catch(err => console.error('Error al cargar galería', err))
+      .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
+
+  // Navigation handlers
+  const handlePrev = () => {
+    if (filteredItems.length === 0) return;
+    setLightboxIndex((prev) => (prev === 0 ? filteredItems.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    if (filteredItems.length === 0) return;
+    setLightboxIndex((prev) => (prev === filteredItems.length - 1 ? 0 : prev + 1));
+  };
 
   // Keyboard navigation for lightbox
   useEffect(() => {
@@ -64,17 +75,6 @@ const Galeria = () => {
     const now = new Date();
     return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
   }).slice(0, 3); // top 3 for this month
-
-  // Navigation handlers
-  const handlePrev = () => {
-    if (filteredItems.length === 0) return;
-    setLightboxIndex((prev) => (prev === 0 ? filteredItems.length - 1 : prev - 1));
-  };
-
-  const handleNext = () => {
-    if (filteredItems.length === 0) return;
-    setLightboxIndex((prev) => (prev === filteredItems.length - 1 ? 0 : prev + 1));
-  };
 
   // YouTube URL Embed Parser
   const getEmbedUrl = (url) => {

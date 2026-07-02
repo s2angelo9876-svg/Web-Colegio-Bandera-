@@ -33,16 +33,14 @@ function AdminDocentes() {
         orden: 0 
     })
 
-    useEffect(() => { cargarDocentes() }, [])
-
     const cargarDocentes = async () => {
         try {
             const res = await API.get('/docentes')
             setDocentes(res.data)
-        } catch (error) {
-            console.error("Error al cargar docentes:", error)
-        }
+        } catch { /* ignore error */ }
     }
+
+    useEffect(() => { cargarDocentes() }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault()

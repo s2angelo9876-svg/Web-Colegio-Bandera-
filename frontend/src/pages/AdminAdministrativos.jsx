@@ -16,16 +16,14 @@ function AdminAdministrativos() {
     const [showForm, setShowForm] = useState(false)
     const [form, setForm] = useState({ nombre: '', cargo: '', area: '', imagen_url: '' })
 
-    useEffect(() => { cargarPersonal() }, [])
-
     const cargarPersonal = async () => {
         try {
             const res = await API.get('/administrativos')
             setPersonal(res.data)
-        } catch (error) {
-            console.error("Error cargando administrativos", error)
-        }
+        } catch { }
     }
+
+    useEffect(() => { cargarPersonal() }, [])
 
     const handleSubmit = async (e) => {
         e.preventDefault()

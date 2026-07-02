@@ -18,9 +18,7 @@ const DocumentosInstitucionales = () => {
     try {
       const res = await API.get('/transparencia');
       setDocumentos(res.data || []);
-    } catch (err) {
-      console.error('Error al cargar documentos:', err);
-    } finally {
+    } catch { /* ignore error */ } finally {
       setCargando(false);
     }
   };

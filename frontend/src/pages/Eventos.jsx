@@ -100,14 +100,14 @@ function Eventos() {
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState('');
 
-  useEffect(() => { cargar(); }, []);
-
   const cargar = () => {
     setCargando(true);
     getEventos()
       .then(res => { setEventos(res.data); setCargando(false); })
       .catch(() => setCargando(false));
   };
+
+  useEffect(() => { cargar(); }, []);
 
   const filtrados = eventos.filter(e => 
     e.titulo.toLowerCase().includes(busqueda.toLowerCase()) ||

@@ -100,8 +100,7 @@ function Admin() {
           cargando: false
         });
 
-      } catch (error) {
-        console.error("Error crítico en estadísticas:", error);
+      } catch {
         setStats(prev => ({ ...prev, cargando: false }));
       }
     };

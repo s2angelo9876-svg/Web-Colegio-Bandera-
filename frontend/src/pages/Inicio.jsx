@@ -7,6 +7,7 @@ import {
 } from 'lucide-react';
 import Footer from '../components/Footer';
 import { API, UPLOADS_URL } from '../services/api';
+import { sanitizeText } from '../utils/sanitize';
 
 function Inicio() {
   const navigate = useNavigate();
@@ -30,19 +31,15 @@ function Inicio() {
   const [videoOpen, setVideoOpen] = useState(false);
 
   useEffect(() => {
-    // Cargar configuraciones
     const fetchConfig = async () => {
       try {
         const res = await API.get('/configuracion');
         if (res.data && Object.keys(res.data).length > 0) {
           setConfig(prev => ({ ...prev, ...res.data }));
         }
-      } catch (error) {
-        console.error('Error fetching config:', error);
-      }
+      } catch { /* ignore error */ }
     };
 
-    // Cargar últimas noticias y comunicados
     const fetchData = async () => {
       try {
         const [resNoticias, resComunicados] = await Promise.all([
@@ -63,7 +60,6 @@ function Inicio() {
           setLatestComunicado(listComunicados[0]);
         }
 
-        // Combinar y ordenar por fecha para obtener las 3 últimas novedades
         const combinados = [
           ...listNoticias.map(n => ({ ...n, tipoItem: 'noticia', fechaOrden: n.fecha || n.created_at })),
           ...listComunicados.map(c => ({ ...c, tipoItem: 'comunicado', fechaOrden: c.fecha || c.created_at }))
@@ -72,9 +68,7 @@ function Inicio() {
         combinados.sort((a, b) => new Date(b.fechaOrden) - new Date(a.fechaOrden));
         setRecentItems(combinados.slice(0, 3));
 
-      } catch (error) {
-        console.error('Error fetching dynamic data for home page:', error);
-      }
+      } catch { /* ignore error */ }
     };
 
     fetchConfig();
@@ -277,7 +271,7 @@ function Inicio() {
                   <div>
                     <span className="text-[8px] font-black uppercase text-blue-500 tracking-widest block">Lo Último</span>
                     <h4 className="font-black text-xs text-gray-800 dark:text-white line-clamp-2 mt-0.5 uppercase">{latestNoticia.titulo}</h4>
-                    <p className="text-[10px] text-gray-400 mt-1 truncate">{latestNoticia.contenido?.replace(/<[^>]*>/g, '')}</p>
+                    <p className="text-[10px] text-gray-400 mt-1 truncate">{sanitizeText(latestNoticia.contenido)}</p>
                   </div>
                 </div>
               )}
@@ -393,9 +387,9 @@ function Inicio() {
                       {item.titulo}
                     </h3>
                     <p className="text-gray-500 dark:text-slate-400 text-sm leading-relaxed line-clamp-3">
-                      {item.tipoItem === 'noticia' 
-                        ? item.contenido?.replace(/<[^>]*>/g, '') 
-                        : item.descripcion
+                      {item.tipoItem === 'noticia'
+                        ? sanitizeText(item.contenido)
+                        : sanitizeText(item.descripcion)
                       }
                     </p>
                   </div>

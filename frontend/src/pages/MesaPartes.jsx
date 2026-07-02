@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { API } from '../services/api';
+import { validateDNI, validateEmail, validatePhone } from '../utils/sanitize';
 import {
   User, Phone, ClipboardList, Send, FileText, CheckCircle2,
   AlertCircle, Loader2, Shield, Info, MapPin, Mail, Sparkles, Upload
@@ -16,20 +18,86 @@ const MesaPartes = () => {
     correo:             '',
     fundamentacion:     '',
   });
+  const [errors, setErrors] = useState({});
   const [archivo, setArchivo] = useState(null);
   const [enviando, setEnviando] = useState(false);
-  const [status, setStatus]     = useState(null); // 'success' | 'error' | null
+  const [status, setStatus]     = useState(null);
   const [message, setMessage]   = useState('');
 
-  const handleChange = (e) =>
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  const validateForm = useCallback(() => {
+    const newErrors = {};
+
+    if (!formData.asunto.trim()) {
+      newErrors.asunto = 'El asunto es requerido';
+    }
+
+    if (!formData.nombres_completos.trim()) {
+      newErrors.nombres_completos = 'Los nombres son requeridos';
+    }
+
+    const dniValidation = validateDNI(formData.dni);
+    if (!dniValidation.valid) {
+      newErrors.dni = dniValidation.error;
+    }
+
+    if (!formData.direccion.trim()) {
+      newErrors.direccion = 'La dirección es requerida';
+    }
+
+    const phoneValidation = validatePhone(formData.telefono);
+    if (!phoneValidation.valid) {
+      newErrors.telefono = phoneValidation.error;
+    }
+
+    if (formData.correo.trim()) {
+      const emailValidation = validateEmail(formData.correo);
+      if (!emailValidation.valid) {
+        newErrors.correo = emailValidation.error;
+      }
+    }
+
+    if (!formData.fundamentacion.trim()) {
+      newErrors.fundamentacion = 'La fundamentación es requerida';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }, [formData]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: undefined }));
+    }
+  };
 
   const handleFileChange = (e) => {
     setArchivo(e.target.files[0]);
   };
 
+  const resetForm = () => {
+    setFormData({
+      asunto:             '',
+      nombres_completos:  '',
+      dni:                '',
+      direccion:          '',
+      telefono:           '',
+      correo:             '',
+      fundamentacion:     '',
+    });
+    setArchivo(null);
+    const fileInput = document.getElementById('archivo-adjunto-input');
+    if (fileInput) fileInput.value = '';
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
     setEnviando(true);
     setStatus(null);
     setMessage('');
@@ -54,21 +122,8 @@ const MesaPartes = () => {
       });
       setStatus('success');
       setMessage(res.data.mensaje || 'Su solicitud ha sido registrada exitosamente.');
-      setFormData({
-        asunto:             '',
-        nombres_completos:  '',
-        dni:                '',
-        direccion:          '',
-        telefono:           '',
-        correo:             '',
-        fundamentacion:     '',
-      });
-      setArchivo(null);
-      // Reset file input element
-      const fileInput = document.getElementById('archivo-adjunto-input');
-      if (fileInput) fileInput.value = '';
+      resetForm();
     } catch (err) {
-      console.error(err);
       setStatus('error');
       setMessage(err.response?.data?.error || 'No se pudo procesar tu trámite. Intenta nuevamente.');
     } finally {
@@ -78,13 +133,12 @@ const MesaPartes = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 font-sans">
-      {/* ── Page Header ── */}
       <section className="relative py-32 px-6 overflow-hidden bg-gradient-to-br from-primary to-primary-dark">
         <div className="absolute top-0 left-0 w-full h-full">
            <div className="absolute top-10 right-10 w-64 h-64 bg-white/5 rounded-full blur-3xl" />
            <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-black/10 rounded-full blur-3xl" />
         </div>
-        
+
         <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center">
           <div className="animate-badge-pop mb-6">
             <div className="w-20 h-20 bg-white/10 border border-white/20 rounded-[2rem] flex items-center justify-center animate-float backdrop-blur-sm">
@@ -109,8 +163,7 @@ const MesaPartes = () => {
 
       <div className="max-w-7xl mx-auto px-6 -mt-10 pb-32 relative z-20">
         <div className="grid lg:grid-cols-12 gap-12 items-start">
-          
-          {/* ── Columna izquierda: info ── */}
+
           <div className="lg:col-span-5 space-y-8 animate-fade-in-up">
             <div className="bg-white rounded-[2.5rem] p-10 shadow-xl shadow-blue-900/5 border border-white">
               <h2 className="text-2xl font-black text-gray-900 tracking-tight mb-6 uppercase flex items-center gap-3">
@@ -137,7 +190,6 @@ const MesaPartes = () => {
               </div>
             </div>
 
-            {/* Banner Informativo */}
             <div className="bg-gradient-to-br from-primary-dark to-slate-900 rounded-[2.5rem] p-10 text-white shadow-xl relative overflow-hidden group">
               <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-700">
                   <Shield size={120} strokeWidth={1} />
@@ -157,10 +209,9 @@ const MesaPartes = () => {
             </div>
           </div>
 
-          {/* ── Columna derecha: formulario ── */}
           <div className="lg:col-span-7 animate-fade-in-up delay-200">
             <div className="bg-white rounded-[3rem] shadow-2xl shadow-blue-900/10 border border-white overflow-hidden">
-              
+
               <div className="bg-slate-50 p-10 border-b border-slate-100 flex items-center gap-4">
                 <div className="w-14 h-14 bg-primary rounded-[1.25rem] flex items-center justify-center shadow-xl shadow-blue-900/20">
                   <FileText size={24} className="text-white" />
@@ -173,7 +224,7 @@ const MesaPartes = () => {
 
               <div className="p-10 md:p-12">
                 {status === 'success' && (
-                  <div className="flex items-start gap-5 bg-emerald-50 border border-emerald-100 text-emerald-800 rounded-[2rem] p-6 mb-8 animate-badge-pop">
+                  <div className="flex items-start gap-5 bg-emerald-50 border border-emerald-100 text-emerald-800 rounded-[2rem] p-6 mb-8 animate-badge-pop" role="alert">
                     <div className="w-12 h-12 bg-emerald-100 rounded-2xl flex items-center justify-center flex-shrink-0">
                         <CheckCircle2 size={24} className="text-emerald-600" />
                     </div>
@@ -187,7 +238,7 @@ const MesaPartes = () => {
                 )}
 
                 {status === 'error' && (
-                  <div className="flex items-start gap-5 bg-red-50 border border-red-100 text-red-800 rounded-[2rem] p-6 mb-8 animate-badge-pop">
+                  <div className="flex items-start gap-5 bg-red-50 border border-red-100 text-red-800 rounded-[2rem] p-6 mb-8 animate-badge-pop" role="alert">
                     <div className="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center flex-shrink-0">
                         <AlertCircle size={24} className="text-red-600" />
                     </div>
@@ -200,124 +251,140 @@ const MesaPartes = () => {
                   </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {/* Asunto */}
+                <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Asunto del Trámite *</label>
+                    <label htmlFor="asunto" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Asunto del Trámite *</label>
                     <input
                       type="text"
+                      id="asunto"
                       name="asunto"
                       value={formData.asunto}
                       onChange={handleChange}
                       placeholder="Ej: Solicitud de Certificado de Estudios"
-                      className="w-full px-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
+                      className={`w-full px-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner ${errors.asunto ? 'ring-2 ring-red-500' : ''}`}
                       required
+                      aria-describedby={errors.asunto ? 'asunto-error' : undefined}
                     />
+                    {errors.asunto && <p id="asunto-error" className="text-red-500 text-xs mt-1 ml-2">{errors.asunto}</p>}
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Nombres Completos */}
                     <div className="space-y-2">
-                      <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Nombres Completos *</label>
+                      <label htmlFor="nombres_completos" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Nombres Completos *</label>
                       <div className="relative group">
                         <User size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
                         <input
                           type="text"
+                          id="nombres_completos"
                           name="nombres_completos"
                           value={formData.nombres_completos}
                           onChange={handleChange}
                           placeholder="Tu nombre completo"
-                          className="w-full pl-14 pr-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
+                          className={`w-full pl-14 pr-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner ${errors.nombres_completos ? 'ring-2 ring-red-500' : ''}`}
                           required
+                          aria-describedby={errors.nombres_completos ? 'nombres-error' : undefined}
                         />
                       </div>
+                      {errors.nombres_completos && <p id="nombres-error" className="text-red-500 text-xs mt-1 ml-2">{errors.nombres_completos}</p>}
                     </div>
 
-                    {/* DNI */}
                     <div className="space-y-2">
-                      <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Número de DNI *</label>
+                      <label htmlFor="dni" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Número de DNI *</label>
                       <input
                         type="text"
+                        id="dni"
                         name="dni"
                         value={formData.dni}
                         onChange={handleChange}
                         placeholder="DNI de 8 dígitos"
                         maxLength="8"
-                        className="w-full px-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
+                        pattern="[0-9]{8}"
+                        inputMode="numeric"
+                        className={`w-full px-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner ${errors.dni ? 'ring-2 ring-red-500' : ''}`}
                         required
+                        aria-describedby={errors.dni ? 'dni-error' : undefined}
                       />
+                      {errors.dni && <p id="dni-error" className="text-red-500 text-xs mt-1 ml-2">{errors.dni}</p>}
                     </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Dirección */}
                     <div className="space-y-2">
-                      <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Dirección Domiciliaria *</label>
+                      <label htmlFor="direccion" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Dirección Domiciliaria *</label>
                       <div className="relative group">
                         <MapPin size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
                         <input
                           type="text"
+                          id="direccion"
                           name="direccion"
                           value={formData.direccion}
                           onChange={handleChange}
                           placeholder="Av / Calle / N° / Distrito"
-                          className="w-full pl-14 pr-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
+                          className={`w-full pl-14 pr-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner ${errors.direccion ? 'ring-2 ring-red-500' : ''}`}
                           required
+                          aria-describedby={errors.direccion ? 'direccion-error' : undefined}
                         />
                       </div>
+                      {errors.direccion && <p id="direccion-error" className="text-red-500 text-xs mt-1 ml-2">{errors.direccion}</p>}
                     </div>
 
-                    {/* Teléfono Celular */}
                     <div className="space-y-2">
-                      <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Teléfono Celular *</label>
+                      <label htmlFor="telefono" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Teléfono Celular *</label>
                       <div className="relative group">
                         <Phone size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
                         <input
                           type="tel"
+                          id="telefono"
                           name="telefono"
                           value={formData.telefono}
                           onChange={handleChange}
                           placeholder="999 999 999"
-                          className="w-full pl-14 pr-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
+                          inputMode="tel"
+                          className={`w-full pl-14 pr-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner ${errors.telefono ? 'ring-2 ring-red-500' : ''}`}
                           required
+                          aria-describedby={errors.telefono ? 'telefono-error' : undefined}
                         />
                       </div>
+                      {errors.telefono && <p id="telefono-error" className="text-red-500 text-xs mt-1 ml-2">{errors.telefono}</p>}
                     </div>
                   </div>
 
-                  {/* Correo Electrónico (OPCIONAL) */}
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">
+                    <label htmlFor="correo" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">
                       Correo Electrónico <span className="text-gray-300 font-bold lowercase italic">(opcional)</span>
                     </label>
                     <div className="relative group">
                       <Mail size={16} className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors" />
                       <input
                         type="email"
+                        id="correo"
                         name="correo"
                         value={formData.correo}
                         onChange={handleChange}
                         placeholder="tu-correo@ejemplo.com"
-                        className="w-full pl-14 pr-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner"
+                        className={`w-full pl-14 pr-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner ${errors.correo ? 'ring-2 ring-red-500' : ''}`}
+                        aria-describedby={errors.correo ? 'correo-error' : undefined}
                       />
                     </div>
+                    {errors.correo && <p id="correo-error" className="text-red-500 text-xs mt-1 ml-2">{errors.correo}</p>}
                   </div>
 
-                  {/* Fundamentación del pedido */}
                   <div className="space-y-2">
-                    <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Fundamentación del Pedido *</label>
+                    <label htmlFor="fundamentacion" className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">Fundamentación del Pedido *</label>
                     <textarea
+                      id="fundamentacion"
                       name="fundamentacion"
                       rows="4"
                       value={formData.fundamentacion}
                       onChange={handleChange}
                       placeholder="Redacte detalladamente los motivos y sustento de su solicitud..."
-                      className="w-full px-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner resize-none"
+                      className={`w-full px-5 py-4 bg-slate-50 border-none focus:ring-2 focus:ring-primary rounded-[1.25rem] text-sm font-bold text-gray-700 outline-none transition-all shadow-inner resize-none ${errors.fundamentacion ? 'ring-2 ring-red-500' : ''}`}
                       required
+                      aria-describedby={errors.fundamentacion ? 'fundamentacion-error' : undefined}
                     ></textarea>
+                    {errors.fundamentacion && <p id="fundamentacion-error" className="text-red-500 text-xs mt-1 ml-2">{errors.fundamentacion}</p>}
                   </div>
 
-                  {/* Archivo Adjunto (OPCIONAL) */}
                   <div className="space-y-2">
                     <label className="block text-[10px] font-black text-gray-400 uppercase tracking-widest ml-2">
                       Documento de Sustento Adjunto <span className="text-gray-300 font-bold lowercase italic">(opcional)</span>
@@ -351,7 +418,6 @@ const MesaPartes = () => {
                     )}
                   </div>
 
-                  {/* Botón submit */}
                   <button
                     type="submit"
                     disabled={enviando}

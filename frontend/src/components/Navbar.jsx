@@ -88,19 +88,29 @@ const Navbar = () => {
       setSearchResults([]);
       return;
     }
+    let isCancelled = false;
     const delay = setTimeout(async () => {
       setSearching(true);
       try {
         const res = await API.get('/buscar', { params: { q: searchQuery } });
-        setSearchResults(res.data.resultados || []);
-      } catch (err) {
-        console.error('Error al buscar:', err);
+        if (!isCancelled) {
+          setSearchResults(res.data.resultados || []);
+        }
+      } catch {
+        if (!isCancelled) {
+          setSearchResults([]);
+        }
       } finally {
-        setSearching(false);
+        if (!isCancelled) {
+          setSearching(false);
+        }
       }
     }, 300);
 
-    return () => clearTimeout(delay);
+    return () => {
+      isCancelled = true;
+      clearTimeout(delay);
+    };
   }, [searchQuery]);
 
   const isActive = (path) => location.pathname === path;

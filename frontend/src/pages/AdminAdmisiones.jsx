@@ -7,19 +7,17 @@ function AdminAdmisiones() {
     const [admisiones, setAdmisiones] = useState([])
     const [cargando, setCargando] = useState(true)
 
-    useEffect(() => { cargarAdmisiones() }, [])
-
     const cargarAdmisiones = async () => {
         try {
             setCargando(true)
             const res = await getAdmisiones()
             setAdmisiones(res.data)
-        } catch (error) {
-            console.error("Error al cargar admisiones:", error)
-        } finally {
+        } catch { /* ignore error */ } finally {
             setCargando(false)
         }
     }
+
+    useEffect(() => { cargarAdmisiones() }, [])
 
     const handleEliminar = async (id) => {
         const result = await Swal.fire({

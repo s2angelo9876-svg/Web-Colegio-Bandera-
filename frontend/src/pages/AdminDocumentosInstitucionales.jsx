@@ -37,9 +37,7 @@ function AdminDocumentosInstitucionales() {
         try {
             const res = await API.get('/transparencia')
             setDocumentos(res.data || [])
-        } catch (error) {
-            console.error("Error al cargar documentos:", error)
-        }
+        } catch { /* ignore error */ }
     }
 
     const handleSubmit = async (e) => {
@@ -74,8 +72,7 @@ function AdminDocumentosInstitucionales() {
             document.getElementById('input-file-pdf').value = '';
             setShowForm(false)
             cargarDocumentos()
-        } catch (error) {
-            console.error('Error al subir documento:', error)
+        } catch {
             Swal.fire('Error', 'No se pudo subir el archivo. Revisa el tamaño (max 10MB) y tipo (PDF/doc).', 'error')
         } finally {
             setSubiendo(false)

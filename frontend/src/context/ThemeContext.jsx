@@ -1,11 +1,8 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
+import PropTypes from 'prop-types';
 
 const ThemeContext = createContext();
 
-/**
- * Lee el tema inicial de forma SINCRONA para evitar flash de tema incorrecto.
- * Por defecto es 'light' siempre, solo es 'dark' si el usuario lo eligió explícitamente.
- */
 function getInitialDark() {
   try {
     return localStorage.getItem('theme') === 'dark';
@@ -14,14 +11,13 @@ function getInitialDark() {
   }
 }
 
-export const ThemeProvider = ({ children }) => {
+export function ThemeProvider({ children }) {
   const [isDarkMode, setIsDarkMode] = useState(getInitialDark);
 
-  // Sincroniza la clase 'dark' en <html> y <body> con el estado de React
   useEffect(() => {
     const root = document.documentElement;
     const body = document.body;
-    
+
     if (isDarkMode) {
       root.classList.add('dark');
       body.classList.add('dark');
@@ -36,20 +32,26 @@ export const ThemeProvider = ({ children }) => {
       const next = !prev;
       try {
         localStorage.setItem('theme', next ? 'dark' : 'light');
-      } catch { /* quota exceeded — ignorar */ }
+      } catch { /* Storage quota exceeded - ignore */ }
       return next;
     });
   }, []);
 
+  const value = useMemo(() => ({ isDarkMode, toggleDarkMode }), [isDarkMode, toggleDarkMode]);
+
   return (
-    <ThemeContext.Provider value={{ isDarkMode, toggleDarkMode }}>
+    <ThemeContext.Provider value={value}>
       {children}
     </ThemeContext.Provider>
   );
+}
+
+ThemeProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
-export const useTheme = () => {
+export function useTheme() {
   const ctx = useContext(ThemeContext);
   if (!ctx) throw new Error('useTheme debe usarse dentro de <ThemeProvider>');
   return ctx;
-};
+}

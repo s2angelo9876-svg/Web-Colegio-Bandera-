@@ -109,9 +109,7 @@ function Comunicados() {
     try {
       const res = await getComunicados();
       setComunicados(res.data);
-    } catch (e) {
-      console.error('Error cargando comunicados', e);
-    } finally {
+    } catch { /* ignore error */ } finally {
       setCargando(false);
     }
   };
