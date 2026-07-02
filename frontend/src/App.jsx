@@ -3,7 +3,7 @@ import { Suspense, lazy, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { AuthProvider, useAuth } from './context/authContext';
 import { ThemeProvider } from './context/ThemeContext';
-import Navbar from './components/navbar';
+import Navbar from './components/Navbar';
 import ErrorBoundary from './components/ErrorBoundary';
 
 const Inicio = lazy(() => import('./pages/Inicio'));
