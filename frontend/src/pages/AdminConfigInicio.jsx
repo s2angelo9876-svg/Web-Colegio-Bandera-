@@ -50,10 +50,6 @@ function AdminConfigInicio() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    cargarConfig();
-  }, []);
-
   const cargarConfig = useCallback(async () => {
     try {
       const res = await API.get('/configuracion');
@@ -62,6 +58,10 @@ function AdminConfigInicio() {
       }
     } catch { /* ignore error */ } finally { setLoading(false); }
   }, []);
+
+  useEffect(() => {
+    cargarConfig();
+  }, [cargarConfig]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;

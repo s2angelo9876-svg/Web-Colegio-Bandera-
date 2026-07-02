@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
 import Swal from 'sweetalert2';
 import { ActionButtons, AdminPageHeader, FormCard, ImageUploadField, SearchBar, TextAreaField, TextField } from '../components/AdminUI';
-import { Film, Image as ImageIcon, Image as Img } from 'lucide-react';
+import { Film, Image as ImageIcon } from 'lucide-react';
 
 const Toast = Swal.mixin({
   toast: true,
@@ -155,7 +155,7 @@ function AdminGaleria() {
       {showForm && (
         <FormCard
           title="Detalles del Recurso Multimedia"
-          icon={<Img size={14} />}
+          icon={<ImageIcon size={14} />}
           onSubmit={handleSubmit}
           submitting={enviando}
           submitLabel="Publicar"
