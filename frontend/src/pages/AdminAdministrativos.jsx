@@ -1,170 +1,238 @@
-import { useEffect, useState } from 'react'
-import { API, UPLOADS_URL } from '../services/api'
-import Swal from 'sweetalert2'
-import { UserPlus, Trash2, Briefcase, Image as ImageIcon, X, Info } from 'lucide-react'
+﻿import { useEffect, useState, useMemo, useCallback } from 'react';
+import PropTypes from 'prop-types';
+import { API, UPLOADS_URL } from '../services/api';
+import Swal from 'sweetalert2';
+import { ActionButtons, AdminPageHeader, FormCard, SearchBar, TextField } from '../components/AdminUI';
+import { Briefcase, Image as ImageIcon } from 'lucide-react';
 
 const Toast = Swal.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
-    timerProgressBar: true
+  toast: true,
+  position: 'top-end',
+  showConfirmButton: false,
+  timer: 2000,
+  timerProgressBar: true,
 });
 
+const initialForm = { nombre: '', cargo: '', area: '', imagen_url: '' };
+
+function SkeletonRows({ count = 4 }) {
+  return Array.from({ length: count }).map((_, i) => (
+    <tr key={i} className="animate-pulse">
+      <td className="px-4 py-3"><div className="h-10 w-10 bg-slate-100 rounded-full" /></td>
+      <td className="px-4 py-3"><div className="h-3 bg-slate-100 rounded w-32 mb-2" /><div className="h-2 bg-slate-50 rounded w-20" /></td>
+      <td className="px-4 py-3"><div className="h-3 bg-slate-100 rounded w-24" /></td>
+      <td className="px-4 py-3"><div className="h-7 w-16 bg-slate-100 rounded ml-auto" /></td>
+    </tr>
+  ));
+}
+
+SkeletonRows.propTypes = { count: PropTypes.number };
+
 function AdminAdministrativos() {
-    const [personal, setPersonal] = useState([])
-    const [showForm, setShowForm] = useState(false)
-    const [form, setForm] = useState({ nombre: '', cargo: '', area: '', imagen_url: '' })
+  const [personal, setPersonal] = useState([]);
+  const [cargando, setCargando] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editMode, setEditMode] = useState(null);
+  const [form, setForm] = useState(initialForm);
+  const [enviando, setEnviando] = useState(false);
+  const [busqueda, setBusqueda] = useState('');
 
-    const cargarPersonal = async () => {
+  const cargarPersonal = useCallback(async () => {
+    setCargando(true);
+    try {
+      const res = await API.get('/administrativos');
+      setPersonal(res.data || []);
+    } catch { /* ignore error */ } finally { setCargando(false); }
+  }, []);
+
+  useEffect(() => { cargarPersonal(); }, [cargarPersonal]);
+
+  const resetForm = useCallback(() => {
+    setForm(initialForm);
+    setEditMode(null);
+    setShowForm(false);
+  }, []);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setEnviando(true);
+    try {
+      if (editMode) {
+        await API.put(`/administrativos/${editMode}`, form);
+        Toast.fire({ icon: 'success', title: 'Personal actualizado' });
+      } else {
+        await API.post('/administrativos', form);
+        Toast.fire({ icon: 'success', title: 'Personal registrado' });
+      }
+      resetForm();
+      cargarPersonal();
+    } catch {
+      Swal.fire('Error', 'No se pudo procesar la solicitud', 'error');
+    } finally { setEnviando(false); }
+  };
+
+  const prepararEdicion = useCallback((p) => {
+    setEditMode(p.id);
+    setForm({ nombre: p.nombre, cargo: p.cargo, area: p.area || '', imagen_url: p.imagen_url || '' });
+    setShowForm(true);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  const handleEliminar = useCallback((id) => {
+    Swal.fire({
+      title: 'Â¿Eliminar registro?',
+      text: 'Se borrarÃ¡ del organigrama administrativo',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#ef4444',
+      confirmButtonText: 'SÃ­, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then(async (result) => {
+      if (result.isConfirmed) {
         try {
-            const res = await API.get('/administrativos')
-            setPersonal(res.data)
-        } catch { }
-    }
+          await API.delete(`/administrativos/${id}`);
+          Toast.fire({ icon: 'success', title: 'Eliminado' });
+          cargarPersonal();
+        } catch { Swal.fire('Error', 'No se pudo eliminar', 'error'); }
+      }
+    });
+  }, [cargarPersonal]);
 
-    useEffect(() => { cargarPersonal() }, [])
+  const filtrados = useMemo(() => {
+    if (!busqueda.trim()) return personal;
+    const q = busqueda.toLowerCase();
+    return personal.filter(p => (p.nombre || '').toLowerCase().includes(q) || (p.cargo || '').toLowerCase().includes(q));
+  }, [personal, busqueda]);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-        try {
-            await API.post('/administrativos', form)
-            Toast.fire({ title: 'Personal Registrado', icon: 'success' })
-            setForm({ nombre: '', cargo: '', area: '', imagen_url: '' })
-            setShowForm(false)
-            cargarPersonal()
-        } catch (error) {
-            Swal.fire('Error', 'No se pudo registrar el personal', 'error')
-        }
-    }
+  return (
+    <div className="p-6 lg:p-8 bg-slate-50 min-h-screen">
+      <AdminPageHeader
+        title="GestiÃ³n Administrativa"
+        subtitle="Operaciones Institucionales"
+        badge={<Briefcase size={11} />}
+        onButtonClick={() => showForm ? resetForm() : setShowForm(true)}
+        formOpen={showForm}
+        addButtonLabel="Nuevo Administrativo"
+      />
 
-    const handleEliminar = async (id) => {
-        const res = await Swal.fire({
-            title: '¿Eliminar registro?',
-            text: "Se borrará del organigrama administrativo",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#ef4444',
-            confirmButtonText: 'Sí, eliminar'
-        })
-        if (res.isConfirmed) {
-            await API.delete(`/administrativos/${id}`)
-            Toast.fire({ title: 'Registro eliminado', icon: 'success' })
-            cargarPersonal()
-        }
-    }
+      {showForm && (
+        <FormCard
+          title={editMode ? 'Editar Personal' : 'Registro de Nuevo Personal'}
+          icon={<Briefcase size={14} />}
+          onSubmit={handleSubmit}
+          submitting={enviando}
+          submitLabel={editMode ? 'Actualizar' : 'Registrar'}
+          onCancel={resetForm}
+        >
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <TextField
+              id="nombre" name="nombre" label="Nombre Completo"
+              value={form.nombre}
+              onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+              placeholder="Ej: MarÃ­a Gonzales" required
+            />
+            <TextField
+              id="cargo" name="cargo" label="Cargo"
+              value={form.cargo}
+              onChange={(e) => setForm({ ...form, cargo: e.target.value })}
+              placeholder="Ej: Secretaria General" required
+            />
+            <TextField
+              id="area" name="area" label="Ãrea / Oficina"
+              value={form.area}
+              onChange={(e) => setForm({ ...form, area: e.target.value })}
+              placeholder="Ej: TesorerÃ­a"
+            />
+            <TextField
+              id="imagen_url" name="imagen_url" label="URL de Foto"
+              value={form.imagen_url}
+              onChange={(e) => setForm({ ...form, imagen_url: e.target.value })}
+              placeholder="https://..."
+            />
+          </div>
+        </FormCard>
+      )}
 
-    return (
-        <div className="p-8 lg:p-12 bg-surface dark:bg-dark-bg min-h-screen transition-colors duration-300 relative overflow-hidden">
-            {/* Decorative background mesh */}
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/30 rounded-full blur-[120px] -z-10 pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-red-50/50 rounded-full blur-[120px] -z-10 pointer-events-none" />
-
-            {/* Header */}
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-16 relative z-10">
-                <div className="animate-in fade-in slide-in-from-left duration-700">
-                    <div className="flex items-center gap-2 text-primary dark:text-blue-300 font-black text-[10px] uppercase tracking-[0.3em] mb-4 bg-blue-50 dark:bg-dark-accent/40 w-fit px-4 py-2 rounded-full border border-blue-100/50 dark:border-dark-accent/50">
-                        <Briefcase size={14} className="animate-pulse" />
-                        Operaciones Institucionales
-                    </div>
-                    <h2 className="text-5xl font-black text-gray-900 dark:text-white tracking-tight leading-none mb-4">
-                        Gestión <span className="text-primary dark:text-blue-400">Administrativa</span>
-                    </h2>
-                    <p className="text-gray-400 dark:text-slate-400 font-bold text-lg">Administra el personal no docente y áreas de soporte.</p>
-                </div>
-                <button
-                    onClick={() => setShowForm(!showForm)}
-                    className={`flex items-center gap-3 px-8 py-4 rounded-[1.5rem] font-black text-xs uppercase tracking-widest shadow-2xl transition-all active:scale-95 group ${showForm
-                            ? 'bg-white dark:bg-dark-card text-gray-700 dark:text-slate-300 border border-gray-100 dark:border-dark-border hover:bg-gray-50 dark:hover:bg-dark-hover'
-                            : 'bg-primary text-white shadow-blue-900/30 hover:bg-blue-900'
-                        }`}
-                >
-                    {showForm ? <><X size={18} /> Cancelar</> : <><UserPlus size={18} /> Nuevo Administrativo</>}
-                </button>
+      <div className="bg-white rounded-xl border border-slate-100 shadow-sm">
+        <div className="px-5 py-3 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-center gap-3">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 bg-blue-50 rounded-lg flex items-center justify-center text-primary">
+              <Briefcase size={16} />
             </div>
-
-            {/* Formulario Animado */}
-            {showForm && (
-                <div className="animate-in fade-in slide-in-from-top-6 duration-500 mb-12 relative z-10">
-                    <form onSubmit={handleSubmit} className="p-10 bg-white/80 dark:bg-dark-card backdrop-blur-xl rounded-[3.5rem] shadow-2xl shadow-blue-900/10 dark:shadow-none border border-white dark:border-dark-border flex flex-col gap-8">
-                        <div className="flex items-center justify-between border-b border-gray-100 pb-6">
-                            <div className="flex items-center gap-3 text-primary font-black uppercase text-xs tracking-[0.2em]">
-                                <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center">
-                                    <Info size={18} />
-                                </div>
-                                Registro de Nuevo Personal Administrativo
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                            <div className="space-y-2 group">
-                                <label className="text-[10px] font-black text-gray-400 uppercase ml-4 tracking-widest group-focus-within:text-primary transition-colors">Nombre Completo</label>
-                                <input type="text" placeholder="Ej: María Gonzales" className="w-full p-5 rounded-2xl bg-slate-50/50 border border-transparent focus:border-primary focus:bg-white focus:ring-4 focus:ring-blue-50 font-bold text-gray-800 outline-none transition-all" value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} required />
-                            </div>
-                            <div className="space-y-2 group">
-                                <label className="text-[10px] font-black text-gray-400 uppercase ml-4 tracking-widest group-focus-within:text-primary transition-colors">Cargo</label>
-                                <input type="text" placeholder="Ej: Secretaria General" className="w-full p-5 rounded-2xl bg-slate-50/50 border border-transparent focus:border-primary focus:bg-white focus:ring-4 focus:ring-blue-50 font-bold text-gray-800 outline-none transition-all" value={form.cargo} onChange={e => setForm({ ...form, cargo: e.target.value })} required />
-                            </div>
-                            <div className="space-y-2 group">
-                                <label className="text-[10px] font-black text-gray-400 uppercase ml-4 tracking-widest group-focus-within:text-primary transition-colors">Área / Oficina</label>
-                                <input type="text" placeholder="Ej: Tesorería" className="w-full p-5 rounded-2xl bg-slate-50/50 border border-transparent focus:border-primary focus:bg-white focus:ring-4 focus:ring-blue-50 font-bold text-gray-800 outline-none transition-all" value={form.area} onChange={e => setForm({ ...form, area: e.target.value })} />
-                            </div>
-                            <div className="space-y-2 group">
-                                <label className="text-[10px] font-black text-gray-400 uppercase ml-4 tracking-widest group-focus-within:text-primary transition-colors">URL de Foto</label>
-                                <input type="text" placeholder="https://..." className="w-full p-5 rounded-2xl bg-slate-50/50 border border-transparent focus:border-primary focus:bg-white focus:ring-4 focus:ring-blue-50 font-medium text-primary outline-none transition-all" value={form.imagen_url} onChange={e => setForm({ ...form, imagen_url: e.target.value })} />
-                            </div>
-                        </div>
-                        <button className="bg-gradient-to-r from-primary to-blue-900 text-white py-6 rounded-[1.5rem] font-black uppercase tracking-[0.2em] hover:shadow-2xl hover:shadow-blue-900/40 hover:-translate-y-1 transition-all active:scale-[0.98] text-xs">
-                            Confirmar Registro Administrativo
-                        </button>
-                    </form>
-                </div>
-            )}
-
-            {/* Listado de Personal Premium */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 relative z-10">
-                {personal.map(p => (
-                    <div key={p.id} className="bg-white/70 dark:bg-dark-card/90 backdrop-blur-sm p-8 rounded-[3.5rem] shadow-xl shadow-blue-900/5 flex flex-col items-center gap-6 relative group border border-white hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full">
-                        <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-all translate-x-4 group-hover:translate-x-0">
-                            <button onClick={() => handleEliminar(p.id)} className="bg-white dark:bg-dark-input text-red-500 p-4 rounded-2xl hover:bg-red-500 hover:text-white transition-all shadow-xl shadow-red-900/10 dark:shadow-none border border-red-50 dark:border-dark-border">
-                                <Trash2 size={20} />
-                            </button>
-                        </div>
-                        <div className="w-32 h-32 rounded-[2.5rem] bg-slate-50 overflow-hidden shrink-0 shadow-2xl border-4 border-white relative group">
-                            {p.imagen_url ? (
-                                <img src={p.imagen_url?.startsWith('http') ? p.imagen_url : `${UPLOADS_URL}/${p.imagen_url}`} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={p.nombre} />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-slate-200">
-                                    <ImageIcon size={40} className="opacity-20" />
-                                </div>
-                            )}
-                        </div>
-                        <div className="text-center w-full">
-                            <span className="bg-blue-50 text-primary text-[9px] font-black uppercase px-4 py-1.5 rounded-xl mb-4 inline-block tracking-[0.2em] border border-blue-100/50 group-hover:bg-white transition-colors">{p.area || 'Administración'}</span>
-                            <h4 className="font-black text-gray-900 dark:text-white text-xl leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2 tracking-tight">{p.nombre}</h4>
-                            <p className="text-gray-400 font-bold text-[10px] uppercase tracking-[0.1em]">{p.cargo}</p>
-                        </div>
-                        <div className="mt-auto pt-6 w-full flex justify-center">
-                            <div className="flex gap-1.5">
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-100 group-hover:bg-primary transition-colors" />
-                                <div className="w-4 h-1.5 rounded-full bg-blue-50 group-hover:bg-red-500 transition-colors" />
-                                <div className="w-1.5 h-1.5 rounded-full bg-blue-100 group-hover:bg-primary transition-colors" />
-                            </div>
-                        </div>
-                    </div>
-                ))}
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Personal</h3>
+              <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider">{filtrados.length} registrados</p>
             </div>
-
-            {personal.length === 0 && (
-                <div className="text-center py-24 bg-white/50 dark:bg-dark-card/60 backdrop-blur-sm rounded-[4rem] border border-dashed border-gray-200 dark:border-dark-border shadow-sm flex flex-col items-center">
-                    <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center text-gray-200 shadow-inner mb-6">
-                        <Briefcase size={48} />
-                    </div>
-                    <p className="text-gray-400 dark:text-slate-400 font-black text-xl tracking-tight">No hay personal administrativo.</p>
-                    <button onClick={() => setShowForm(true)} className="text-primary font-black text-xs uppercase tracking-widest mt-4 hover:underline">Registrar primer ingreso</button>
-                </div>
-            )}
+          </div>
+          <div className="w-full sm:w-72">
+            <SearchBar
+              value={busqueda}
+              onChange={(e) => setBusqueda(e.target.value)}
+              placeholder="Buscar personal..."
+            />
+          </div>
         </div>
-    )
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="bg-slate-50 border-b border-slate-100 text-slate-500 text-[10px] font-bold uppercase tracking-wider">
+                <th className="px-4 py-3">Foto</th>
+                <th className="px-4 py-3">Personal</th>
+                <th className="px-4 py-3">Cargo / Ãrea</th>
+                <th className="px-4 py-3 text-right">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {cargando ? (
+                <SkeletonRows count={4} />
+              ) : filtrados.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-4 py-12 text-center text-slate-400 text-sm font-medium">
+                    No hay personal administrativo
+                  </td>
+                </tr>
+              ) : (
+                filtrados.map(p => (
+                  <tr key={p.id} className="hover:bg-slate-50 transition-colors">
+                    <td className="px-4 py-3">
+                      <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 flex items-center justify-center">
+                        {p.imagen_url ? (
+                          <img
+                            src={p.imagen_url?.startsWith('http') ? p.imagen_url : `${UPLOADS_URL}/${p.imagen_url}`}
+                            className="w-full h-full object-cover"
+                            alt={p.nombre}
+                            loading="lazy"
+                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                          />
+                        ) : (
+                          <ImageIcon size={16} className="text-slate-300" />
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <p className="text-sm font-semibold text-slate-900">{p.nombre}</p>
+                    </td>
+                    <td className="px-4 py-3">
+                      <p className="text-xs text-slate-700">{p.cargo}</p>
+                      {p.area && <p className="text-[10px] text-slate-500">{p.area}</p>}
+                    </td>
+                    <td className="px-4 py-3">
+                      <ActionButtons
+                        onEdit={() => prepararEdicion(p)}
+                        onDelete={() => handleEliminar(p.id)}
+                      />
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default AdminAdministrativos;
+
