@@ -65,8 +65,11 @@ async function verifyMagicBytes(req, _res, next) {
  *
  * Espera que el cliente suba el archivo en el campo "archivo" o "imagen".
  * Define req.file.url_public, req.file.storage_path en éxito.
+ *
+ * NOTA: la funcion externa NO es async (de lo contrario devolveria
+ * una Promise<Function> en vez del middleware directamente).
  */
-async function processAndUpload(folder) {
+function processAndUpload(folder) {
   return async (req, _res, next) => {
     if (!req.file) return next();
 
