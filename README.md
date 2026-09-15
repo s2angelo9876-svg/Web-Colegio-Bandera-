@@ -31,7 +31,7 @@ Este proyecto ha sido desarrollado bajo los más altos estándares de desarrollo
 
 ## 🛠️ Arquitectura y Tecnologías
 
-El sistema está construido sobre una arquitectura desacoplada **MERN (MySQL, Express, React, Node)**, lo que garantiza escalabilidad y facilidad de mantenimiento:
+El sistema está construido sobre una arquitectura desacoplada, lo que garantiza escalabilidad y facilidad de mantenimiento:
 
 ### 💻 Frontend (Cliente)
 *   **React 19**: Biblioteca base para interfaces de usuario declarativas y reactivas.
@@ -44,12 +44,15 @@ El sistema está construido sobre una arquitectura desacoplada **MERN (MySQL, Ex
 
 ### ⚙️ Backend (Servidor)
 *   **Node.js & Express.js**: Servidor HTTP rápido y minimalista enfocado en APIs RESTful estructuradas.
-*   **MySQL & mysql2/promise**: Motor de base de datos relacional robusto que utiliza conexiones en Pool con soporte nativo de promesas (`async/await`) para transacciones eficientes.
-*   **JWT (JsonWebToken)**: Sistema estándar de autenticación basado en tokens firmados con caducidad establecida (8 horas) y guardado seguro en cliente.
+*   **PostgreSQL (Supabase) & `pg`**: Base de datos relacional robusta con conexiones en Pool y soporte nativo de promesas (`async/await`) para transacciones eficientes. SQL nativo con placeholders `$1, $2`.
+*   **Supabase Storage**: Almacenamiento persistente de imágenes y PDFs en la nube (sobrevive a redeploys).
+*   **JWT (JsonWebToken)**: Sistema estándar de autenticación basado en tokens firmados con caducidad establecida (8 horas). El servidor **no arranca** sin `JWT_SECRET` configurado.
 *   **BcryptJS**: Encriptación unidireccional y hash adaptativo de contraseñas de administrador.
-*   **Sharp & Multer**: Procesamiento y optimización de imágenes en el servidor antes del almacenamiento.
-*   **Helmet & Express Rate Limit**: Suite de seguridad para cabeceras HTTP y protección automatizada contra ataques de Fuerza Bruta y denegación de servicio (DoS).
-*   **Compression & Morgan**: Middleware para compresión Gzip de todas las respuestas HTTP y registrador de auditoría de peticiones en consola de desarrollo.
+*   **Sharp & Multer**: Procesamiento y optimización de imágenes en memoria (resize + WebP) antes de subirlas a Storage.
+*   **Express Validator + XSS Sanitize**: Validación de payloads y sanitización de inputs server-side contra XSS.
+*   **File-type**: Verificación de magic bytes (no solo extensión) para evitar uploads de archivos maliciosos.
+*   **Helmet & Express Rate Limit**: Cabeceras HTTP seguras y rate limit diferenciado: 5/15min para login, 200/15min para el resto de la API.
+*   **Compression & Morgan**: Compresión Gzip y logger HTTP (dev/production).
 
 ---
 

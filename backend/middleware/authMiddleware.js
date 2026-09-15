@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken')
 
-const JWT_SECRET = process.env.JWT_SECRET || 'colegio_bandera_peru_secret'
+const JWT_SECRET = process.env.JWT_SECRET
+if (!JWT_SECRET) {
+  throw new Error('Configuración crítica faltante: JWT_SECRET no está definido en .env')
+}
 
 const verificarToken = (req, res, next) => {
   const authHeader = req.headers['authorization']
@@ -18,14 +21,10 @@ const verificarToken = (req, res, next) => {
 }
 
 const soloAdmin = (req, res, next) => {
-  // LOG DE DIAGNÓSTICO
-  console.log("DATOS DEL USUARIO EN EL TOKEN:", req.usuario);
-
   if (!req.usuario || req.usuario.rol !== 'admin') {
-    console.log("BLOQUEADO: El rol es", req.usuario?.rol, "y se esperaba 'admin'");
-    return res.status(403).json({ 
+    return res.status(403).json({
       error: 'Acceso solo para administradores',
-      tu_rol_actual: req.usuario?.rol 
+      tu_rol_actual: req.usuario?.rol
     });
   }
   next()

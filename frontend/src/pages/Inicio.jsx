@@ -26,6 +26,7 @@ function Inicio() {
   const [comunicados, setComunicados] = useState([]);
   const [recentItems, setRecentItems] = useState([]);
   const [videoOpen, setVideoOpen] = useState(false);
+  const [heroImage, setHeroImage] = useState(null);
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -33,6 +34,7 @@ function Inicio() {
         const res = await API.get('/configuracion');
         if (res.data && Object.keys(res.data).length > 0) {
           setConfig(prev => ({ ...prev, ...res.data }));
+          if (res.data.hero_imagen) setHeroImage(res.data.hero_imagen);
         }
       } catch { /* ignore error */ }
     };
@@ -154,13 +156,19 @@ function Inicio() {
           </div>
 
           <div className="relative hidden lg:block">
-            <div className="relative rounded-2xl overflow-hidden shadow-2xl h-[500px]">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl h-[500px] bg-white/10">
               <div className="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent z-10" />
-              <img
-                src="https://images.unsplash.com/photo-1523050335392-9af560c12e74?auto=format&fit=crop&q=80&w=1200"
-                alt="Instalaciones I.E. Bandera del Perú"
-                className="w-full h-full object-cover"
-              />
+              {heroImage ? (
+                <img
+                  src={heroImage}
+                  alt="Instalaciones I.E. Bandera del Perú"
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-white/40">
+                  <School size={120} strokeWidth={0.5} />
+                </div>
+              )}
               <div className="absolute bottom-6 left-6 z-20">
                 <div className="bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-xl flex items-center gap-4">
                   <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white">

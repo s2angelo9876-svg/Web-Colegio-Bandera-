@@ -1,55 +1,109 @@
 const multer = require('multer');
-const path = require('path');
 const sharp = require('sharp');
-const fs = require('fs');
+const { fileTypeFromBuffer } = require('file-type');
+const path = require('path');
+const { uploadBufferToStorage } = require('../config/storage');
+const logger = require('../config/logger');
 
-// Almacenamiento en memoria para procesar con Sharp antes de guardar
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
+const MAX_DOC_BYTES = 15 * 1024 * 1024;
+
+// ── Multer en memoria (nunca escribimos a disco del servidor) ──────────
 const storage = multer.memoryStorage();
 
-// Filtro de archivos para asegurar que solo se suban imágenes
-const fileFilter = (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|webp|gif/;
-    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
-
-    if (extname && mimetype) {
-        return cb(null, true);
-    } else {
-        cb(new Error('Solo se permiten imágenes (jpeg, jpg, png, webp, gif)'), false);
-    }
-};
-
-const upload = multer({ 
-    storage: storage,
-    limits: { fileSize: 10 * 1024 * 1024 }, // Aumentamos límite a 10MB porque Sharp lo comprimirá
-    fileFilter: fileFilter
+const upload = multer({
+  storage,
+  limits: { fileSize: MAX_DOC_BYTES },
 });
 
-// Middleware para optimizar la imagen después de la carga
-const processImage = async (req, res, next) => {
+/**
+ * Verifica que el archivo realmente es del tipo declarado leyendo
+ * los magic bytes del buffer. Esto evita que un .exe renombrado a .jpg
+ * pase el filtro.
+ */
+async function verifyMagicBytes(req, _res, next) {
+  if (!req.file) return next();
+
+  try {
+    const detected = await fileTypeFromBuffer(req.file.buffer);
+    const mimetype = req.file.mimetype;
+    const ext = path.extname(req.file.originalname).toLowerCase().replace('.', '');
+
+    const isImage = detected && detected.mime.startsWith('image/');
+    const isPdf   = detected && detected.mime === 'application/pdf';
+
+    if (!isImage && !isPdf) {
+      return next(new Error('Tipo de archivo no permitido. Solo imágenes y PDF.'));
+    }
+
+    // Validación cruzada: lo que dice multer vs lo que realmente es
+    if (isImage && !mimetype.startsWith('image/')) {
+      return next(new Error('El archivo no es una imagen válida'));
+    }
+    if (isPdf && mimetype !== 'application/pdf') {
+      return next(new Error('El archivo no es un PDF válido'));
+    }
+
+    // Guardamos metadata útil
+    req.file.detectedType = detected.mime;
+    req.file.detectedExt = detected.ext;
+    req.file.ext = ext;
+    next();
+  } catch (err) {
+    logger.error('Error verificando magic bytes', { message: err.message });
+    next(new Error('No se pudo verificar el archivo subido'));
+  }
+}
+
+/**
+ * Procesa imágenes (resize + WebP) y las sube a Supabase Storage.
+ * PDFs pasan directamente sin procesar.
+ *
+ * Espera que el cliente suba el archivo en el campo "archivo" o "imagen".
+ * Define req.file.url_public, req.file.storage_path en éxito.
+ */
+async function processAndUpload(folder) {
+  return async (req, _res, next) => {
     if (!req.file) return next();
 
-    const fileName = `img-${Date.now()}-${Math.round(Math.random() * 1E9)}.webp`;
-    const outputPath = path.join('uploads', fileName);
+    const isPdf = req.file.detectedType === 'application/pdf';
 
     try {
-        await sharp(req.file.buffer)
-            .resize(1200, 800, { // Redimensionar a un tamaño estándar máximo
-                fit: 'inside',
-                withoutEnlargement: true
-            })
-            .webp({ quality: 80 }) // Convertir a WebP con calidad 80
-            .toFile(outputPath);
+      let buffer;
+      let contentType;
+      let ext;
+      let filename;
 
-        // Actualizamos req.file para que los controladores usen el nuevo nombre y ruta
-        req.file.filename = fileName;
-        req.file.path = outputPath;
-        
-        next();
-    } catch (error) {
-        console.error('Error procesando imagen:', error);
-        next(); // Continuamos aunque falle la optimización, o podrías manejar el error
+      if (isPdf) {
+        buffer = req.file.buffer;
+        contentType = 'application/pdf';
+        ext = 'pdf';
+        filename = `doc-${Date.now()}-${Math.round(Math.random() * 1e9)}.${ext}`;
+      } else {
+        // Convertir SIEMPRE a WebP optimizado
+        buffer = await sharp(req.file.buffer)
+          .resize(1600, 1200, { fit: 'inside', withoutEnlargement: true })
+          .webp({ quality: 80 })
+          .toBuffer();
+        contentType = 'image/webp';
+        ext = 'webp';
+        filename = `img-${Date.now()}-${Math.round(Math.random() * 1e9)}.${ext}`;
+      }
+
+      const { url, path: storagePath } = await uploadBufferToStorage(buffer, {
+        folder,
+        filename,
+        contentType,
+      });
+
+      req.file.url_public = url;
+      req.file.storage_path = storagePath;
+      next();
+    } catch (err) {
+      logger.error('Error procesando/subiendo archivo', { message: err.message, folder });
+      next(err);
     }
-};
+  };
+}
 
-module.exports = { upload, processImage };
+module.exports = { upload, verifyMagicBytes, processAndUpload };

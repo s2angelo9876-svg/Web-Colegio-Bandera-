@@ -2,9 +2,12 @@ const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'colegio_bandera_peru_secret';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error('Configuración crítica faltante: JWT_SECRET no está definido en .env');
+}
 
-// LOGIN (Copiado de la versión funcional que hicimos)
+// Login
 const login = async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
@@ -12,10 +15,13 @@ const login = async (req, res) => {
   }
 
   try {
-    const [results] = await db.query('SELECT * FROM usuarios WHERE username = ?', [username]);
-    if (results.length === 0) return res.status(401).json({ error: 'Usuario no encontrado' });
+    const { rows } = await db.query(
+      'SELECT id, username, password, rol FROM usuarios WHERE username = $1',
+      [username]
+    );
+    if (rows.length === 0) return res.status(401).json({ error: 'Usuario no encontrado' });
 
-    const usuario = results[0];
+    const usuario = rows[0];
     const passwordValida = await bcrypt.compare(password, usuario.password);
     if (!passwordValida) return res.status(401).json({ error: 'Contraseña incorrecta' });
 
@@ -28,21 +34,16 @@ const login = async (req, res) => {
     return res.json({
       mensaje: 'Login exitoso',
       token,
-      usuario: { id: usuario.id, username: usuario.username, rol: usuario.rol }
+      usuario: { id: usuario.id, username: usuario.username, rol: usuario.rol },
     });
   } catch (error) {
-    console.error(error);
     return res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
-// ESTA ES LA FUNCIÓN QUE TE FALTA EXPORTAR
+// Verificar token vivo
 const verificar = (req, res) => {
   res.json({ valido: true, usuario: req.usuario });
 };
 
-// EXPORTACIÓN COMPLETA
-module.exports = { 
-  login, 
-  verificar 
-};
+module.exports = { login, verificar };
