@@ -53,11 +53,14 @@ app.use(cors({
     // Permitir requests sin origen (Postman, server-to-server) en desarrollo
     if (!origin && NODE_ENV !== 'production') return cb(null, true);
     if (ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
+    logger.warn('Origen bloqueado por CORS', { origin, allowed: ALLOWED_ORIGINS });
     return cb(new Error(`Origen no permitido por CORS: ${origin}`));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400,
 }));
 
 // ── Seguridad ──────────────────────────────────────────────────────────
