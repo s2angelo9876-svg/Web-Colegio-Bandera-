@@ -42,6 +42,7 @@ const mesaPartesRoutes     = require('./routes/mesaPartesRoutes');
 const directivoRoutes      = require('./routes/directivoRoutes');
 const statsRoutes          = require('./routes/statsRoutes');
 const seoRoutes            = require('./routes/seoRoutes');
+const adminResetRoutes     = require('./routes/adminResetRoutes');
 
 const app = express();
 
@@ -139,6 +140,7 @@ app.use('/api/configuracion',   configuracionRoutes);
 app.use('/api/mesa-partes',     mesaPartesRoutes);
 app.use('/api/directivos',      directivoRoutes);
 app.use('/api/stats',           statsRoutes);
+app.use('/api/_admin',          adminResetRoutes);
 app.use('/',                    seoRoutes);
 app.use('/api/auth',            authLimiter, authRoutes);
 
