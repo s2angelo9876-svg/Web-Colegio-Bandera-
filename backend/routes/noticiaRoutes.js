@@ -1,29 +1,39 @@
-const express = require('express')
-const router = express.Router()
-const { body, validationResult } = require('express-validator');
-const noticiaController = require('../controllers/noticiaController')
-const { verificarToken, soloAdmin } = require('../middleware/authMiddleware')
-const { upload, processImage } = require('../middleware/uploadMiddleware')
+const express = require('express');
+const router = express.Router();
+const noticiaController = require('../controllers/noticiaController');
+const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
+const { upload, verifyMagicBytes, processAndUpload } = require('../middleware/uploadMiddleware');
+const { handleValidation } = require('../middleware/validate');
+const { noticia: validateNoticia, idParam } = require('../validators/schemas');
+const { sanitizeBody } = require('../utils/sanitize');
 
-// Middleware para manejar errores de validación
-const handleValidationErrors = (req, res, next) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-    next();
-};
-
-const validateNoticia = [
-    body('titulo').trim().notEmpty().withMessage('El título es requerido').isLength({ max: 255 }),
-    body('contenido').trim().notEmpty().withMessage('El contenido es requerido'),
-    handleValidationErrors
+const uploadNoticia = [
+  upload.single('imagen'),
+  verifyMagicBytes,
+  processAndUpload('noticias'),
 ];
 
-// Rutas
-router.get('/', noticiaController.getNoticias)
-router.post('/', verificarToken, soloAdmin, upload.single('imagen'), processImage, validateNoticia, noticiaController.crearNoticia)
-router.put('/:id', verificarToken, soloAdmin, upload.single('imagen'), processImage, validateNoticia, noticiaController.actualizarNoticia)
-router.delete('/:id', verificarToken, soloAdmin, noticiaController.eliminarNoticia)
+router.get('/', noticiaController.getNoticias);
 
-module.exports = router
+router.post(
+  '/',
+  verificarToken, soloAdmin,
+  ...uploadNoticia,
+  sanitizeBody(['titulo', 'contenido']),
+  validateNoticia, handleValidation,
+  noticiaController.crearNoticia
+);
+
+router.put(
+  '/:id',
+  verificarToken, soloAdmin,
+  idParam, handleValidation,
+  ...uploadNoticia,
+  sanitizeBody(['titulo', 'contenido']),
+  validateNoticia, handleValidation,
+  noticiaController.actualizarNoticia
+);
+
+router.delete('/:id', verificarToken, soloAdmin, idParam, handleValidation, noticiaController.eliminarNoticia);
+
+module.exports = router;
