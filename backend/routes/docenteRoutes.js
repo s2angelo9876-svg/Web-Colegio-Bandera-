@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const { getDocentes, createDocente, deleteDocente } = require('../controllers/docenteController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
@@ -16,10 +16,11 @@ router.post(
   verifyMagicBytes,
   processAndUpload('docentes'),
   sanitizeBody(['nombre', 'cargo', 'especialidad']),
-  validateDocente, handleValidation,
+  ...validateDocente, handleValidation,
   createDocente
 );
 
-router.delete('/:id', verificarToken, soloAdmin, idParam, handleValidation, deleteDocente);
+router.delete('/:id', verificarToken, soloAdmin, ...idParam, handleValidation, deleteDocente);
 
 module.exports = router;
+

@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const { getComunicados, crearComunicado, eliminarComunicado } = require('../controllers/comunicadoController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
@@ -12,10 +12,11 @@ router.post(
   '/',
   verificarToken, soloAdmin,
   sanitizeBody(['titulo', 'descripcion']),
-  validateComunicado, handleValidation,
+  ...validateComunicado, handleValidation,
   crearComunicado
 );
 
-router.delete('/:id', verificarToken, soloAdmin, idParam, handleValidation, eliminarComunicado);
+router.delete('/:id', verificarToken, soloAdmin, ...idParam, handleValidation, eliminarComunicado);
 
 module.exports = router;
+

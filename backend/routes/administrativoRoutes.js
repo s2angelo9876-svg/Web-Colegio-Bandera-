@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const { getAdministrativos, createAdministrativo, deleteAdministrativo } = require('../controllers/administrativoController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
@@ -16,10 +16,11 @@ router.post(
   verifyMagicBytes,
   processAndUpload('administrativos'),
   sanitizeBody(['nombre', 'cargo', 'area']),
-  validateAdmin, handleValidation,
+  ...validateAdmin, handleValidation,
   createAdministrativo
 );
 
-router.delete('/:id', verificarToken, soloAdmin, idParam, handleValidation, deleteAdministrativo);
+router.delete('/:id', verificarToken, soloAdmin, ...idParam, handleValidation, deleteAdministrativo);
 
 module.exports = router;
+

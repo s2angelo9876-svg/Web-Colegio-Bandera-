@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const eventoController = require('../controllers/eventoController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
@@ -16,10 +16,11 @@ router.post(
   verifyMagicBytes,
   processAndUpload('eventos'),
   sanitizeBody(['titulo', 'descripcion', 'lugar']),
-  validateEvento, handleValidation,
+  ...validateEvento, handleValidation,
   eventoController.crearEvento
 );
 
-router.delete('/:id', verificarToken, soloAdmin, idParam, handleValidation, eventoController.eliminarEvento);
+router.delete('/:id', verificarToken, soloAdmin, ...idParam, handleValidation, eventoController.eliminarEvento);
 
 module.exports = router;
+

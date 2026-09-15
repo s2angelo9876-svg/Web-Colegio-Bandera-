@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const carruselController = require('../controllers/carruselController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
@@ -16,10 +16,11 @@ router.post(
   verifyMagicBytes,
   processAndUpload('carrusel'),
   sanitizeBody(['titulo', 'subtitulo']),
-  validateCarrusel, handleValidation,
+  ...validateCarrusel, handleValidation,
   carruselController.createSlide
 );
 
-router.delete('/:id', verificarToken, soloAdmin, idParam, handleValidation, carruselController.deleteSlide);
+router.delete('/:id', verificarToken, soloAdmin, ...idParam, handleValidation, carruselController.deleteSlide);
 
 module.exports = router;
+

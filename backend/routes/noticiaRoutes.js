@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const noticiaController = require('../controllers/noticiaController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
@@ -20,20 +20,21 @@ router.post(
   verificarToken, soloAdmin,
   ...uploadNoticia,
   sanitizeBody(['titulo', 'contenido']),
-  validateNoticia, handleValidation,
+  ...validateNoticia, handleValidation,
   noticiaController.crearNoticia
 );
 
 router.put(
   '/:id',
   verificarToken, soloAdmin,
-  idParam, handleValidation,
+  ...idParam, handleValidation,
   ...uploadNoticia,
   sanitizeBody(['titulo', 'contenido']),
-  validateNoticia, handleValidation,
+  ...validateNoticia, handleValidation,
   noticiaController.actualizarNoticia
 );
 
-router.delete('/:id', verificarToken, soloAdmin, idParam, handleValidation, noticiaController.eliminarNoticia);
+router.delete('/:id', verificarToken, soloAdmin, ...idParam, handleValidation, noticiaController.eliminarNoticia);
 
 module.exports = router;
+

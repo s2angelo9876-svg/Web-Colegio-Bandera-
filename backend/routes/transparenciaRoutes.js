@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const { getDocumentos, createDocumento, deleteDocumento } = require('../controllers/transparenciaController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
@@ -16,10 +16,11 @@ router.post(
   verifyMagicBytes,
   processAndUpload('transparencia'),
   sanitizeBody(['titulo', 'descripcion', 'categoria']),
-  validateTrans, handleValidation,
+  ...validateTrans, handleValidation,
   createDocumento
 );
 
-router.delete('/:id', verificarToken, soloAdmin, idParam, handleValidation, deleteDocumento);
+router.delete('/:id', verificarToken, soloAdmin, ...idParam, handleValidation, deleteDocumento);
 
 module.exports = router;
+

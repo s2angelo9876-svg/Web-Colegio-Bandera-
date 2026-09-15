@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const { getDirectivos, createDirectivo, updateDirectivo, deleteDirectivo } = require('../controllers/directivoController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
@@ -16,22 +16,23 @@ router.post(
   verifyMagicBytes,
   processAndUpload('directivos'),
   sanitizeBody(['nombres', 'cargo', 'frase', 'correo']),
-  validateDirectivo, handleValidation,
+  ...validateDirectivo, handleValidation,
   createDirectivo
 );
 
 router.put(
   '/:id',
   verificarToken, soloAdmin,
-  idParam, handleValidation,
+  ...idParam, handleValidation,
   upload.single('imagen'),
   verifyMagicBytes,
   processAndUpload('directivos'),
   sanitizeBody(['nombres', 'cargo', 'frase', 'correo']),
-  validateDirectivo, handleValidation,
+  ...validateDirectivo, handleValidation,
   updateDirectivo
 );
 
-router.delete('/:id', verificarToken, soloAdmin, idParam, handleValidation, deleteDirectivo);
+router.delete('/:id', verificarToken, soloAdmin, ...idParam, handleValidation, deleteDirectivo);
 
 module.exports = router;
+

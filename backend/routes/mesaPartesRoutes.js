@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const { listarTramites, enviarTramite, consultarTramite, actualizarEstado, eliminarTramite } = require('../controllers/mesaPartesController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
@@ -13,14 +13,15 @@ router.post(
   verifyMagicBytes,
   processAndUpload('mesa_partes'),
   sanitizeBody(['asunto', 'nombres_completos', 'direccion', 'fundamentacion']),
-  validateMP, handleValidation,
+  ...validateMP, handleValidation,
   enviarTramite
 );
 
 router.get('/seguimiento', consultarTramite);
 
 router.get('/', verificarToken, soloAdmin, listarTramites);
-router.patch('/:id/estado', verificarToken, soloAdmin, idParam, handleValidation, estadoMesaPartes, handleValidation, actualizarEstado);
-router.delete('/:id', verificarToken, soloAdmin, idParam, handleValidation, eliminarTramite);
+router.patch('/:id/estado', verificarToken, soloAdmin, ...idParam, handleValidation, ...estadoMesaPartes, handleValidation, actualizarEstado);
+router.delete('/:id', verificarToken, soloAdmin, ...idParam, handleValidation, eliminarTramite);
 
 module.exports = router;
+

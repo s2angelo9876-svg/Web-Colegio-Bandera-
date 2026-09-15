@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const router = express.Router();
 const { getGaleria, createFoto, deleteFoto } = require('../controllers/galeriaController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
@@ -16,10 +16,11 @@ router.post(
   verifyMagicBytes,
   processAndUpload('galeria'),
   sanitizeBody(['titulo']),
-  validateGaleria, handleValidation,
+  ...validateGaleria, handleValidation,
   createFoto
 );
 
-router.delete('/:id', verificarToken, soloAdmin, idParam, handleValidation, deleteFoto);
+router.delete('/:id', verificarToken, soloAdmin, ...idParam, handleValidation, deleteFoto);
 
 module.exports = router;
+
