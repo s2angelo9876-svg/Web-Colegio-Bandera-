@@ -1,9 +1,12 @@
 const multer = require('multer');
 const sharp = require('sharp');
-const { fileTypeFromBuffer } = require('file-type');
 const path = require('path');
 const { uploadBufferToStorage } = require('../config/storage');
 const logger = require('../config/logger');
+
+// file-type es ESM puro (v17+), no se puede hacer require() desde CommonJS.
+// Cargamos con dynamic import una sola vez al arrancar.
+const fileTypePromise = import('file-type').then((m) => m.fileTypeFromBuffer);
 
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 const MAX_DOC_BYTES = 15 * 1024 * 1024;
@@ -25,6 +28,7 @@ async function verifyMagicBytes(req, _res, next) {
   if (!req.file) return next();
 
   try {
+    const fileTypeFromBuffer = await fileTypePromise;
     const detected = await fileTypeFromBuffer(req.file.buffer);
     const mimetype = req.file.mimetype;
     const ext = path.extname(req.file.originalname).toLowerCase().replace('.', '');
