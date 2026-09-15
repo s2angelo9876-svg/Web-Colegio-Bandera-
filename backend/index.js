@@ -50,8 +50,9 @@ app.set('trust proxy', 1);
 // ── CORS restringido ────────────────────────────────────────────────────
 app.use(cors({
   origin: (origin, cb) => {
-    // Permitir requests sin origen (Postman, server-to-server) en desarrollo
-    if (!origin && NODE_ENV !== 'production') return cb(null, true);
+    // Permitir requests sin Origin (health checks de Render, curl, Postman,
+    // server-to-server, etc.). NO son navegadores, no pueden enviar cookies.
+    if (!origin) return cb(null, true);
     if (ALLOWED_ORIGINS.includes(origin)) return cb(null, true);
     logger.warn('Origen bloqueado por CORS', { origin, allowed: ALLOWED_ORIGINS });
     return cb(new Error(`Origen no permitido por CORS: ${origin}`));
