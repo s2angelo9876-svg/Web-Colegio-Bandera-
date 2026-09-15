@@ -1,9 +1,30 @@
 const db = require('../config/db');
 
 exports.getComunicados = async (req, res) => {
+  const wantsPagination = req.query.page !== undefined;
+  if (!wantsPagination) {
+    try {
+      const { rows } = await db.query('SELECT * FROM comunicados ORDER BY fecha DESC');
+      return res.json(rows);
+    } catch (err) {
+      return res.status(500).json({ error: 'Error al obtener comunicados' });
+    }
+  }
+
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = Math.min(parseInt(req.query.limit, 10) || 10, 50);
+  const offset = (page - 1) * limit;
   try {
-    const { rows } = await db.query('SELECT * FROM comunicados ORDER BY fecha DESC');
-    res.json(rows);
+    const { rows: countRows } = await db.query('SELECT COUNT(*)::int AS total FROM comunicados');
+    const total = countRows[0].total;
+    const { rows } = await db.query(
+      'SELECT * FROM comunicados ORDER BY fecha DESC LIMIT $1 OFFSET $2',
+      [limit, offset]
+    );
+    res.json({
+      data: rows,
+      pagination: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    });
   } catch (err) {
     res.status(500).json({ error: 'Error al obtener comunicados' });
   }

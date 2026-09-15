@@ -3,6 +3,7 @@ import { Suspense, lazy, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { AuthProvider, useAuth } from './context/authContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './context/ToastContext';
 import Navbar from './components/Navbar';
 import ErrorBoundary from './components/ErrorBoundary';
 
@@ -118,11 +119,13 @@ function AppContent() {
 function App() {
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <ThemeProvider>
-          <AppContent />
-        </ThemeProvider>
-      </AuthProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <AppContent />
+          </ThemeProvider>
+        </AuthProvider>
+      </ToastProvider>
     </ErrorBoundary>
   );
 }

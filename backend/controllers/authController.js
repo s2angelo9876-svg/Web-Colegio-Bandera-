@@ -7,7 +7,21 @@ if (!JWT_SECRET) {
   throw new Error('Configuración crítica faltante: JWT_SECRET no está definido en .env');
 }
 
-// Login
+const COOKIE_NAME = 'cbp_token';
+const COOKIE_MAX_AGE_MS = 8 * 60 * 60 * 1000; // 8 horas
+
+// En producción usa Secure (solo HTTPS). En dev puede ir sin él.
+function cookieOptions() {
+  return {
+    httpOnly: true,
+    sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: COOKIE_MAX_AGE_MS,
+    path: '/',
+  };
+}
+
+// Login: ahora setea cookie httpOnly Y devuelve token (para compatibilidad)
 const login = async (req, res) => {
   const { username, password } = req.body;
   if (!username || !password) {
@@ -31,9 +45,11 @@ const login = async (req, res) => {
       { expiresIn: '8h' }
     );
 
+    res.cookie(COOKIE_NAME, token, cookieOptions());
+
     return res.json({
       mensaje: 'Login exitoso',
-      token,
+      token, // sigue siendo útil para clientes no-cookie
       usuario: { id: usuario.id, username: usuario.username, rol: usuario.rol },
     });
   } catch (error) {
@@ -41,9 +57,15 @@ const login = async (req, res) => {
   }
 };
 
-// Verificar token vivo
+// Verificar token vivo (lee de cookie O de Authorization header)
 const verificar = (req, res) => {
   res.json({ valido: true, usuario: req.usuario });
 };
 
-module.exports = { login, verificar };
+// Logout: limpia la cookie
+const logout = (req, res) => {
+  res.clearCookie(COOKIE_NAME, { path: '/' });
+  res.json({ mensaje: 'Sesión cerrada' });
+};
+
+module.exports = { login, verificar, logout, COOKIE_NAME };

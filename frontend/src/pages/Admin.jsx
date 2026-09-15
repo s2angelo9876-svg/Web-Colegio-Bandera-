@@ -2,28 +2,15 @@ import { useEffect, useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from '../context/authContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import {
-  getNoticias, getEventos, getComunicados, getDocentes, getGaleria
-} from '../services/api';
+import { API, getStats } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
+import { useToast } from '../context/ToastContext';
 import {
   Newspaper, Calendar, Megaphone, FolderTree,
   Users, Image as ImageIcon, LayoutDashboard, LogOut,
   ChevronRight, Bell, Briefcase, ArrowUpRight, Clock, Settings, FileText, Moon, Sun
 } from 'lucide-react';
 import AdminChart from '../components/AdminChart';
-
-const trendData = [
-  { name: 'Ene', valor: 4 }, { name: 'Feb', valor: 7 },
-  { name: 'Mar', valor: 5 }, { name: 'Abr', valor: 12 },
-  { name: 'May', valor: 9 }, { name: 'Jun', valor: 15 },
-];
-
-const distributionData = [
-  { name: 'Lun', valor: 2 }, { name: 'Mar', valor: 5 },
-  { name: 'Mie', valor: 3 }, { name: 'Jue', valor: 8 },
-  { name: 'Vie', valor: 6 },
-];
 
 function SidebarItem({ to, icon: Icon, label, active }) {
   return (
@@ -107,10 +94,16 @@ function Admin() {
   const { isDarkMode, toggleDarkMode } = useTheme();
   const navigate = useNavigate();
   const location = useLocation();
+  const toast = useToast();
   const [currentTime, setCurrentTime] = useState(new Date());
 
   const [stats, setStats] = useState({
-    noticias: 0, eventos: 0, comunicados: 0, docentes: 0, galeria: 0, cargando: true
+    cargando: true,
+    contadores: {},
+    tendencia_mensual: [],
+    comunicados_por_dia: [],
+    ultimas_noticias: [],
+    ultimos_comunicados: [],
   });
 
   useEffect(() => {
@@ -121,20 +114,19 @@ function Admin() {
   useEffect(() => {
     const fetchRealStats = async () => {
       try {
-        const resultados = await Promise.allSettled([
-          getNoticias(), getEventos(), getComunicados(), getDocentes(), getGaleria()
-        ]);
-        const [r1, r2, r3, r4, r5] = resultados;
+        const res = await getStats();
+        const data = res.data || {};
         setStats({
-          noticias: r1.status === 'fulfilled' ? (r1.value.data?.length || 0) : 0,
-          eventos: r2.status === 'fulfilled' ? (r2.value.data?.length || 0) : 0,
-          comunicados: r3.status === 'fulfilled' ? (r3.value.data?.length || 0) : 0,
-          docentes: r4.status === 'fulfilled' ? (r4.value.data?.length || 0) : 0,
-          galeria: r5.status === 'fulfilled' ? (r5.value.data?.length || 0) : 0,
-          cargando: false
+          cargando: false,
+          contadores: data.contadores || {},
+          tendencia_mensual: data.tendencia_mensual || [],
+          comunicados_por_dia: data.comunicados_por_dia || [],
+          ultimas_noticias: data.ultimas_noticias || [],
+          ultimos_comunicados: data.ultimos_comunicados || [],
         });
-      } catch {
-        setStats(prev => ({ ...prev, cargando: false }));
+      } catch (err) {
+        setStats((prev) => ({ ...prev, cargando: false }));
+        toast.error('No se pudieron cargar las estadísticas');
       }
     };
     fetchRealStats();
@@ -145,11 +137,11 @@ function Admin() {
   const isActive = (path) => location.pathname === `/admin/${path}` || (path === '' && location.pathname === '/admin');
 
   const statsCards = useMemo(() => [
-    { label: 'Noticias', count: stats.noticias, loading: stats.cargando, icon: <Newspaper size={18} />, color: 'bg-primary', footer: 'Tendencia Mensual' },
-    { label: 'Eventos', count: stats.eventos, loading: stats.cargando, icon: <Calendar size={18} />, color: 'bg-red-600', footer: 'Calendario Escolar' },
-    { label: 'Comunicados', count: stats.comunicados, loading: stats.cargando, icon: <Megaphone size={18} />, color: 'bg-amber-500', footer: 'Avisos comunidad' },
-    { label: 'Docentes', count: stats.docentes, loading: stats.cargando, icon: <Users size={18} />, color: 'bg-emerald-600', footer: 'Staff Académico' },
-    { label: 'Galería', count: stats.galeria, loading: stats.cargando, icon: <ImageIcon size={18} />, color: 'bg-indigo-600', footer: 'Archivo Visual' },
+    { label: 'Noticias', count: stats.contadores.noticias || 0, loading: stats.cargando, icon: <Newspaper size={18} />, color: 'bg-primary', footer: 'Publicaciones activas' },
+    { label: 'Eventos', count: stats.contadores.eventos || 0, loading: stats.cargando, icon: <Calendar size={18} />, color: 'bg-red-600', footer: `${stats.contadores.eventos_proximos_30d || 0} próximos 30 días` },
+    { label: 'Comunicados', count: stats.contadores.comunicados || 0, loading: stats.cargando, icon: <Megaphone size={18} />, color: 'bg-amber-500', footer: 'Avisos comunidad' },
+    { label: 'Docentes', count: stats.contadores.docentes || 0, loading: stats.cargando, icon: <Users size={18} />, color: 'bg-emerald-600', footer: 'Staff Académico' },
+    { label: 'Galería', count: stats.contadores.galeria || 0, loading: stats.cargando, icon: <ImageIcon size={18} />, color: 'bg-indigo-600', footer: 'Archivo Visual' },
   ], [stats]);
 
   return (
@@ -240,10 +232,10 @@ function Admin() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
           <div className="h-[340px]">
-            <AdminChart data={trendData} title="Actividad de Publicaciones" type="area" color="#003087" />
+            <AdminChart data={stats.tendencia_mensual} title="Publicaciones por Mes" type="area" color="#003087" />
           </div>
           <div className="h-[340px]">
-            <AdminChart data={distributionData} title="Alcance de Comunicados" type="line" color="#DC2626" />
+            <AdminChart data={stats.comunicados_por_dia} title="Comunicados por Día" type="line" color="#DC2626" />
           </div>
         </div>
 

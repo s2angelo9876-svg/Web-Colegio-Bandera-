@@ -1,9 +1,30 @@
 const db = require('../config/db');
 
 exports.getDocentes = async (req, res) => {
+  const wantsPagination = req.query.page !== undefined;
+  if (!wantsPagination) {
+    try {
+      const { rows } = await db.query('SELECT * FROM docentes ORDER BY orden ASC, nombre ASC');
+      return res.json(rows);
+    } catch (err) {
+      return res.status(500).json({ error: err.message });
+    }
+  }
+
+  const page = parseInt(req.query.page, 10) || 1;
+  const limit = Math.min(parseInt(req.query.limit, 10) || 12, 60);
+  const offset = (page - 1) * limit;
   try {
-    const { rows } = await db.query('SELECT * FROM docentes ORDER BY orden ASC, nombre ASC');
-    res.json(rows);
+    const { rows: countRows } = await db.query('SELECT COUNT(*)::int AS total FROM docentes');
+    const total = countRows[0].total;
+    const { rows } = await db.query(
+      'SELECT * FROM docentes ORDER BY orden ASC, nombre ASC LIMIT $1 OFFSET $2',
+      [limit, offset]
+    );
+    res.json({
+      data: rows,
+      pagination: { total, page, limit, totalPages: Math.ceil(total / limit) },
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

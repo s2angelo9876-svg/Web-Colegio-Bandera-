@@ -9,9 +9,11 @@ import {
 import Footer from '../components/Footer';
 import { API, UPLOADS_URL } from '../services/api';
 import { sanitizeText } from '../utils/sanitize';
+import { useToast } from '../context/ToastContext';
 
 function Inicio() {
   const navigate = useNavigate();
+  const toast = useToast();
   const [config, setConfig] = useState({
     hero_titulo_1: 'Formando',
     hero_titulo_2: 'líderes del mañana',
@@ -36,7 +38,11 @@ function Inicio() {
           setConfig(prev => ({ ...prev, ...res.data }));
           if (res.data.hero_imagen) setHeroImage(res.data.hero_imagen);
         }
-      } catch { /* ignore error */ }
+      } catch (err) {
+        if (err.response?.status !== 401) {
+          toast.error('No se pudo cargar la configuración del sitio');
+        }
+      }
     };
 
     const fetchData = async () => {
@@ -59,7 +65,11 @@ function Inicio() {
 
         combinados.sort((a, b) => new Date(b.fechaOrden) - new Date(a.fechaOrden));
         setRecentItems(combinados.slice(0, 3));
-      } catch { /* ignore error */ }
+      } catch (err) {
+        if (err.response?.status !== 401) {
+          toast.error('No se pudieron cargar las novedades');
+        }
+      }
     };
 
     fetchConfig();

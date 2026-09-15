@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
 const compression = require('compression');
 const morgan = require('morgan');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const db = require('./config/db');
@@ -39,6 +40,8 @@ const carruselRoutes       = require('./routes/carruselRoutes');
 const configuracionRoutes  = require('./routes/configuracionRoutes');
 const mesaPartesRoutes     = require('./routes/mesaPartesRoutes');
 const directivoRoutes      = require('./routes/directivoRoutes');
+const statsRoutes          = require('./routes/statsRoutes');
+const seoRoutes            = require('./routes/seoRoutes');
 
 const app = express();
 
@@ -81,6 +84,7 @@ const authLimiter = rateLimit({
 
 // ── Middlewares base ───────────────────────────────────────────────────
 app.use(express.json({ limit: '2mb' }));
+app.use(cookieParser());
 app.use(compression());
 if (NODE_ENV !== 'test') {
   app.use(morgan(NODE_ENV === 'production' ? 'combined' : 'dev'));
@@ -130,6 +134,8 @@ app.use('/api/carrusel',        carruselRoutes);
 app.use('/api/configuracion',   configuracionRoutes);
 app.use('/api/mesa-partes',     mesaPartesRoutes);
 app.use('/api/directivos',      directivoRoutes);
+app.use('/api/stats',           statsRoutes);
+app.use('/',                    seoRoutes);
 app.use('/api/auth',            authLimiter, authRoutes);
 
 // Rate limit solo se aplica a partir de aquí (excepto /api/auth que ya tiene el suyo)

@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+﻿import { useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { API } from '../services/api';
+import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
 import { TextField, TextAreaField } from '../components/AdminUI';
 import { Settings, Save, Layout, Trophy, BookOpen, Loader2, RefreshCw } from 'lucide-react';
@@ -9,6 +10,7 @@ const DEFAULT_CONFIG = {
   hero_titulo_1: 'Bandera',
   hero_titulo_2: 'del Perú',
   hero_subtitulo: 'Forjando la excelencia con tradición y honor.',
+  hero_imagen: '',
   stats_anios: '65',
   stats_alumnos: '1200+',
   stats_docentes: '60+',
@@ -46,6 +48,7 @@ SectionCard.propTypes = {
 };
 
 function AdminConfigInicio() {
+  const toast = useToast();
   const [config, setConfig] = useState(DEFAULT_CONFIG);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -56,7 +59,9 @@ function AdminConfigInicio() {
       if (res.data && Object.keys(res.data).length > 0) {
         setConfig(prev => ({ ...prev, ...res.data }));
       }
-    } catch { /* ignore error */ } finally { setLoading(false); }
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Error al cargar configuración');
+    } finally { setLoading(false); }
   }, []);
 
   useEffect(() => {
@@ -124,6 +129,28 @@ function AdminConfigInicio() {
                 value={config.hero_subtitulo} onChange={handleChange} rows={3}
               />
             </div>
+            <div className="md:col-span-2">
+              <label htmlFor="hero_imagen" className="block text-sm font-semibold text-slate-700 mb-1.5">
+                Imagen del Hero (URL)
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="hero_imagen"
+                  name="hero_imagen"
+                  type="url"
+                  value={config.hero_imagen || ''}
+                  onChange={handleChange}
+                  placeholder="https://... o URL de Supabase Storage"
+                  className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                />
+                {config.hero_imagen && (
+                  <img src={config.hero_imagen} alt="Preview" className="w-12 h-12 rounded-lg object-cover border border-slate-200" />
+                )}
+              </div>
+              <p className="text-[11px] text-slate-400 mt-1">
+                Sube primero la imagen en la sección de Galería/Carrusel y pega aquí la URL pública.
+              </p>
+            </div>
           </div>
         </SectionCard>
 
@@ -179,3 +206,5 @@ function AdminConfigInicio() {
 }
 
 export default AdminConfigInicio;
+
+

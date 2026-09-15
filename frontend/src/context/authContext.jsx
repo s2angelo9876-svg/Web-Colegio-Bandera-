@@ -1,84 +1,101 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
-import PropTypes from 'prop-types'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import PropTypes from 'prop-types';
+import { API } from '../services/api';
 
-const AuthContext = createContext()
+const AuthContext = createContext();
 
 function parseUserData(data) {
-  if (!data) return null
-  if (typeof data === 'object') return data
+  if (!data) return null;
+  if (typeof data === 'object') return data;
   try {
-    return JSON.parse(data)
+    return JSON.parse(data);
   } catch {
-    return null
+    return null;
   }
 }
 
 function validateToken(token) {
-  if (!token || typeof token !== 'string') return false
+  if (!token || typeof token !== 'string') return false;
   try {
-    const parts = token.split('.')
-    if (parts.length !== 3) return false
-    const payload = JSON.parse(atob(parts[1]))
+    const parts = token.split('.');
+    if (parts.length !== 3) return false;
+    const payload = JSON.parse(atob(parts[1]));
     if (payload.exp) {
-      const isExpired = payload.exp * 1000 < Date.now()
-      if (isExpired) return false
+      const isExpired = payload.exp * 1000 < Date.now();
+      if (isExpired) return false;
     }
-    return true
+    return true;
   } catch {
-    return false
+    return false;
   }
 }
 
 export function AuthProvider({ children }) {
-  const [usuario, setUsuario] = useState(null)
-  const [cargando, setCargando] = useState(true)
+  const [usuario, setUsuario] = useState(null);
+  const [cargando, setCargando] = useState(true);
 
-  const logout = useCallback(() => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('usuario')
-    setUsuario(null)
-  }, [])
+  const logout = useCallback(async () => {
+    try {
+      await API.post('/auth/logout');
+    } catch { /* ignore */ }
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    setUsuario(null);
+  }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
-    const usuarioGuardado = localStorage.getItem('usuario')
+    // Verifica contra el backend (la cookie httpOnly viaja automáticamente).
+    // Si falla, caemos al flujo legacy de localStorage.
+    const token = localStorage.getItem('token');
+    const usuarioGuardado = localStorage.getItem('usuario');
 
-    if (token && validateToken(token) && usuarioGuardado) {
-      const parsedUser = parseUserData(usuarioGuardado)
-      if (parsedUser) {
-        setUsuario(parsedUser)
-      } else {
-        logout()
+    const init = async () => {
+      try {
+        const res = await API.get('/auth/verificar');
+        if (res.data?.valido && res.data?.usuario) {
+          setUsuario(res.data.usuario);
+          // sincroniza localStorage como cache
+          localStorage.setItem('usuario', JSON.stringify(res.data.usuario));
+          setCargando(false);
+          return;
+        }
+      } catch { /* sin cookie o token inválido */ }
+
+      // Fallback: token legacy en localStorage
+      if (token && validateToken(token) && usuarioGuardado) {
+        const parsed = parseUserData(usuarioGuardado);
+        if (parsed) setUsuario(parsed);
+      } else if (token || usuarioGuardado) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('usuario');
       }
-    } else if (token || usuarioGuardado) {
-      logout()
-    }
+      setCargando(false);
+    };
 
-    setCargando(false)
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-  }, [logout])
+    init();
+  }, []);
 
-  const login = useCallback((token, datosUsuario) => {
-    localStorage.setItem('token', token)
-    localStorage.setItem('usuario', JSON.stringify(datosUsuario))
-    setUsuario(datosUsuario)
-  }, [])
+  const login = useCallback(async (token, datosUsuario) => {
+    if (token) localStorage.setItem('token', token);
+    localStorage.setItem('usuario', JSON.stringify(datosUsuario));
+    setUsuario(datosUsuario);
+  }, []);
 
   return (
     <AuthContext.Provider value={{ usuario, login, logout, cargando }}>
       {children}
     </AuthContext.Provider>
-  )
+  );
 }
 
 AuthProvider.propTypes = {
   children: PropTypes.node.isRequired,
-}
+};
 
 export const useAuth = () => {
-  const context = useContext(AuthContext)
+  const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth debe usarse dentro de un AuthProvider')
+    throw new Error('useAuth debe usarse dentro de un AuthProvider');
   }
-  return context
-}
+  return context;
+};
