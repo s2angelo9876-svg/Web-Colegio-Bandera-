@@ -2,7 +2,10 @@ const { createClient } = require('@supabase/supabase-js');
 const logger = require('./logger');
 
 const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+// Acepta tanto SUPABASE_SERVICE_ROLE_KEY (nombre estándar de Supabase)
+// como SUPABASE_SERVICE_KEY (alias legacy).
+const SUPABASE_SERVICE_KEY =
+  process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
 const SUPABASE_BUCKET = process.env.SUPABASE_BUCKET || 'colegio-archivos';
 
 let supabase = null;
