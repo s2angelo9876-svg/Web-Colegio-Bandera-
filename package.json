@@ -1,17 +1,26 @@
 {
   "name": "web_institucional",
-  "version": "1.0.0",
-  "description": "",
+  "version": "2.0.0",
+  "description": "Portal Web Institucional & Panel Administrativo - Colegio Bandera del Perú",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently \"npm:dev:backend\" \"npm:dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "test": "cd backend && npm test && cd ../frontend && npm test",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "lint": "cd frontend && npm run lint",
+    "start": "cd backend && node index.js",
+    "migrate:storage": "cd backend && node scripts/migrateUploadsToSupabase.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/s2angelo9876-svg/Web-Colegio-Bandera-.git"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["colegio", "educacion", "peru", "supabase", "react", "express"],
+  "author": "I.E. Bandera del Perú",
   "license": "ISC",
   "type": "commonjs",
   "bugs": {

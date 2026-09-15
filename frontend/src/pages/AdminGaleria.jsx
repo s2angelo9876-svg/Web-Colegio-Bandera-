@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
+import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
 import { ActionButtons, AdminPageHeader, FormCard, ImageUploadField, SearchBar, TextAreaField, TextField } from '../components/AdminUI';
 import { Film, Image as ImageIcon } from 'lucide-react';
@@ -37,6 +38,7 @@ function SkeletonRows({ count = 4 }) {
 SkeletonRows.propTypes = { count: PropTypes.number };
 
 function AdminGaleria() {
+  const toast = useToast();
   const [mediaItems, setMediaItems] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -52,7 +54,9 @@ function AdminGaleria() {
     try {
       const res = await API.get('/galeria');
       setMediaItems(res.data || []);
-    } catch { /* ignore error */ } finally { setCargando(false); }
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Error al cargar galería');
+    } finally { setCargando(false); }
   }, []);
 
   useEffect(() => { cargarGaleria(); }, [cargarGaleria]);
@@ -341,4 +345,6 @@ function AdminGaleria() {
 }
 
 export default AdminGaleria;
+
+
 

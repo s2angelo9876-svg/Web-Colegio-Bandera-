@@ -1,6 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { getComunicados } from '../services/api';
+import { useToast } from '../context/ToastContext';
 import {
   Bell, Calendar, Tag, FileX, RefreshCw,
   ChevronDown, ChevronUp, Search, Shield, Filter
@@ -103,6 +104,7 @@ ComunicadoCard.propTypes = {
 };
 
 function Comunicados() {
+  const toast = useToast();
   const [comunicados, setComunicados] = useState([]);
   const [cargando, setCargando]       = useState(true);
   const [busqueda, setBusqueda]       = useState('');
@@ -113,7 +115,9 @@ function Comunicados() {
     try {
       const res = await getComunicados();
       setComunicados(res.data || []);
-    } catch { /* ignore error */ } finally {
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Error al cargar comunicados');
+    } finally {
       setCargando(false);
     }
   }, []);
@@ -254,3 +258,5 @@ function Comunicados() {
 }
 
 export default Comunicados;
+
+

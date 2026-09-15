@@ -1,6 +1,7 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+﻿import { useEffect, useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { getNoticias, API, UPLOADS_URL } from '../services/api';
+import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
 import {
   AdminPageHeader, FormCard, TextField, TextAreaField, ImageUploadField,
@@ -21,6 +22,7 @@ function SkeletonRows({ count = 3 }) {
 }
 
 function SkeletonRow() {
+  const toast = useToast();
   return (
     <tr className="animate-pulse">
       <td className="px-4 py-3"><div className="h-12 w-20 bg-slate-100 rounded" /></td>
@@ -35,6 +37,7 @@ SkeletonRow.propTypes = {};
 SkeletonRows.propTypes = { count: PropTypes.number };
 
 function AdminNoticias() {
+  const toast = useToast();
   const [noticias, setNoticias] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [cargando, setCargando] = useState(true);
@@ -54,7 +57,9 @@ function AdminNoticias() {
       const res = await getNoticias({ page, limit: 10 });
       setNoticias(res.data.data || []);
       setPagination(prev => ({ ...prev, totalPages: res.data.pagination?.totalPages || 1 }));
-    } catch { /* ignore error */ } finally { setCargando(false); }
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Error al cargar noticias');
+    } finally { setCargando(false); }
   }, []);
 
   useEffect(() => { cargarNoticias(pagination.page); }, [pagination.page, cargarNoticias]);
@@ -269,3 +274,5 @@ function AdminNoticias() {
 }
 
 export default AdminNoticias;
+
+

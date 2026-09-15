@@ -1,10 +1,12 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+﻿import { useState, useEffect, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { FileText, Search, Download, ShieldCheck } from 'lucide-react';
 import { API, UPLOADS_URL } from '../services/api';
+import { useToast } from '../context/ToastContext';
 import Footer from '../components/Footer';
 
 const DocumentosInstitucionales = () => {
+  const toast = useToast();
   const [documentos, setDocumentos] = useState([]);
   const [filtro, setFiltro] = useState('');
   const [categoria, setCategoria] = useState('Todos');
@@ -15,7 +17,9 @@ const DocumentosInstitucionales = () => {
     try {
       const res = await API.get('/transparencia');
       setDocumentos(res.data || []);
-    } catch { /* ignore error */ } finally {
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Error al cargar documentos');
+    } finally {
       setCargando(false);
     }
   }, []);
@@ -153,3 +157,4 @@ const DocumentosInstitucionales = () => {
 DocumentosInstitucionales.propTypes = {};
 
 export default DocumentosInstitucionales;
+

@@ -1,6 +1,7 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+﻿import { useEffect, useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { API, getEventos } from '../services/api';
+import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
 import {
   AdminPageHeader, FormCard, TextField, TextAreaField,
@@ -33,6 +34,7 @@ function SkeletonRows({ count = 3 }) {
 SkeletonRows.propTypes = { count: PropTypes.number };
 
 function AdminEventos() {
+  const toast = useToast();
   const [eventos, setEventos] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showForm, setShowForm] = useState(false);
@@ -48,7 +50,9 @@ function AdminEventos() {
       const res = await getEventos({ page, limit: 12 });
       setEventos(res.data?.data || res.data || []);
       setPagination(prev => ({ ...prev, totalPages: res.data?.pagination?.totalPages || 1 }));
-    } catch { /* ignore error */ } finally { setCargando(false); }
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Error al cargar eventos');
+    } finally { setCargando(false); }
   }, []);
 
   useEffect(() => { cargarEventos(); }, [cargarEventos]);
@@ -258,3 +262,5 @@ function AdminEventos() {
 }
 
 export default AdminEventos;
+
+

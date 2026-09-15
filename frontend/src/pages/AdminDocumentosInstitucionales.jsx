@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
+import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
 import { ActionButtons, AdminPageHeader, FormCard, SearchBar, TextAreaField, TextField } from '../components/AdminUI';
 import { ExternalLink, FileText, FolderTree } from 'lucide-react';
@@ -34,6 +35,7 @@ function SkeletonRows({ count = 3 }) {
 SkeletonRows.propTypes = { count: PropTypes.number };
 
 function AdminDocumentosInstitucionales() {
+  const toast = useToast();
   const [documentos, setDocumentos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [filtro, setFiltro] = useState('Todos');
@@ -48,7 +50,9 @@ function AdminDocumentosInstitucionales() {
     try {
       const res = await API.get('/transparencia');
       setDocumentos(res.data || []);
-    } catch { /* ignore error */ } finally { setCargando(false); }
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Error al cargar documentos');
+    } finally { setCargando(false); }
   }, []);
 
   useEffect(() => { cargarDocumentos(); }, [cargarDocumentos]);
@@ -283,4 +287,6 @@ function AdminDocumentosInstitucionales() {
 }
 
 export default AdminDocumentosInstitucionales;
+
+
 

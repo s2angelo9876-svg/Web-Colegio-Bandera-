@@ -1,6 +1,7 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+﻿import { useEffect, useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
+import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
 import {
   AdminPageHeader, SearchBar, ActionButtons
@@ -43,6 +44,7 @@ function SkeletonRows({ count = 3 }) {
 SkeletonRows.propTypes = { count: PropTypes.number };
 
 function AdminMesaPartes() {
+  const toast = useToast();
   const [tramites, setTramites] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [filtroEstado, setFiltroEstado] = useState('Todos');
@@ -53,7 +55,9 @@ function AdminMesaPartes() {
     try {
       const res = await API.get('/mesa-partes');
       setTramites(res.data || []);
-    } catch { /* ignore error */ } finally { setCargando(false); }
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Error al cargar trámites');
+    } finally { setCargando(false); }
   }, []);
 
   useEffect(() => { cargarTramites(); }, [cargarTramites]);
@@ -219,3 +223,5 @@ function AdminMesaPartes() {
 }
 
 export default AdminMesaPartes;
+
+

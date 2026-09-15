@@ -1,6 +1,7 @@
 ﻿import { useEffect, useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
+import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
 import { ActionButtons, AdminPageHeader, FormCard, SearchBar, TextField } from '../components/AdminUI';
 import { Briefcase, Image as ImageIcon } from 'lucide-react';
@@ -29,6 +30,7 @@ function SkeletonRows({ count = 4 }) {
 SkeletonRows.propTypes = { count: PropTypes.number };
 
 function AdminAdministrativos() {
+  const toast = useToast();
   const [personal, setPersonal] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -42,7 +44,9 @@ function AdminAdministrativos() {
     try {
       const res = await API.get('/administrativos');
       setPersonal(res.data || []);
-    } catch { /* ignore error */ } finally { setCargando(false); }
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Error al cargar administrativos');
+    } finally { setCargando(false); }
   }, []);
 
   useEffect(() => { cargarPersonal(); }, [cargarPersonal]);
@@ -235,4 +239,6 @@ function AdminAdministrativos() {
 }
 
 export default AdminAdministrativos;
+
+
 

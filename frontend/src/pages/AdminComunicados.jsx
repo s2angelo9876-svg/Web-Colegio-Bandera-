@@ -1,6 +1,7 @@
-import { useEffect, useState, useCallback } from 'react';
+﻿import { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { API, getComunicados } from '../services/api';
+import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
 import {
   AdminPageHeader, FormCard, TextField, TextAreaField,
@@ -30,6 +31,7 @@ function SkeletonRows({ count = 3 }) {
 SkeletonRows.propTypes = { count: PropTypes.number };
 
 function AdminComunicados() {
+  const toast = useToast();
   const [comunicados, setComunicados] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [cargando, setCargando] = useState(true);
@@ -43,7 +45,9 @@ function AdminComunicados() {
     try {
       const res = await getComunicados();
       setComunicados(res.data || []);
-    } catch { /* ignore error */ } finally { setCargando(false); }
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Error al cargar comunicados');
+    } finally { setCargando(false); }
   }, []);
 
   useEffect(() => { cargar(); }, [cargar]);
@@ -243,3 +247,5 @@ function AdminComunicados() {
 }
 
 export default AdminComunicados;
+
+
