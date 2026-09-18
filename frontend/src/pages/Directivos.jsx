@@ -68,15 +68,6 @@ const directivos = {
   ]
 };
 
-const Section = ({ title, nivel, color = 'border-primary' }) => (
-  <div className="space-y-8">
-    <div className="text-center">
-      <h3 className="text-xs font-bold uppercase tracking-widest text-red-600">{nivel}</h3>
-      <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 mt-1">{title}</h2>
-    </div>
-  </div>
-);
-
 const DirectivoCard = ({ person, highlight }) => (
   <div className={`bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition duration-300 p-6 flex flex-col ${highlight ? 'md:flex-row gap-6 items-center' : 'items-center text-center'}`}>
     <div className={`rounded-lg overflow-hidden flex-shrink-0 ${highlight ? 'w-32 h-32' : 'w-28 h-28'}`}>

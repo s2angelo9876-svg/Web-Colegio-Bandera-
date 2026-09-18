@@ -13,18 +13,21 @@ const XSS_OPTIONS = {
 
 /**
  * Sanitiza un string permitiendo un set limitado de HTML seguro.
- * Si el valor no es string, lo devuelve tal cual.
+ * Normaliza null/undefined a string vacio para evitar bugs en consumidores.
  */
 function sanitizeHTML(value) {
-  if (typeof value !== 'string') return value;
+  if (value == null) return '';
+  if (typeof value !== 'string') return String(value);
   return xss(value, XSS_OPTIONS);
 }
 
 /**
  * Sanitiza un string removiendo TODO el HTML (solo texto plano).
+ * Normaliza null/undefined a string vacio.
  */
 function sanitizeText(value) {
-  if (typeof value !== 'string') return value;
+  if (value == null) return '';
+  if (typeof value !== 'string') return String(value);
   return xss(value, { whiteList: {}, stripIgnoreTag: true });
 }
 

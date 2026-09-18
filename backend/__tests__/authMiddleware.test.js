@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Tests del middleware de autenticación.
  * Validan que el JWT se verifique correctamente desde cookies y Authorization header.
  */
@@ -7,7 +7,7 @@
 process.env.JWT_SECRET = 'test_secret_key_for_unit_tests_only';
 
 const jwt = require('jsonwebtoken');
-const { verificarToken, soloAdmin } = require('../../middleware/authMiddleware');
+const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
 
 function mockReqRes(headers = {}, cookies = {}) {
   const req = { headers, cookies };
@@ -88,3 +88,4 @@ describe('soloAdmin', () => {
     expect(next).not.toHaveBeenCalled();
   });
 });
+

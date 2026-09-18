@@ -1,9 +1,9 @@
-/**
+﻿/**
  * Tests de los schemas de validación con express-validator.
  */
 process.env.JWT_SECRET = 'test';
 const { validationResult } = require('express-validator');
-const schemas = require('../../validators/schemas');
+const schemas = require('../validators/schemas');
 
 async function runValidation(schema, body) {
   const req = { body };
@@ -110,3 +110,4 @@ describe('schema estadoMesaPartes', () => {
     expect(result.isEmpty()).toBe(false);
   });
 });
+

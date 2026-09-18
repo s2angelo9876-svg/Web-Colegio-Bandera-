@@ -1,9 +1,9 @@
-/**
+﻿/**
  * Tests de sanitización contra XSS.
  * Validan que el backend bloquee payloads maliciosos antes de persistir.
  */
 process.env.JWT_SECRET = 'test_secret';
-const { sanitizeHTML, sanitizeText, sanitizeBody } = require('../../utils/sanitize');
+const { sanitizeHTML, sanitizeText, sanitizeBody } = require('../utils/sanitize');
 
 describe('sanitizeHTML', () => {
   test('elimina <script> completo', () => {
@@ -73,3 +73,4 @@ describe('sanitizeBody middleware', () => {
     expect(next).toHaveBeenCalled();
   });
 });
+
