@@ -33,3 +33,26 @@ exports.deleteAdministrativo = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+exports.updateAdministrativo = async (req, res) => {
+  const { id } = req.params;
+  const { nombre, cargo, area } = req.body;
+  const nuevaImagen = req.file ? req.file.url_public : null;
+
+  try {
+    if (nuevaImagen) {
+      await db.query(
+        'UPDATE administrativos SET nombre=$1, cargo=$2, area=$3, imagen_url=$4 WHERE id=$5',
+        [nombre, cargo, area, nuevaImagen, id]
+      );
+    } else {
+      await db.query(
+        'UPDATE administrativos SET nombre=$1, cargo=$2, area=$3 WHERE id=$4',
+        [nombre, cargo, area, id]
+      );
+    }
+    res.json({ message: 'Registro actualizado correctamente' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};

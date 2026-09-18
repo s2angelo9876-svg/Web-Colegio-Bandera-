@@ -53,3 +53,18 @@ exports.eliminarComunicado = async (req, res) => {
     res.status(500).json({ error: 'Error al eliminar' });
   }
 };
+
+exports.actualizarComunicado = async (req, res) => {
+  const { id } = req.params;
+  const { titulo, descripcion, fecha, tipo } = req.body;
+
+  try {
+    await db.query(
+      'UPDATE comunicados SET titulo=$1, descripcion=$2, fecha=$3, tipo=$4 WHERE id=$5',
+      [titulo, descripcion, fecha || new Date().toISOString(), tipo || 'aviso', id]
+    );
+    res.json({ mensaje: 'Comunicado actualizado correctamente' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al actualizar el comunicado' });
+  }
+};

@@ -1,6 +1,6 @@
 ﻿const express = require('express');
 const router = express.Router();
-const { getDocentes, createDocente, deleteDocente } = require('../controllers/docenteController');
+const { getDocentes, createDocente, updateDocente, deleteDocente } = require('../controllers/docenteController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
 const { upload, verifyMagicBytes, processAndUpload } = require('../middleware/uploadMiddleware');
 const { handleValidation } = require('../middleware/validate');
@@ -16,8 +16,20 @@ router.post(
   verifyMagicBytes,
   processAndUpload('docentes'),
   sanitizeBody(['nombre', 'cargo', 'especialidad']),
-  ...validateDocente, handleValidation,
+  validateDocente, handleValidation,
   createDocente
+);
+
+router.put(
+  '/:id',
+  verificarToken, soloAdmin,
+  ...idParam, handleValidation,
+  upload.single('imagen'),
+  verifyMagicBytes,
+  processAndUpload('docentes'),
+  sanitizeBody(['nombre', 'cargo', 'especialidad']),
+  validateDocente, handleValidation,
+  updateDocente
 );
 
 router.delete('/:id', verificarToken, soloAdmin, ...idParam, handleValidation, deleteDocente);

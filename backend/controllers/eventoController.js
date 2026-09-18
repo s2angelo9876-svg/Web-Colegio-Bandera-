@@ -62,3 +62,31 @@ exports.eliminarEvento = async (req, res) => {
     res.status(500).json({ error: 'Error al eliminar el evento' });
   }
 };
+
+// 4. Actualizar evento
+exports.actualizarEvento = async (req, res) => {
+  const { id } = req.params;
+  const { titulo, descripcion, fecha_evento, hora_evento, lugar } = req.body;
+  const nuevaImagen = req.file ? req.file.url_public : null;
+
+  if (!fecha_evento) {
+    return res.status(400).json({ error: 'La fecha_evento es obligatoria' });
+  }
+
+  try {
+    if (nuevaImagen) {
+      await db.query(
+        'UPDATE eventos SET titulo=$1, descripcion=$2, fecha_evento=$3, hora_evento=$4, lugar=$5, imagen_url=$6 WHERE id=$7',
+        [titulo, descripcion || null, fecha_evento, hora_evento || null, lugar || null, nuevaImagen, id]
+      );
+    } else {
+      await db.query(
+        'UPDATE eventos SET titulo=$1, descripcion=$2, fecha_evento=$3, hora_evento=$4, lugar=$5 WHERE id=$6',
+        [titulo, descripcion || null, fecha_evento, hora_evento || null, lugar || null, id]
+      );
+    }
+    res.json({ mensaje: 'Evento actualizado correctamente' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al actualizar el evento' });
+  }
+};

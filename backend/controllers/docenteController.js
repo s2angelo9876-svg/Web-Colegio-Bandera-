@@ -54,3 +54,26 @@ exports.deleteDocente = async (req, res) => {
     res.status(500).json({ error: 'No se pudo eliminar el docente' });
   }
 };
+
+exports.updateDocente = async (req, res) => {
+  const { id } = req.params;
+  const { nombre, cargo, especialidad, orden } = req.body;
+  const nuevaImagen = req.file ? req.file.url_public : null;
+
+  try {
+    if (nuevaImagen) {
+      await db.query(
+        'UPDATE docentes SET nombre=$1, cargo=$2, especialidad=$3, imagen_url=$4, orden=$5 WHERE id=$6',
+        [nombre, cargo, especialidad, nuevaImagen, orden || 0, id]
+      );
+    } else {
+      await db.query(
+        'UPDATE docentes SET nombre=$1, cargo=$2, especialidad=$3, orden=$4 WHERE id=$5',
+        [nombre, cargo, especialidad, orden || 0, id]
+      );
+    }
+    res.json({ message: 'Docente actualizado correctamente' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al actualizar el docente' });
+  }
+};
