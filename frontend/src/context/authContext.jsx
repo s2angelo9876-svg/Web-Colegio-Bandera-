@@ -44,22 +44,33 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    // Verifica contra el backend (la cookie httpOnly viaja automáticamente).
-    // Si falla, caemos al flujo legacy de localStorage.
     const token = localStorage.getItem('token');
     const usuarioGuardado = localStorage.getItem('usuario');
 
+    // Helper: ¿hay evidencia de sesion activa?
+    // (El backend tambien envia una cookie httpOnly, pero JS no puede
+    // leerla, asi que nos basamos en localStorage que SI guarda el token
+    // despues del login.)
+    const hasSessionEvidence = () => Boolean(token) || Boolean(usuarioGuardado);
+
     const init = async () => {
+      // FIX: Solo llamar a /auth/verificar si hay evidencia de sesion.
+      // Esto evita el 401 en consola para TODOS los visitantes
+      // anonimos del sitio publico.
+      if (!hasSessionEvidence()) {
+        setCargando(false);
+        return;
+      }
+
       try {
         const res = await API.get('/auth/verificar');
         if (res.data?.valido && res.data?.usuario) {
           setUsuario(res.data.usuario);
-          // sincroniza localStorage como cache
           localStorage.setItem('usuario', JSON.stringify(res.data.usuario));
           setCargando(false);
           return;
         }
-      } catch { /* sin cookie o token inválido */ }
+      } catch { /* token invalido o expirado */ }
 
       // Fallback: token legacy en localStorage
       if (token && validateToken(token) && usuarioGuardado) {
