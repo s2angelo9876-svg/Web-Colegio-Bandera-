@@ -3,41 +3,60 @@ import PropTypes from 'prop-types';
 
 const ThemeContext = createContext();
 
-function getInitialDark() {
+// Lee el tema actual considerando localStorage y prefers-color-scheme.
+// (El script anti-flash en index.html ya aplicó .dark al <html>).
+function getInitialTheme() {
   try {
-    return localStorage.getItem('theme') === 'dark';
-  } catch {
-    return false;
+    const stored = localStorage.getItem('theme');
+    if (stored === 'dark' || stored === 'light') return stored;
+  } catch { /* ignore */ }
+  // Fallback a la preferencia del sistema operativo
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
   }
+  return 'light';
 }
 
 export function ThemeProvider({ children }) {
-  const [isDarkMode, setIsDarkMode] = useState(getInitialDark);
+  const [theme, setTheme] = useState(getInitialTheme);
 
+  // Aplicar/remover clase .dark en <html> cuando cambia el tema
   useEffect(() => {
     const root = document.documentElement;
-    const body = document.body;
-
-    if (isDarkMode) {
+    if (theme === 'dark') {
       root.classList.add('dark');
-      body.classList.add('dark');
     } else {
       root.classList.remove('dark');
-      body.classList.remove('dark');
     }
-  }, [isDarkMode]);
+    try {
+      localStorage.setItem('theme', theme);
+    } catch { /* ignore */ }
+  }, [theme]);
 
-  const toggleDarkMode = useCallback(() => {
-    setIsDarkMode(prev => {
-      const next = !prev;
+  // Escuchar cambios en prefers-color-scheme SOLO si el usuario
+  // no ha elegido manualmente (no hay localStorage 'theme').
+  useEffect(() => {
+    if (!window.matchMedia) return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const onChange = (e) => {
       try {
-        localStorage.setItem('theme', next ? 'dark' : 'light');
-      } catch { /* Storage quota exceeded - ignore */ }
-      return next;
-    });
+        // Solo aplicar si el usuario no ha hecho override manual
+        if (localStorage.getItem('theme')) return;
+      } catch { return; }
+      setTheme(e.matches ? 'dark' : 'light');
+    };
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
   }, []);
 
-  const value = useMemo(() => ({ isDarkMode, toggleDarkMode }), [isDarkMode, toggleDarkMode]);
+  const toggleDarkMode = useCallback(() => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  }, []);
+
+  const value = useMemo(
+    () => ({ theme, isDarkMode: theme === 'dark', toggleDarkMode, setTheme }),
+    [theme, toggleDarkMode]
+  );
 
   return (
     <ThemeContext.Provider value={value}>

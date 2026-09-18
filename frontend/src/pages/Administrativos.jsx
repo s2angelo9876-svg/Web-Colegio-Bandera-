@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
 import { Briefcase, Users } from 'lucide-react';
@@ -48,7 +48,7 @@ function Administrativos() {
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                         {personal.map(p => (
-                            <div key={p.id} className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md border border-slate-100 transition-all duration-300 group">
+                            <div key={p.id} className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md border border-slate-100 transition duration-300 group">
                                 <div className="aspect-[4/5] relative overflow-hidden bg-slate-100">
                                     <img
                                         src={p.imagen_url?.startsWith('http') ? p.imagen_url : (p.imagen_url ? `${UPLOADS_URL}/${p.imagen_url}` : 'https://placehold.co/400x500/f1f5f9/64748b?text=Personal')}
@@ -68,7 +68,7 @@ function Administrativos() {
                                 <div className="p-5 text-center bg-white">
                                     <h3 className="text-base font-bold text-slate-900 mb-1 group-hover:text-primary transition-colors">{p.nombre}</h3>
                                     <p className="text-primary text-xs font-semibold uppercase tracking-wider mb-3">{p.cargo}</p>
-                                    <div className="inline-flex w-9 h-9 bg-slate-50 rounded-full items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition-all">
+                                    <div className="inline-flex w-9 h-9 bg-slate-50 rounded-full items-center justify-center text-slate-400 group-hover:bg-primary group-hover:text-white transition">
                                         <Briefcase size={14} />
                                     </div>
                                 </div>
@@ -93,3 +93,4 @@ function Administrativos() {
 Administrativos.propTypes = {};
 
 export default Administrativos;
+

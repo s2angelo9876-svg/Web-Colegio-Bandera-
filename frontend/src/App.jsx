@@ -1,4 +1,4 @@
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+﻿import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Suspense, lazy, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { AuthProvider, useAuth } from './context/authContext';
@@ -55,7 +55,7 @@ function AppContent() {
 
   const sessionBar = useMemo(() => (
     usuario && !isAdminPath && (
-      <div className="bg-primary text-white px-6 py-2 text-sm text-right flex justify-end items-center gap-4">
+      <div className="bg-primary text-white active:scale-[0.97] px-6 py-2 text-sm text-right flex justify-end items-center gap-4">
         <span>Sesión activa: <strong>{usuario.username}</strong></span>
         <a
           href="/admin"
@@ -131,3 +131,4 @@ function App() {
 }
 
 export default App;
+

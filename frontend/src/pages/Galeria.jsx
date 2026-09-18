@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+﻿import { useEffect, useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
 import {
@@ -116,7 +116,7 @@ const Galeria = () => {
                 <button
                   key={tp.v}
                   onClick={() => setSelectedType(tp.v)}
-                  className={`flex-1 md:flex-initial px-4 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition-all ${
+                  className={`flex-1 md:flex-initial px-4 py-1.5 rounded-md text-xs font-semibold uppercase tracking-wider transition ${
                     selectedType === tp.v
                       ? 'bg-white text-primary shadow-sm'
                       : 'text-slate-400 hover:text-slate-600'
@@ -131,7 +131,7 @@ const Galeria = () => {
           <button
             onClick={cargar}
             disabled={loading}
-            className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-primary hover:border-primary/20 rounded-lg transition-all disabled:opacity-50"
+            className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-primary hover:border-primary/20 rounded-lg transition disabled:opacity-50"
             aria-label="Actualizar"
           >
             <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
@@ -150,7 +150,7 @@ const Galeria = () => {
               <div
                 key={foto.id || i}
                 onClick={() => setLightboxIndex(i)}
-                className="group relative overflow-hidden rounded-lg shadow-sm aspect-square bg-slate-100 cursor-pointer hover:shadow-md transition-all duration-300"
+                className="group relative overflow-hidden rounded-lg shadow-sm aspect-square bg-slate-100 cursor-pointer hover:shadow-md transition duration-300"
               >
                 <img
                   src={foto.imagen_url?.startsWith('http') ? foto.imagen_url : `${UPLOADS_URL}/${foto.imagen_url}`}
@@ -164,7 +164,7 @@ const Galeria = () => {
                     {foto.tipo === 'video' ? <Video size={12} /> : <Image size={12} />}
                   </span>
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col items-center justify-end p-3">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition duration-300 flex flex-col items-center justify-end p-3">
                   <Eye size={16} className="text-white mb-1" />
                   <h4 className="text-white font-semibold text-xs line-clamp-1 text-center w-full">
                     {foto.titulo}
@@ -208,7 +208,7 @@ const Galeria = () => {
             </div>
             <button
               onClick={() => setLightboxIndex(null)}
-              className="w-11 h-11 bg-white/10 hover:bg-red-600 rounded-full flex items-center justify-center transition-all"
+              className="w-11 h-11 bg-white/10 hover:bg-red-600 rounded-full flex items-center justify-center transition"
               aria-label="Cerrar"
             >
               <X size={20} />
@@ -218,7 +218,7 @@ const Galeria = () => {
           <div className="flex-1 flex items-center justify-between gap-4 relative" onClick={e => e.stopPropagation()}>
             <button
               onClick={handlePrev}
-              className="w-12 h-12 bg-white/10 hover:bg-primary rounded-full flex items-center justify-center text-white transition-all flex-shrink-0"
+              className="w-12 h-12 bg-white/10 hover:bg-primary rounded-full flex items-center justify-center text-white transition flex-shrink-0"
               aria-label="Anterior"
             >
               <ChevronLeft size={26} />
@@ -255,7 +255,7 @@ const Galeria = () => {
 
             <button
               onClick={handleNext}
-              className="w-12 h-12 bg-white/10 hover:bg-primary rounded-full flex items-center justify-center text-white transition-all flex-shrink-0"
+              className="w-12 h-12 bg-white/10 hover:bg-primary rounded-full flex items-center justify-center text-white transition flex-shrink-0"
               aria-label="Siguiente"
             >
               <ChevronRight size={26} />
@@ -283,3 +283,4 @@ const Galeria = () => {
 Galeria.propTypes = {};
 
 export default Galeria;
+

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
   MapPin, Phone, Mail, Heart, School, Globe
@@ -162,7 +162,7 @@ const Footer = () => (
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Facebook"
-            className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition-all"
+            className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition"
           >
             <FacebookIcon size={16} />
           </a>
@@ -171,7 +171,7 @@ const Footer = () => (
             target="_blank"
             rel="noopener noreferrer"
             aria-label="YouTube"
-            className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-red-600 hover:text-white transition-all"
+            className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-red-600 hover:text-white transition"
           >
             <YoutubeIcon size={16} />
           </a>
@@ -180,7 +180,7 @@ const Footer = () => (
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Web institucional"
-            className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition-all"
+            className="w-9 h-9 rounded-full bg-slate-800 flex items-center justify-center text-slate-400 hover:bg-primary hover:text-white transition"
           >
             <Globe size={16} />
           </a>
@@ -197,3 +197,4 @@ const Footer = () => (
 Footer.propTypes = {};
 
 export default Footer;
+

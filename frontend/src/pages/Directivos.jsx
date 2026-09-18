@@ -1,4 +1,4 @@
-import { Mail, Users, Award } from 'lucide-react';
+﻿import { Mail, Users, Award } from 'lucide-react';
 import Footer from '../components/Footer';
 
 const directivos = {
@@ -78,7 +78,7 @@ const Section = ({ title, nivel, color = 'border-primary' }) => (
 );
 
 const DirectivoCard = ({ person, highlight }) => (
-  <div className={`bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 p-6 flex flex-col ${highlight ? 'md:flex-row gap-6 items-center' : 'items-center text-center'}`}>
+  <div className={`bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition duration-300 p-6 flex flex-col ${highlight ? 'md:flex-row gap-6 items-center' : 'items-center text-center'}`}>
     <div className={`rounded-lg overflow-hidden flex-shrink-0 ${highlight ? 'w-32 h-32' : 'w-28 h-28'}`}>
       <img
         src={person.imagen}
@@ -188,3 +188,4 @@ const Directivos = () => {
 };
 
 export default Directivos;
+

@@ -25,7 +25,7 @@ const DEFAULT_CONFIG = {
 
 function SectionCard({ title, subtitle, icon, children }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-6">
+    <div className="bg-white dark:bg-dark-card rounded-xl border border-slate-100 dark:border-dark-border shadow-sm p-6">
       <div className="flex items-center gap-3 mb-5 pb-4 border-b border-slate-100">
         <div className="w-10 h-10 bg-blue-50 text-primary rounded-lg flex items-center justify-center">
           {icon}
@@ -141,7 +141,7 @@ function AdminConfigInicio() {
                   value={config.hero_imagen || ''}
                   onChange={handleChange}
                   placeholder="https://... o URL de Supabase Storage"
-                  className="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                  className="flex-1 px-4 py-2.5 bg-slate-50 dark:bg-dark-input border border-slate-200 dark:border-dark-border rounded-lg text-sm text-slate-900 dark:text-dark-text focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-colors duration-200"
                 />
                 {config.hero_imagen && (
                   <img src={config.hero_imagen} alt="Preview" className="w-12 h-12 rounded-lg object-cover border border-slate-200" />
@@ -194,7 +194,7 @@ function AdminConfigInicio() {
           <button
             type="submit"
             disabled={saving}
-            className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg font-semibold text-xs uppercase tracking-wider hover:bg-red-600 disabled:opacity-50 transition-colors shadow-sm"
+            className="inline-flex items-center gap-2 bg-primary text-white active:scale-[0.97] px-6 py-3 rounded-lg font-semibold text-xs uppercase tracking-wider hover:bg-red-600 disabled:opacity-50 transition-colors shadow-sm"
           >
             {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
             {saving ? 'Guardando...' : 'Guardar Configuración'}
@@ -206,5 +206,7 @@ function AdminConfigInicio() {
 }
 
 export default AdminConfigInicio;
+
+
 
 

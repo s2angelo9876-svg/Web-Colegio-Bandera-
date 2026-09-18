@@ -19,12 +19,8 @@ API.interceptors.request.use((config) => {
 
 // ── Notificaciones de errores de red/servidor ──────────────────────────
 function notifyError(message) {
-  // Se carga de forma lazy para evitar dependencia circular
-  import('../context/ToastContext.jsx').then(({ useToast }) => {
-    // No podemos usar el hook aquí directamente, pero si ToastProvider
-    // expone un evento global podemos enganchar. Mientras, usamos dispatchEvent.
-  }).catch(() => {});
-  // Custom event para que ToastProvider lo escuche
+  // Custom event para que ToastProvider lo escuche (sin import dinámico
+  // para evitar ciclos de dependencias y warnings de no-unused-vars).
   window.dispatchEvent(new CustomEvent('app:toast', { detail: { type: 'error', message } }));
 }
 

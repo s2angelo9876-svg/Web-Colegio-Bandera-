@@ -1,4 +1,4 @@
-import { Component } from 'react';
+﻿import { Component } from 'react';
 import PropTypes from 'prop-types';
 
 class ErrorBoundary extends Component {
@@ -36,7 +36,7 @@ class ErrorBoundary extends Component {
             </p>
             <button
               onClick={this.handleReset}
-              className="bg-primary hover:bg-red-600 text-white font-bold px-6 py-3 rounded-xl transition-colors"
+              className="bg-primary hover:bg-red-600 text-white active:scale-[0.97] font-bold px-6 py-3 rounded-xl transition-colors"
             >
               Volver al inicio
             </button>
@@ -54,3 +54,4 @@ ErrorBoundary.propTypes = {
 };
 
 export default ErrorBoundary;
+

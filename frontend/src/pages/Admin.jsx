@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+﻿import { useEffect, useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from '../context/authContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
@@ -16,7 +16,7 @@ function SidebarItem({ to, icon: Icon, label, active }) {
   return (
     <Link
       to={to}
-      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all ${
+      className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition ${
         active
           ? 'bg-white/10 text-white font-semibold'
           : 'text-blue-200/60 hover:bg-white/5 hover:text-white'
@@ -37,7 +37,7 @@ SidebarItem.propTypes = {
 
 function StatCard({ label, count, loading, icon, color, footer }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-100 p-5 shadow-sm hover:shadow-md transition-all duration-300 group">
+    <div className="bg-white dark:bg-dark-card rounded-xl border border-slate-100 dark:border-dark-border p-5 shadow-sm hover:shadow-md transition-shadow duration-300 group">
       <div className="flex justify-between items-start mb-4">
         <div className={`p-2.5 rounded-lg ${color} text-white group-hover:scale-110 transition-transform`}>
           {icon}
@@ -74,7 +74,7 @@ function QuickAction({ to, color, title, icon: Icon }) {
   return (
     <Link
       to={to}
-      className={`${colors[color] || colors.blue} p-4 rounded-lg text-white text-center font-semibold text-[11px] uppercase tracking-wider transition-all hover:-translate-y-0.5 shadow-sm flex flex-col items-center justify-center gap-2 group h-24`}
+      className={`${colors[color] || colors.blue} p-4 rounded-lg text-white text-center font-semibold text-[11px] uppercase tracking-wider transition hover:-translate-y-0.5 shadow-sm flex flex-col items-center justify-center gap-2 group h-24`}
     >
       <Icon size={22} className="group-hover:scale-110 transition-transform" />
       <span>{title}</span>
@@ -140,12 +140,12 @@ function Admin() {
     { label: 'Noticias', count: stats.contadores.noticias || 0, loading: stats.cargando, icon: <Newspaper size={18} />, color: 'bg-primary', footer: 'Publicaciones activas' },
     { label: 'Eventos', count: stats.contadores.eventos || 0, loading: stats.cargando, icon: <Calendar size={18} />, color: 'bg-red-600', footer: `${stats.contadores.eventos_proximos_30d || 0} próximos 30 días` },
     { label: 'Comunicados', count: stats.contadores.comunicados || 0, loading: stats.cargando, icon: <Megaphone size={18} />, color: 'bg-amber-500', footer: 'Avisos comunidad' },
-    { label: 'Docentes', count: stats.contadores.docentes || 0, loading: stats.cargando, icon: <Users size={18} />, color: 'bg-emerald-600', footer: 'Staff Académico' },
+    { label: 'Docentes', count: stats.contadores.docentes || 0, loading: stats.cargando, icon: <Users size={18} />, color: 'bg-emerald-600 active:scale-[0.97]', footer: 'Staff Académico' },
     { label: 'Galería', count: stats.contadores.galeria || 0, loading: stats.cargando, icon: <ImageIcon size={18} />, color: 'bg-indigo-600', footer: 'Archivo Visual' },
   ], [stats]);
 
   return (
-    <div className="flex min-h-screen bg-slate-50">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-dark-bg">
       <aside className="w-64 bg-slate-900 flex flex-col p-5 sticky top-0 h-screen">
         <div className="mb-8 px-2 flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
@@ -197,7 +197,7 @@ function Admin() {
         </div>
       </aside>
 
-      <main className="flex-1 p-6 lg:p-8 overflow-y-auto">
+      <main className="flex-1 p-6 lg:p-8 overflow-y-auto bg-slate-50 dark:bg-dark-bg">
         <header className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
           <div>
             <div className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary text-white text-[10px] font-bold uppercase tracking-wider rounded mb-2">
@@ -255,3 +255,5 @@ function Admin() {
 }
 
 export default Admin;
+
+

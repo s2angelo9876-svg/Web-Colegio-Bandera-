@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+﻿import { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { API } from '../services/api';
 import { validateDNI, validateEmail, validatePhone } from '../utils/sanitize';
@@ -49,7 +49,7 @@ const InputField = ({ id, name, label, type = 'text', value, onChange, placehold
         maxLength={maxLength}
         autoComplete={autoComplete}
         required={required}
-        className={`w-full ${Icon ? 'pl-11' : 'pl-4'} pr-4 py-3 bg-slate-50 border ${error ? 'border-red-400' : 'border-slate-200'} rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all`}
+        className={`w-full ${Icon ? 'pl-11' : 'pl-4'} pr-4 py-3 bg-slate-50 border ${error ? 'border-red-400' : 'border-slate-200'} rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition`}
         aria-describedby={error ? `${id}-error` : undefined}
       />
     </div>
@@ -86,7 +86,7 @@ const TextAreaField = ({ id, name, label, value, onChange, placeholder, error, r
       onChange={onChange}
       placeholder={placeholder}
       required={required}
-      className={`w-full px-4 py-3 bg-slate-50 border ${error ? 'border-red-400' : 'border-slate-200'} rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none`}
+      className={`w-full px-4 py-3 bg-slate-50 border ${error ? 'border-red-400' : 'border-slate-200'} rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition resize-none`}
       aria-describedby={error ? `${id}-error` : undefined}
     />
     {error && <p id={`${id}-error`} className="text-red-500 text-xs mt-0.5">{error}</p>}
@@ -393,7 +393,7 @@ const MesaPartes = () => {
                   <button
                     type="submit"
                     disabled={enviando}
-                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-red-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-lg shadow-md transition-all active:scale-[0.98] text-sm"
+                    className="w-full flex items-center justify-center gap-2 bg-primary hover:bg-red-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-3.5 rounded-lg shadow-md transition active:scale-[0.98] text-sm"
                   >
                     {enviando ? (
                       <>
@@ -429,3 +429,4 @@ const MesaPartes = () => {
 MesaPartes.propTypes = {};
 
 export default MesaPartes;
+

@@ -92,10 +92,10 @@ const DocumentosInstitucionales = () => {
             ) : docsFiltrados.length > 0 ? docsFiltrados.map((doc) => (
               <div
                 key={doc.id}
-                className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-primary/20 rounded-lg transition-all duration-300 group"
+                className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-slate-50 hover:bg-white border border-slate-100 hover:border-primary/20 rounded-lg transition duration-300 group"
               >
                 <div className="flex items-center gap-4 mb-3 sm:mb-0 flex-1">
-                  <div className="p-2.5 bg-red-50 text-red-600 rounded-lg group-hover:bg-red-600 group-hover:text-white transition-all">
+                  <div className="p-2.5 bg-red-50 text-red-600 rounded-lg group-hover:bg-red-600 group-hover:text-white transition">
                     <FileText size={20} />
                   </div>
                   <div className="flex-1">
@@ -124,7 +124,7 @@ const DocumentosInstitucionales = () => {
                   href={doc.archivo_pdf?.startsWith('http') ? doc.archivo_pdf : `${UPLOADS_URL}/${doc.archivo_pdf}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto bg-primary text-white px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-red-600 transition-colors text-xs font-semibold uppercase tracking-wider"
+                  className="w-full sm:w-auto bg-primary text-white active:scale-[0.97] px-4 py-2 rounded-lg flex items-center justify-center gap-2 hover:bg-red-600 transition-colors text-xs font-semibold uppercase tracking-wider"
                 >
                   <Download size={14} />
                   Descargar
@@ -157,4 +157,6 @@ const DocumentosInstitucionales = () => {
 DocumentosInstitucionales.propTypes = {};
 
 export default DocumentosInstitucionales;
+
+
 

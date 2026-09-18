@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+﻿import { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
@@ -129,9 +129,9 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-300 h-20 ${
+        className={`fixed top-0 left-0 right-0 z-[100] h-20 transition-[background-color,box-shadow,backdrop-filter] duration-300 ease-out ${
           scrolled
-            ? 'bg-primary shadow-lg'
+            ? 'bg-primary/95 shadow-lg backdrop-blur-md'
             : 'bg-primary'
         }`}
       >
@@ -159,19 +159,19 @@ const Navbar = () => {
                 <div key={link.name} className="relative group">
                   {link.submenu ? (
                     <>
-                      <button className="flex items-center gap-1 text-white/90 hover:text-white font-medium text-sm py-2 px-3 transition-colors">
+                      <button className="flex items-center gap-1 text-white/90 hover:text-white font-medium text-sm py-2 px-3 transition-colors duration-200">
                         {link.name}
                         <ChevronDown size={14} className="transition-transform duration-300 group-hover:rotate-180" />
                       </button>
 
-                      <div className="absolute top-full left-0 w-56 bg-white shadow-xl rounded-xl p-2 border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 translate-y-2 group-hover:translate-y-0">
+                      <div className="absolute top-full left-0 w-56 bg-white dark:bg-dark-card shadow-xl rounded-xl p-2 border border-slate-100 dark:border-dark-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-[opacity,transform,visibility] duration-200 ease-out translate-y-2 group-hover:translate-y-0">
                         {link.submenu.map((sub) => {
                           const SubIcon = sub.icon;
                           return (
                             <Link
                               key={sub.name}
                               to={sub.path}
-                              className="flex items-center gap-3 px-4 py-2.5 text-slate-600 hover:text-primary hover:bg-slate-50 rounded-lg text-sm font-medium transition-all"
+                              className="flex items-center gap-3 px-4 py-2.5 text-slate-600 dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-accent-text hover:bg-slate-50 dark:hover:bg-dark-hover rounded-lg text-sm font-medium transition-colors duration-200"
                             >
                               <SubIcon size={15} />
                               {sub.name}
@@ -200,7 +200,7 @@ const Navbar = () => {
             <div className="hidden lg:flex items-center gap-3">
               <button
                 onClick={toggleDarkMode}
-                className="w-9 h-9 flex items-center justify-center rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-all"
+                className="w-9 h-9 flex items-center justify-center rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors duration-200 active:scale-[0.94]"
                 aria-label="Cambiar tema"
               >
                 {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
@@ -208,7 +208,7 @@ const Navbar = () => {
 
               <button
                 onClick={() => setSearchOpen(!searchOpen)}
-                className="w-9 h-9 flex items-center justify-center rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-all"
+                className="w-9 h-9 flex items-center justify-center rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors duration-200 active:scale-[0.94]"
                 aria-label="Buscar"
               >
                 {searchOpen ? <X size={18} /> : <Search size={18} />}
@@ -216,7 +216,7 @@ const Navbar = () => {
 
               <button
                 onClick={() => navigate('/login')}
-                className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-all"
+                className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg text-sm font-semibold transition-colors duration-200 active:scale-[0.97] shadow-sm hover:shadow-md"
               >
                 Intranet
               </button>
@@ -225,7 +225,7 @@ const Navbar = () => {
             {/* Hamburger mobile */}
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg text-white hover:bg-white/10 transition-all"
+              className="lg:hidden w-10 h-10 flex items-center justify-center rounded-lg text-white hover:bg-white/10 transition"
               aria-label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
             >
               {isMenuOpen ? <X size={22} /> : <Menu size={22} />}
@@ -262,7 +262,7 @@ const Navbar = () => {
                         <div
                           key={`${item.tipo}-${item.id}`}
                           onClick={() => handleResultClick(item)}
-                          className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 rounded-xl cursor-pointer transition-all"
+                          className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 rounded-xl cursor-pointer transition"
                         >
                           <span className="text-sm font-semibold text-slate-700">{item.titulo}</span>
                           <span className="text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 bg-blue-50 text-primary rounded-lg">
@@ -323,7 +323,7 @@ const Navbar = () => {
                     <>
                       <button
                         onClick={() => setOpenMobile(openMobile === link.name ? null : link.name)}
-                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-slate-700 font-medium text-sm hover:bg-slate-50 transition-all"
+                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl text-slate-700 font-medium text-sm hover:bg-slate-50 transition"
                       >
                         <div className="flex items-center gap-3">
                           {(() => { const Icon = link.icon; return <Icon size={16} className="text-slate-400" />; })()}
@@ -342,7 +342,7 @@ const Navbar = () => {
                               <Link
                                 key={sub.name}
                                 to={sub.path}
-                                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:text-primary hover:bg-slate-50 text-sm font-medium transition-all"
+                                className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-slate-500 hover:text-primary hover:bg-slate-50 text-sm font-medium transition"
                               >
                                 <SubIcon size={14} className="text-slate-400 flex-shrink-0" />
                                 {sub.name}
@@ -355,7 +355,7 @@ const Navbar = () => {
                   ) : (
                     <Link
                       to={link.path}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all ${
+                      className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition ${
                         isActive(link.path)
                           ? 'bg-blue-50 text-primary'
                           : 'text-slate-700 hover:bg-slate-50 hover:text-primary'
@@ -371,14 +371,14 @@ const Navbar = () => {
               <div className="pt-4 pb-2 flex flex-col gap-3">
                 <button
                   onClick={toggleDarkMode}
-                  className="w-full flex items-center justify-center gap-2 bg-slate-100 text-slate-700 py-3 rounded-xl font-semibold text-sm transition-all"
+                  className="w-full flex items-center justify-center gap-2 bg-slate-100 text-slate-700 py-3 rounded-xl font-semibold text-sm transition"
                 >
                   {isDarkMode ? <Sun size={16} /> : <Moon size={16} />}
                   Modo {isDarkMode ? 'Claro' : 'Oscuro'}
                 </button>
                 <button
                   onClick={() => navigate('/login')}
-                  className="w-full flex items-center justify-center gap-2 bg-red-600 text-white py-3.5 rounded-xl font-semibold text-sm hover:bg-red-700 transition-all"
+                  className="w-full flex items-center justify-center gap-2 bg-red-600 text-white active:scale-[0.97] py-3.5 rounded-xl font-semibold text-sm hover:bg-red-700 transition"
                 >
                   <Shield size={15} />
                   Acceso Intranet
@@ -395,3 +395,5 @@ const Navbar = () => {
 Navbar.propTypes = {};
 
 export default Navbar;
+
+

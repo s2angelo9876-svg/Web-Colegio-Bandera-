@@ -25,7 +25,7 @@ function ComunicadoCard({ c, index }) {
 
   return (
     <div
-      className="bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden animate-fade-in"
+      className="bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition duration-300 overflow-hidden animate-fade-in"
       style={{ animationDelay: `${index * 0.05}s` }}
     >
       <div className="flex">
@@ -55,7 +55,7 @@ function ComunicadoCard({ c, index }) {
             {c.titulo}
           </h3>
 
-          <div className={`overflow-hidden transition-all duration-500 ease-in-out ${expanded ? 'max-h-[2000px] opacity-100' : 'max-h-20 opacity-70'}`}>
+          <div className={`overflow-hidden transition duration-500 ease-in-out ${expanded ? 'max-h-[2000px] opacity-100' : 'max-h-20 opacity-70'}`}>
             <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">
               {c.contenido}
             </p>
@@ -199,7 +199,7 @@ function Comunicados() {
             <button
               onClick={cargar}
               disabled={cargando}
-              className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-primary hover:border-primary/20 rounded-lg transition-all disabled:opacity-50"
+              className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-primary hover:border-primary/20 rounded-lg transition disabled:opacity-50"
               aria-label="Actualizar"
             >
               <RefreshCw size={16} className={cargando ? 'animate-spin' : ''} />
@@ -258,5 +258,6 @@ function Comunicados() {
 }
 
 export default Comunicados;
+
 
 

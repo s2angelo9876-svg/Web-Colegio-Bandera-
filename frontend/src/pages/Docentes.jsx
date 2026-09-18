@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useMemo } from 'react';
+﻿import { useEffect, useState, useCallback, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
 import {
@@ -27,7 +27,7 @@ function DocenteCard({ doc, index }) {
 
   return (
     <div
-      className="group bg-white rounded-xl overflow-hidden border border-slate-100 hover:border-slate-200 hover:shadow-md transition-all duration-300 animate-fade-in"
+      className="group bg-white rounded-xl overflow-hidden border border-slate-100 hover:border-slate-200 hover:shadow-md transition duration-300 animate-fade-in"
       style={{ animationDelay: `${index * 0.04}s` }}
     >
       <div className="aspect-[3/4] overflow-hidden bg-slate-100 relative">
@@ -155,7 +155,7 @@ const Docentes = () => {
             <button
               onClick={cargar}
               disabled={cargando}
-              className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-primary hover:border-primary/20 rounded-lg transition-all disabled:opacity-50"
+              className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-primary hover:border-primary/20 rounded-lg transition disabled:opacity-50"
               aria-label="Actualizar"
             >
               <RefreshCw size={16} className={cargando ? 'animate-spin' : ''} />
@@ -188,7 +188,7 @@ const Docentes = () => {
             </p>
             <button
               onClick={cargar}
-              className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-red-600 transition-all"
+              className="inline-flex items-center gap-2 bg-primary text-white font-semibold px-6 py-3 rounded-lg hover:bg-red-600 transition"
             >
               <RefreshCw size={16} />
               Reintentar
@@ -221,3 +221,4 @@ const Docentes = () => {
 };
 
 export default Docentes;
+

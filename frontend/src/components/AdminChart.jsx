@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { 
   LineChart, Line, XAxis, YAxis, CartesianGrid, 
   Tooltip, ResponsiveContainer, AreaChart, Area 
@@ -6,7 +6,7 @@ import {
 
 const AdminChart = ({ data, title, type = "line", color = "#003087" }) => {
   return (
-    <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 group relative overflow-hidden h-[400px]">
+    <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm hover:shadow-xl transition duration-500 group relative overflow-hidden h-[400px]">
       <div className="flex justify-between items-center mb-8">
         <div>
           <h4 className="text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] mb-1">Estadísticas Visuales</h4>
@@ -96,3 +96,4 @@ const AdminChart = ({ data, title, type = "line", color = "#003087" }) => {
 };
 
 export default AdminChart;
+

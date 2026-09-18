@@ -1,4 +1,4 @@
-import { useLocation, Link } from 'react-router-dom';
+﻿import { useLocation, Link } from 'react-router-dom';
 import {
   Info, BookOpen, Users, LayoutDashboard,
   Flag, Monitor, Cpu, Map, HelpCircle,
@@ -151,7 +151,7 @@ const SeccionInstitucion = () => {
             <div className="mt-8 text-center">
               <Link
                 to={actual.redirect}
-                className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg font-semibold text-sm uppercase tracking-wider hover:bg-red-600 transition-colors"
+                className="inline-flex items-center gap-2 bg-primary text-white active:scale-[0.97] px-6 py-3 rounded-lg font-semibold text-sm uppercase tracking-wider hover:bg-red-600 transition-colors"
               >
                 Ver equipo completo
                 <ChevronRight size={16} />
@@ -187,3 +187,4 @@ const SeccionInstitucion = () => {
 };
 
 export default SeccionInstitucion;
+

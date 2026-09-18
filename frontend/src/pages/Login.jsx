@@ -1,4 +1,4 @@
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { useAuth } from '../context/authContext';
@@ -69,9 +69,9 @@ function Login() {
       </section>
 
       {/* Right Column: Login Form */}
-      <section className="w-full md:w-7/12 flex items-center justify-center p-6 md:p-12 bg-slate-50">
+      <section className="w-full md:w-7/12 flex items-center justify-center p-6 md:p-12 bg-slate-50 dark:bg-dark-bg">
         <div className="w-full max-w-md">
-          <div className="bg-white p-8 md:p-10 rounded-xl shadow-sm border border-slate-200 transition-all duration-300 hover:shadow-md">
+          <div className="bg-white dark:bg-dark-card p-8 md:p-10 rounded-xl shadow-sm border border-slate-200 dark:border-dark-border transition-shadow duration-300 hover:shadow-md">
             <div className="mb-8 text-center md:text-left">
               <h2 className="text-primary font-bold text-2xl md:text-3xl mb-2">
                 Acceso al Panel Administrativo
@@ -106,7 +106,7 @@ function Login() {
                     placeholder="nombre.apellido"
                     autoComplete="username"
                     required
-                    className="block w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                    className="block w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition outline-none"
                   />
                 </div>
               </div>
@@ -128,7 +128,7 @@ function Login() {
                     placeholder="••••••••"
                     autoComplete="current-password"
                     required
-                    className="block w-full pl-11 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                    className="block w-full pl-11 pr-12 py-3.5 bg-slate-50 border border-slate-200 rounded-lg text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-primary/20 focus:border-primary transition outline-none"
                   />
                   <button
                     type="button"
@@ -145,7 +145,7 @@ function Login() {
               <button
                 type="submit"
                 disabled={cargando}
-                className="w-full bg-primary hover:bg-red-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg transition-all duration-200 active:scale-[0.98] shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                className="w-full bg-primary hover:bg-red-600 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold py-4 px-6 rounded-lg transition-[transform,background-color] duration-200 ease-out active:scale-[0.97] shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
               >
                 {cargando ? (
                   <>
@@ -193,3 +193,4 @@ function Login() {
 Login.propTypes = {};
 
 export default Login;
+

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import {
@@ -24,8 +24,6 @@ function Inicio() {
     stats_logros: '98%',
   });
 
-  const [noticias, setNoticias] = useState([]);
-  const [comunicados, setComunicados] = useState([]);
   const [recentItems, setRecentItems] = useState([]);
   const [videoOpen, setVideoOpen] = useState(false);
   const [heroImage, setHeroImage] = useState(null);
@@ -55,8 +53,8 @@ function Inicio() {
         const listNoticias = resNoticias.data || [];
         const listComunicados = resComunicados.data || [];
 
-        setNoticias(listNoticias);
-        setComunicados(listComunicados);
+        
+        
 
         const combinados = [
           ...listNoticias.map(n => ({ ...n, tipoItem: 'noticia', fechaOrden: n.fecha || n.created_at })),
@@ -138,14 +136,14 @@ function Inicio() {
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 to="/mesa-partes"
-                className="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-all hover:-translate-y-0.5 shadow-lg"
+                className="inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-[transform,background-color,box-shadow] duration-200 ease-out hover:-translate-y-0.5 active:scale-[0.97] shadow-lg hover:shadow-xl"
               >
                 Mesa de Partes
                 <Send size={18} />
               </Link>
               <button
                 onClick={() => setVideoOpen(true)}
-                className="inline-flex items-center justify-center gap-2 border-2 border-white/30 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-primary transition-all"
+                className="inline-flex items-center justify-center gap-2 border-2 border-white/30 text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-primary transition-colors duration-200 active:scale-[0.97]"
               >
                 <Play size={18} fill="currentColor" />
                 Conoce más
@@ -202,11 +200,11 @@ function Inicio() {
             {quickLinks.map((link) => {
               const Icon = link.icon;
               return (
-                <Link
-                  key={link.title}
-                  to={link.path}
-                  className="flex items-start gap-4 p-6 rounded-xl hover:bg-slate-50 transition-all cursor-pointer group border border-transparent hover:border-slate-100"
-                >
+              <Link
+                key={link.title}
+                to={link.path}
+                className="flex items-start gap-4 p-6 rounded-xl hover:bg-slate-50 dark:hover:bg-dark-hover transition-colors duration-200 cursor-pointer group border border-transparent hover:border-slate-100 dark:hover:border-dark-border active:scale-[0.98]"
+              >
                   <div className={`w-12 h-12 shrink-0 rounded-lg flex items-center justify-center ${link.color} group-hover:scale-110 transition-transform`}>
                     <Icon size={22} />
                   </div>
@@ -245,7 +243,7 @@ function Inicio() {
               <div
                 key={item.id}
                 onClick={() => navigate(item.tipoItem === 'noticia' ? '/noticias' : '/comunicados')}
-                className="group bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col cursor-pointer h-full"
+                className="group bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition duration-300 overflow-hidden flex flex-col cursor-pointer h-full"
               >
                 <div className="aspect-video relative overflow-hidden bg-slate-100">
                   {item.imagen ? (
@@ -306,7 +304,7 @@ function Inicio() {
               return (
                 <div
                   key={p.title}
-                  className="group p-8 rounded-xl bg-slate-50 hover:bg-white border border-transparent hover:border-slate-100 transition-all duration-300 shadow-sm hover:shadow-lg"
+                  className="group p-8 rounded-xl bg-slate-50 hover:bg-white border border-transparent hover:border-slate-100 transition duration-300 shadow-sm hover:shadow-lg"
                 >
                   <div className={`w-14 h-14 ${p.color} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
                     <Icon size={28} />
@@ -343,7 +341,7 @@ function Inicio() {
           <div className="relative w-full max-w-4xl aspect-video rounded-2xl overflow-hidden shadow-2xl">
             <button
               onClick={() => setVideoOpen(false)}
-              className="absolute top-4 right-4 w-10 h-10 bg-black/50 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-all z-50"
+              className="absolute top-4 right-4 w-10 h-10 bg-black/50 hover:bg-red-600 text-white active:scale-[0.97] rounded-full flex items-center justify-center transition z-50"
             >
               <X size={18} />
             </button>
@@ -366,3 +364,6 @@ function Inicio() {
 Inicio.propTypes = {};
 
 export default Inicio;
+
+
+

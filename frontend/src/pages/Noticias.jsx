@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+﻿import { useEffect, useState, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { getNoticias, UPLOADS_URL } from '../services/api';
 import { sanitizeText } from '../utils/sanitize';
@@ -27,7 +27,7 @@ SkeletonCard.propTypes = {};
 function NoticiaCard({ n, index }) {
   return (
     <article
-      className="bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group animate-fade-in"
+      className="bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-md transition duration-300 overflow-hidden group animate-fade-in"
       style={{ animationDelay: `${index * 0.05}s` }}
     >
       <div className="h-48 overflow-hidden relative bg-slate-100">
@@ -169,7 +169,7 @@ function Noticias() {
             <button
               onClick={() => cargarNoticias()}
               disabled={cargando}
-              className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-primary hover:border-primary/20 rounded-lg transition-all disabled:opacity-50"
+              className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 text-slate-400 hover:text-primary hover:border-primary/20 rounded-lg transition disabled:opacity-50"
               aria-label="Actualizar"
             >
               <RefreshCw size={16} className={cargando ? 'animate-spin' : ''} />
@@ -196,7 +196,7 @@ function Noticias() {
             <button
               onClick={() => handlePageChange(Math.max(1, pagination.page - 1))}
               disabled={pagination.page === 1}
-              className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-primary disabled:opacity-30 transition-all"
+              className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-primary disabled:opacity-30 transition"
               aria-label="Página anterior"
             >
               <ArrowRight size={16} className="rotate-180" />
@@ -207,7 +207,7 @@ function Noticias() {
             <button
               onClick={() => handlePageChange(Math.min(pagination.totalPages, pagination.page + 1))}
               disabled={pagination.page === pagination.totalPages}
-              className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-primary disabled:opacity-30 transition-all"
+              className="w-10 h-10 flex items-center justify-center bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-primary disabled:opacity-30 transition"
               aria-label="Página siguiente"
             >
               <ArrowRight size={16} />
@@ -240,3 +240,4 @@ function Noticias() {
 }
 
 export default Noticias;
+

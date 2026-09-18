@@ -22,6 +22,29 @@
 
     <link rel="icon" type="image/svg+xml" href="/src/assets/escudo.jpeg" />
     <title>I.E. Bandera del Perú - Educación de Calidad</title>
+
+    <!-- ================================================================
+         ANTI-FLASH DARK MODE
+         Este script se ejecuta ANTES del primer paint y aplica el tema
+         oscuro si el usuario lo tenía guardado. Evita el "flash blanco"
+         que ocurría cuando ThemeContext aplicaba la clase .dark después
+         del render.
+         ================================================================ -->
+    <script>
+      (function() {
+        try {
+          var theme = localStorage.getItem('theme');
+          var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+          // Prioridad: localStorage > preferencia del sistema > light
+          if (theme === 'dark' || (!theme && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          }
+        } catch (e) {
+          // localStorage no disponible (modo incógnito estricto, etc.)
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

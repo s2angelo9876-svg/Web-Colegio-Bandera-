@@ -1,4 +1,4 @@
-import PropTypes from 'prop-types';
+﻿import PropTypes from 'prop-types';
 import { Plus, X, Search, Edit3, Trash2, Save, FileText, Type, Image as ImageIcon, Calendar, RefreshCw, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
 
 export function AdminPageHeader({ title, subtitle, badge, onButtonClick, formOpen, addButtonLabel = 'Crear' }) {
@@ -14,7 +14,7 @@ export function AdminPageHeader({ title, subtitle, badge, onButtonClick, formOpe
       {onButtonClick && (
         <button
           onClick={onButtonClick}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-xs uppercase tracking-wider transition-all active:scale-95 ${
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-xs uppercase tracking-wider transition active:scale-95 ${
             formOpen
               ? 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
               : 'bg-primary text-white hover:bg-red-600 shadow-sm'
@@ -73,7 +73,7 @@ export function FormCard({ title, icon, children, onSubmit, submitting, submitLa
           <button
             type="submit"
             disabled={submitting}
-            className="inline-flex items-center gap-2 bg-primary text-white px-5 py-2 rounded-lg font-semibold text-xs uppercase tracking-wider hover:bg-red-600 disabled:opacity-50 transition-colors"
+            className="inline-flex items-center gap-2 bg-primary text-white active:scale-[0.97] px-5 py-2 rounded-lg font-semibold text-xs uppercase tracking-wider hover:bg-red-600 disabled:opacity-50 transition-colors"
           >
             {submitting ? <RefreshCw size={14} className="animate-spin" /> : <Save size={14} />}
             {submitLabel || 'Guardar'}
@@ -109,7 +109,7 @@ export function TextField({ id, name, label, value, onChange, placeholder, requi
           placeholder={placeholder}
           required={required}
           maxLength={maxLength}
-          className={`w-full ${Icon ? 'pl-9' : 'pl-3'} pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all`}
+          className={`w-full ${Icon ? 'pl-9' : 'pl-3'} pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition`}
         />
       </div>
     </div>
@@ -141,7 +141,7 @@ export function TextAreaField({ id, name, label, value, onChange, placeholder, r
         onChange={onChange}
         placeholder={placeholder}
         required={required}
-        className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all resize-none"
+        className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition resize-none"
       />
     </div>
   );
@@ -162,7 +162,7 @@ export function ImageUploadField({ id, label, preview, onChange, required }) {
   return (
     <div className="space-y-1.5">
       <label className="block text-xs font-semibold text-slate-700">{label}</label>
-      <div className={`relative border-2 border-dashed rounded-lg overflow-hidden transition-all ${
+      <div className={`relative border-2 border-dashed rounded-lg overflow-hidden transition ${
         preview ? 'border-solid border-primary' : 'border-slate-200 bg-slate-50 hover:border-primary'
       }`}>
         <div className="aspect-video flex flex-col items-center justify-center cursor-pointer relative">
@@ -208,7 +208,7 @@ export function SearchBar({ value, onChange, placeholder = 'Buscar...' }) {
         placeholder={placeholder}
         value={value}
         onChange={onChange}
-        className="pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+        className="pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition"
       />
     </div>
   );
@@ -227,7 +227,7 @@ export function Pagination({ page, totalPages, onPageChange }) {
       <button
         onClick={() => onPageChange(Math.max(1, page - 1))}
         disabled={page === 1}
-        className="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-primary disabled:opacity-30 transition-all"
+        className="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-primary disabled:opacity-30 transition"
         aria-label="Página anterior"
       >
         <ChevronLeft size={16} />
@@ -238,7 +238,7 @@ export function Pagination({ page, totalPages, onPageChange }) {
       <button
         onClick={() => onPageChange(Math.min(totalPages, page + 1))}
         disabled={page === totalPages}
-        className="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-primary disabled:opacity-30 transition-all"
+        className="p-2 bg-white border border-slate-200 rounded-lg text-slate-400 hover:text-primary disabled:opacity-30 transition"
         aria-label="Página siguiente"
       >
         <ChevronRight size={16} />
@@ -311,3 +311,5 @@ Alert.propTypes = {
   type: PropTypes.oneOf(['error', 'success', 'info']),
   children: PropTypes.node,
 };
+
+
