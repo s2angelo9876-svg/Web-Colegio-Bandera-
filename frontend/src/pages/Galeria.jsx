@@ -180,7 +180,7 @@ const Galeria = () => {
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
               <Images size={32} className="text-slate-300" />
             </div>
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Sin resultados</h3>
+            <h3 className="line-clamp-2 text-lg font-bold text-slate-800 mb-2">Sin resultados</h3>
             <p className="text-slate-500 text-sm max-w-xs mb-6">
               No hemos encontrado fotos o videos con esos criterios.
             </p>
@@ -204,7 +204,7 @@ const Galeria = () => {
               <span className="text-[10px] font-bold uppercase text-blue-400 tracking-widest">
                 {lightboxIndex + 1} / {filteredItems.length}
               </span>
-              <h3 className="text-lg font-bold mt-0.5">{activeItem.titulo}</h3>
+              <h3 className="line-clamp-2 text-lg font-bold mt-0.5">{activeItem.titulo}</h3>
             </div>
             <button
               onClick={() => setLightboxIndex(null)}
@@ -283,4 +283,5 @@ const Galeria = () => {
 Galeria.propTypes = {};
 
 export default Galeria;
+
 

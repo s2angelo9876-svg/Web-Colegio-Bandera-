@@ -160,7 +160,7 @@ function Comunicados() {
               <Shield size={18} />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900 leading-none">
+              <h2 className="line-clamp-2 text-base font-bold text-slate-900 leading-none">
                 {cargando ? 'Cargando...' : `${filtrados.length} Comunicados`}
               </h2>
               <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1">Para Padres y Alumnos</p>
@@ -238,7 +238,7 @@ function Comunicados() {
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
               <FileX size={32} className="text-slate-300" />
             </div>
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Sin comunicados</h3>
+            <h3 className="line-clamp-2 text-lg font-bold text-slate-800 mb-2">Sin comunicados</h3>
             <p className="text-slate-500 text-sm max-w-sm mb-6">
               No hemos encontrado comunicados que coincidan con los filtros seleccionados.
             </p>
@@ -258,6 +258,7 @@ function Comunicados() {
 }
 
 export default Comunicados;
+
 
 
 

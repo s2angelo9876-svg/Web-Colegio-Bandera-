@@ -48,7 +48,7 @@ function EventoCard({ e, index }) {
           </span>
         </div>
 
-        <h2 className="text-lg md:text-xl font-bold text-slate-900 group-hover:text-primary transition-colors leading-tight mb-3">
+        <h2 className="line-clamp-2 text-lg md:text-xl font-bold text-slate-900 group-hover:text-primary transition-colors leading-tight mb-3">
           {e.titulo}
         </h2>
 
@@ -146,7 +146,7 @@ function Eventos() {
               <CalendarDays size={18} />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900 leading-none">
+              <h2 className="line-clamp-2 text-base font-bold text-slate-900 leading-none">
                 {cargando ? 'Cargando...' : `${filtrados.length} Actividades`}
               </h2>
               <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1">Cronograma Institucional 2026</p>
@@ -193,7 +193,7 @@ function Eventos() {
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
               <CalendarX size={32} className="text-slate-300" />
             </div>
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Sin eventos</h3>
+            <h3 className="line-clamp-2 text-lg font-bold text-slate-800 mb-2">Sin eventos</h3>
             <p className="text-slate-500 text-sm max-w-sm mb-6">
               No hemos encontrado actividades programadas con esos términos.
             </p>
@@ -213,4 +213,5 @@ function Eventos() {
 }
 
 export default Eventos;
+
 

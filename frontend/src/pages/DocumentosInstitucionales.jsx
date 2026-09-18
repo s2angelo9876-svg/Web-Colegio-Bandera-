@@ -133,7 +133,7 @@ const DocumentosInstitucionales = () => {
             )) : (
               <div className="text-center py-16 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200">
                 <FileText size={32} className="mx-auto text-slate-300 mb-3" />
-                <h3 className="text-base font-bold text-slate-800 mb-1">Sin archivos</h3>
+                <h3 className="line-clamp-2 text-base font-bold text-slate-800 mb-1">Sin archivos</h3>
                 <p className="text-slate-500 text-sm max-w-xs mx-auto mb-4">
                   No se encontraron documentos con esos criterios.
                 </p>
@@ -157,6 +157,7 @@ const DocumentosInstitucionales = () => {
 DocumentosInstitucionales.propTypes = {};
 
 export default DocumentosInstitucionales;
+
 
 
 

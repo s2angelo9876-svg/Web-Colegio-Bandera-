@@ -209,7 +209,7 @@ function Inicio() {
                     <Icon size={22} />
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-900 mb-1 group-hover:text-primary transition-colors">{link.title}</h3>
+                    <h3 className="line-clamp-2 font-bold text-slate-900 mb-1 group-hover:text-primary transition-colors">{link.title}</h3>
                     <p className="text-sm text-slate-500">{link.desc}</p>
                   </div>
                 </Link>
@@ -286,7 +286,7 @@ function Inicio() {
             }) : (
               <div className="col-span-3 text-center py-16 bg-white rounded-xl border border-dashed border-slate-200">
                 <Newspaper size={40} className="mx-auto text-slate-300 mb-4" />
-                <h3 className="font-bold text-lg text-slate-800">Sin publicaciones</h3>
+                <h3 className="line-clamp-2 font-bold text-lg text-slate-800">Sin publicaciones</h3>
                 <p className="text-slate-400 text-sm mt-1">No se encontraron noticias ni comunicados recientes.</p>
               </div>
             )}
@@ -381,6 +381,7 @@ function Inicio() {
 Inicio.propTypes = {};
 
 export default Inicio;
+
 
 
 

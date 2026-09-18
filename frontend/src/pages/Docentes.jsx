@@ -49,7 +49,7 @@ function DocenteCard({ doc, index }) {
       </div>
 
       <div className="p-4 text-center">
-        <h3 className="text-primary font-bold text-sm leading-tight mb-1 group-hover:text-red-600 transition-colors">
+        <h3 className="line-clamp-2 text-primary font-bold text-sm leading-tight mb-1 group-hover:text-red-600 transition-colors">
           {doc.nombre}
         </h3>
         <p className="text-slate-400 text-[10px] font-semibold uppercase tracking-wider mb-2">
@@ -133,7 +133,7 @@ const Docentes = () => {
               <Users size={18} />
             </div>
             <div>
-              <h2 className="text-base font-bold text-slate-900 leading-none">
+              <h2 className="line-clamp-2 text-base font-bold text-slate-900 leading-none">
                 {cargando ? 'Cargando...' : `${filtrados.length} Miembros Activos`}
               </h2>
               <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wider mt-1">Personal académico calificado</p>
@@ -182,7 +182,7 @@ const Docentes = () => {
             <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
               <UserX size={32} className="text-red-300" />
             </div>
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Error de conexión</h3>
+            <h3 className="line-clamp-2 text-lg font-bold text-slate-800 mb-2">Error de conexión</h3>
             <p className="text-slate-500 text-sm max-w-sm mb-6">
               No se pudo establecer conexión con el servidor institucional. Por favor, intenta más tarde.
             </p>
@@ -201,7 +201,7 @@ const Docentes = () => {
             <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4">
               <Search size={32} className="text-slate-300" />
             </div>
-            <h3 className="text-lg font-bold text-slate-800 mb-2">Sin coincidencias</h3>
+            <h3 className="line-clamp-2 text-lg font-bold text-slate-800 mb-2">Sin coincidencias</h3>
             <p className="text-slate-500 text-sm max-w-sm mb-6">
               No hemos encontrado ningún docente que coincida con tu búsqueda.
             </p>
@@ -221,4 +221,5 @@ const Docentes = () => {
 };
 
 export default Docentes;
+
 
