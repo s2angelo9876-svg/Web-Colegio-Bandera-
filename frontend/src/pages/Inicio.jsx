@@ -10,6 +10,7 @@ import Footer from '../components/Footer';
 import { API, UPLOADS_URL } from '../services/api';
 import { sanitizeText } from '../utils/sanitize';
 import { useToast } from '../context/ToastContext';
+import frontisColegio from '../assets/frontis_colegio.webp';
 
 function Inicio() {
   const navigate = useNavigate();
@@ -166,10 +167,10 @@ function Inicio() {
           <div className="relative hidden lg:block">
             <div className="relative rounded-2xl overflow-hidden shadow-2xl h-[500px] bg-white/10">
               <div className="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent z-10" />
-              {heroImage ? (
+              {heroImage || frontisColegio ? (
                 <img
-                  src={heroImage}
-                  alt="Instalaciones I.E. Bandera del Perú"
+                  src={heroImage || frontisColegio}
+                  alt="Frontis I.E. Bandera del Perú"
                   className="w-full h-full object-cover"
                 />
               ) : (
