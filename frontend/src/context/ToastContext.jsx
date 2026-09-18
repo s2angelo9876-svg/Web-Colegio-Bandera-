@@ -68,7 +68,7 @@ export function ToastProvider({ children }) {
           <div
             key={t.id}
             role="alert"
-            className={`pointer-events-auto flex items-start gap-3 p-4 rounded-xl border-l-4 ${COLORS[t.type]} shadow-lg animate-fade-in-down`}
+            className={`pointer-events-auto flex items-start gap-3 p-4 rounded-xl border-l-4 ${COLORS[t.type]} shadow-lg animate-spring-in`}
           >
             {ICONS[t.type]}
             <p className="flex-1 text-sm text-slate-700 font-medium leading-snug">{t.message}</p>

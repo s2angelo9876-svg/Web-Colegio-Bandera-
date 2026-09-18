@@ -196,15 +196,15 @@ function Inicio() {
       {/* Quick Access */}
       <section className="bg-white py-16 border-b border-slate-100">
         <div className="max-w-7xl mx-auto px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 stagger">
             {quickLinks.map((link) => {
               const Icon = link.icon;
               return (
-              <Link
-                key={link.title}
-                to={link.path}
-                className="flex items-start gap-4 p-6 rounded-xl hover:bg-slate-50 dark:hover:bg-dark-hover transition-colors duration-200 cursor-pointer group border border-transparent hover:border-slate-100 dark:hover:border-dark-border active:scale-[0.98]"
-              >
+                <Link
+                  key={link.title}
+                  to={link.path}
+                  className="flex items-start gap-4 p-6 rounded-xl hover:bg-slate-50 dark:hover:bg-dark-hover transition-colors duration-200 cursor-pointer group border border-transparent hover:border-slate-100 dark:hover:border-dark-border press-feedback"
+                >
                   <div className={`w-12 h-12 shrink-0 rounded-lg flex items-center justify-center ${link.color} group-hover:scale-110 transition-transform`}>
                     <Icon size={22} />
                   </div>
@@ -238,35 +238,40 @@ function Inicio() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {recentItems.length > 0 ? recentItems.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => navigate(item.tipoItem === 'noticia' ? '/noticias' : '/comunicados')}
-                className="group bg-white rounded-xl border border-slate-100 shadow-sm hover:shadow-lg hover:-translate-y-1 transition duration-300 overflow-hidden flex flex-col cursor-pointer h-full"
-              >
-                <div className="aspect-video relative overflow-hidden bg-slate-100">
-                  {item.imagen ? (
-                    <img
-                      src={`${UPLOADS_URL}/${item.imagen}`}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      alt={item.titulo}
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-blue-50 text-primary font-bold text-xs uppercase tracking-widest">
-                      Bandera del Perú
-                    </div>
-                  )}
-                  <span className={`absolute top-4 left-4 text-[10px] font-bold uppercase tracking-wider text-white px-2.5 py-1 rounded ${item.tipoItem === 'noticia' ? 'bg-primary' : 'bg-red-600'}`}>
-                    {item.tipoItem}
-                  </span>
-                </div>
+          {/* Layout asimétrico: 1 card grande + 2 cards pequeñas (Sprint 3) */}
+          <div className="grid grid-cols-1 md:grid-cols-3 md:grid-rows-2 gap-6 stagger">
+            {recentItems.length > 0 ? recentItems.slice(0, 3).map((item, index) => {
+              const isHero = index === 0;
+              return (
+                <div
+                  key={item.id}
+                  onClick={() => navigate(item.tipoItem === 'noticia' ? '/noticias' : '/comunicados')}
+                  className={`group bg-white rounded-xl border border-slate-100 shadow-sm overflow-hidden flex flex-col cursor-pointer hover-lift ${
+                    isHero ? 'md:col-span-2 md:row-span-2' : ''
+                  }`}
+                >
+                  <div className={`relative overflow-hidden bg-slate-100 ${isHero ? 'aspect-[16/10]' : 'aspect-video'}`}>
+                    {item.imagen ? (
+                      <img
+                        src={`${UPLOADS_URL}/${item.imagen}`}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                        alt={item.titulo}
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-blue-50 text-primary font-bold text-xs uppercase tracking-widest">
+                        Bandera del Perú
+                      </div>
+                    )}
+                    <span className={`absolute top-4 left-4 text-[10px] font-bold uppercase tracking-wider text-white px-2.5 py-1 rounded ${item.tipoItem === 'noticia' ? 'bg-primary' : 'bg-red-600'}`}>
+                      {item.tipoItem}
+                    </span>
+                  </div>
 
-                <div className="p-6 flex-1 flex flex-col">
-                  <span className="text-xs text-slate-400 font-medium mb-2">
-                    {new Date(item.fechaOrden).toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' })}
-                  </span>
-                  <h3 className="text-lg font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-primary transition-colors">
+                  <div className={`p-6 flex-1 flex flex-col ${isHero ? 'md:p-8' : ''}`}>
+                    <span className="text-xs text-slate-400 font-medium mb-2">
+                      {new Date(item.fechaOrden).toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' })}
+                    </span>
+                    <h3 className={`font-bold text-slate-900 mb-3 line-clamp-2 group-hover:text-primary transition-colors ${isHero ? 'text-2xl md:text-3xl' : 'text-lg'}`}>
                     {item.titulo}
                   </h3>
                   <p className="text-slate-500 text-sm leading-relaxed line-clamp-3 flex-1">
@@ -277,7 +282,8 @@ function Inicio() {
                   </p>
                 </div>
               </div>
-            )) : (
+              );
+            }) : (
               <div className="col-span-3 text-center py-16 bg-white rounded-xl border border-dashed border-slate-200">
                 <Newspaper size={40} className="mx-auto text-slate-300 mb-4" />
                 <h3 className="font-bold text-lg text-slate-800">Sin publicaciones</h3>
@@ -298,13 +304,13 @@ function Inicio() {
             </h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 stagger">
             {pilares.map((p) => {
               const Icon = p.icon;
               return (
                 <div
                   key={p.title}
-                  className="group p-8 rounded-xl bg-slate-50 hover:bg-white border border-transparent hover:border-slate-100 transition duration-300 shadow-sm hover:shadow-lg"
+                  className="group p-8 rounded-xl bg-slate-50 dark:bg-dark-card hover:bg-white dark:hover:bg-dark-card-elevated border border-transparent hover:border-slate-100 dark:hover:border-dark-border transition-colors duration-300 shadow-sm hover:shadow-lg press-feedback"
                 >
                   <div className={`w-14 h-14 ${p.color} rounded-xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`}>
                     <Icon size={28} />
@@ -324,13 +330,24 @@ function Inicio() {
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-red-600/10 rounded-full blur-3xl" />
 
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {stats.map((s) => (
-              <div key={s.label} className="text-center">
-                <div className="text-4xl md:text-5xl font-extrabold text-white mb-2">{s.value}</div>
-                <div className="text-white/70 text-sm font-medium">{s.label}</div>
-              </div>
-            ))}
+          {/* Stats con jerarquía visual (Sprint 3): 1 hero grande + 3 secundarias */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-10 stagger">
+            {stats.map((s, i) => {
+              const isHero = i === 0;
+              return (
+                <div
+                  key={s.label}
+                  className={`text-center lg:text-left ${isHero ? 'col-span-2 lg:col-span-1 lg:pr-8 lg:border-r lg:border-white/15' : ''}`}
+                >
+                  <div className={`font-extrabold text-white mb-2 ${isHero ? 'text-6xl md:text-7xl' : 'text-4xl md:text-5xl'}`}>
+                    {s.value}
+                  </div>
+                  <div className={`font-medium uppercase tracking-wider ${isHero ? 'text-white/80 text-xs' : 'text-white/60 text-sm'}`}>
+                    {s.label}
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </section>

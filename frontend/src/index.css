@@ -88,46 +88,47 @@ body {
 /* ============================================================
    DARK MODE OVERRIDES — sin !important (específicidad correcta)
    Aplican solo cuando <html> tiene clase .dark
+   Estas reglas cubren TODAS las variantes comunes de Tailwind
+   para no tener que editar 600+ archivos JSX manualmente.
    ============================================================ */
-.dark .bg-white {
-  background-color: var(--color-dark-card);
-}
-.dark .bg-\[\#F8FAFC\],
-.dark .bg-slate-50 {
-  background-color: var(--color-dark-bg);
-}
-.dark .bg-slate-100 {
-  background-color: var(--color-dark-card-elevated);
-}
-.dark .text-gray-900 {
-  color: var(--color-dark-text);
-}
-.dark .text-gray-800 {
-  color: #e2e8f0;
-}
-.dark .text-gray-700 {
-  color: #cbd5e1;
-}
-.dark .text-gray-600,
-.dark .text-slate-500 {
-  color: var(--color-dark-text-muted);
-}
-.dark .text-slate-400 {
-  color: var(--color-dark-text-subtle);
-}
-.dark .text-slate-700 {
-  color: #cbd5e1;
-}
-.dark .border-gray-100,
-.dark .border-slate-100 {
-  border-color: var(--color-dark-border);
-}
-.dark .border-gray-200,
-.dark .border-slate-200 {
-  border-color: var(--color-dark-border);
-}
 
-/* Inputs en dark mode */
+/* ── Backgrounds ─────────────────────────────────────────────────── */
+.dark .bg-white { background-color: var(--color-dark-card); }
+.dark .bg-slate-50 { background-color: var(--color-dark-bg); }
+.dark .bg-slate-100 { background-color: var(--color-dark-card-elevated); }
+.dark .bg-slate-200 { background-color: var(--color-dark-card-elevated); }
+.dark .bg-slate-300 { background-color: var(--color-dark-hover); }
+.dark .bg-\[\#F8FAFC\] { background-color: var(--color-dark-bg); }
+.dark .bg-\[\#F1F5F9\] { background-color: var(--color-dark-card-elevated); }
+
+/* ── Textos ─────────────────────────────────────────────────────── */
+.dark .text-gray-900 { color: var(--color-dark-text); }
+.dark .text-gray-800 { color: #e2e8f0; }
+.dark .text-gray-700 { color: #cbd5e1; }
+.dark .text-gray-600 { color: var(--color-dark-text-muted); }
+.dark .text-gray-500 { color: var(--color-dark-text-subtle); }
+.dark .text-gray-400 { color: #64748b; }
+.dark .text-slate-900 { color: var(--color-dark-text); }
+.dark .text-slate-800 { color: #e2e8f0; }
+.dark .text-slate-700 { color: #cbd5e1; }
+.dark .text-slate-600 { color: var(--color-dark-text-muted); }
+.dark .text-slate-500 { color: var(--color-dark-text-muted); }
+.dark .text-slate-400 { color: var(--color-dark-text-subtle); }
+.dark .text-slate-300 { color: #94a3b8; }
+
+/* ── Borders ─────────────────────────────────────────────────────── */
+.dark .border-gray-100 { border-color: var(--color-dark-border); }
+.dark .border-gray-200 { border-color: var(--color-dark-border); }
+.dark .border-gray-300 { border-color: var(--color-dark-hover); }
+.dark .border-slate-100 { border-color: var(--color-dark-border); }
+.dark .border-slate-200 { border-color: var(--color-dark-border); }
+.dark .border-slate-300 { border-color: var(--color-dark-hover); }
+
+/* ── Dividers ────────────────────────────────────────────────────── */
+.dark .divide-gray-200 > * + * { border-color: var(--color-dark-border); }
+.dark .divide-slate-200 > * + * { border-color: var(--color-dark-border); }
+
+/* ── Inputs / textareas / selects ────────────────────────────────── */
 .dark input,
 .dark textarea,
 .dark select {
@@ -135,13 +136,24 @@ body {
   color: var(--color-dark-text);
   border-color: var(--color-dark-border);
 }
-
-/* Hover states */
-.dark .hover\:bg-slate-50:hover {
-  background-color: var(--color-dark-hover);
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--color-dark-text-subtle);
 }
 
-/* Institucional Blue: solo cambia el TEXTO, los fondos se mantienen */
+/* ── Hover states ────────────────────────────────────────────────── */
+.dark .hover\:bg-slate-50:hover { background-color: var(--color-dark-hover); }
+.dark .hover\:bg-slate-100:hover { background-color: var(--color-dark-card-elevated); }
+.dark .hover\:bg-white:hover { background-color: var(--color-dark-card); }
+.dark .hover\:text-gray-900:hover { color: var(--color-dark-text); }
+
+/* ── Sombras en dark mode (más sutiles que en light) ─────────────── */
+.dark .shadow-sm { box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4); }
+.dark .shadow-md { box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5); }
+.dark .shadow-lg { box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6); }
+.dark .shadow-xl { box-shadow: 0 12px 32px rgba(0, 0, 0, 0.7); }
+
+/* ── Institucional Blue: solo cambia el TEXTO, fondos se mantienen ── */
 .dark .text-primary,
 .dark .text-primary-dark,
 .dark .text-\[\#003087\],
@@ -149,9 +161,15 @@ body {
   color: var(--color-dark-accent-text);
 }
 
-/* Fondos primarios institucionales: se mantienen (no se vuelven celeste) */
+/* ── Backgrounds primarios institucionales (NO se vuelven celeste) ── */
+/* (Se mantienen #003087 — son la identidad de marca) */
 
-/* Premium card style en dark */
+/* ── Focus rings: más visibles en dark ────────────────────────────── */
+.dark .focus\:ring-primary\/20:focus {
+  --tw-ring-color: rgba(96, 165, 250, 0.3);
+}
+
+/* ── Premium card style en dark ──────────────────────────────────── */
 .dark .card-premium {
   background: var(--color-dark-card);
   border: 1px solid var(--color-dark-border);
@@ -161,6 +179,15 @@ body {
   border-color: var(--color-dark-accent);
   box-shadow: var(--shadow-dark-card-hover);
 }
+
+/* ── Tablas en dark ──────────────────────────────────────────────── */
+.dark table { color: var(--color-dark-text); }
+.dark th { color: var(--color-dark-text-muted); }
+
+/* ── Prose/Contenido largo en dark ──────────────────────────────── */
+.dark .prose { color: var(--color-dark-text); }
+.dark .prose strong { color: #f8fafc; }
+.dark .prose a { color: var(--color-dark-accent-text); }
 
 /* ============================================================
    ANIMACIONES GLOBALES (Emil Kowalski style)
@@ -177,6 +204,29 @@ body {
   from { opacity: 0; transform: translateY(-8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+/* Stagger entry: el hijo N entra con delay N*60ms */
+@keyframes stagger-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+/* Slide lateral (sidebar admin) */
+@keyframes slide-in-left {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(0); }
+}
+/* Scale pulse (toasts entrance) */
+@keyframes spring-in {
+  0%   { opacity: 0; transform: translateY(-20px) scale(0.85); }
+  60%  { opacity: 1; transform: translateY(2px) scale(1.05); }
+  100% { transform: translateY(0) scale(1); }
+}
+/* Icon rotate (toggle dark mode) */
+@keyframes icon-swap {
+  0%   { transform: rotate(0) scale(1); opacity: 1; }
+  50%  { transform: rotate(180deg) scale(0.6); opacity: 0; }
+  51%  { transform: rotate(-180deg) scale(0.6); opacity: 0; }
+  100% { transform: rotate(0) scale(1); opacity: 1; }
+}
 
 .animate-fade-in {
   animation: fade-in var(--duration-normal) var(--ease-out-quart) both;
@@ -187,11 +237,71 @@ body {
 .animate-fade-in-down {
   animation: fade-in-down var(--duration-normal) var(--ease-out-quart) both;
 }
+.animate-spring-in {
+  animation: spring-in 400ms var(--ease-spring) both;
+}
+.animate-icon-swap {
+  animation: icon-swap 400ms var(--ease-out-quart) both;
+}
+.animate-slide-in-left {
+  animation: slide-in-left 250ms var(--ease-out-quart) both;
+}
+
+/* ============================================================
+   STAGGER AUTOMÁTICO con CSS puro (Emil Kowalski style)
+   Aplicar la clase .stagger al contenedor padre y los hijos
+   entrarán con 60ms de delay incremental.
+   ============================================================ */
+.stagger > * {
+  animation: stagger-in 500ms var(--ease-out-quart) both;
+}
+.stagger > *:nth-child(1)  { animation-delay: 0ms; }
+.stagger > *:nth-child(2)  { animation-delay: 60ms; }
+.stagger > *:nth-child(3)  { animation-delay: 120ms; }
+.stagger > *:nth-child(4)  { animation-delay: 180ms; }
+.stagger > *:nth-child(5)  { animation-delay: 240ms; }
+.stagger > *:nth-child(6)  { animation-delay: 300ms; }
+.stagger > *:nth-child(7)  { animation-delay: 360ms; }
+.stagger > *:nth-child(8)  { animation-delay: 420ms; }
+.stagger > *:nth-child(9)  { animation-delay: 480ms; }
+.stagger > *:nth-child(n+10) { animation-delay: 540ms; }
+
+/* ============================================================
+   HOVER PREMIUM (Emil Kowalski style)
+   Cards que crecen sutilmente al pasar el mouse, con sombra
+   que aparece suavemente. Mantiene accesibilidad (no se mueve
+   el contenido, solo la sombra).
+   ============================================================ */
+.hover-lift {
+  transition: transform var(--duration-normal) var(--ease-out-quart),
+              box-shadow var(--duration-normal) var(--ease-out-quart);
+}
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(0, 48, 135, 0.15);
+}
+.dark .hover-lift:hover {
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6),
+              0 0 0 1px rgba(96, 165, 250, 0.2);
+}
+
+/* Card press feedback (botones y cards interactivas) */
+.press-feedback {
+  transition: transform var(--duration-fast) var(--ease-out-quart);
+}
+.press-feedback:active {
+  transform: scale(0.97);
+}
 
 /* Reduced motion: respetar preferencia del usuario */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
+  }
+  .stagger > * {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
   }
 }

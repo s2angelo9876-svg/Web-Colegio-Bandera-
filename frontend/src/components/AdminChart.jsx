@@ -53,7 +53,9 @@ const AdminChart = ({ data, title, type = "line", color = "#003087" }) => {
                 strokeWidth={4}
                 fillOpacity={1} 
                 fill="url(#colorValue)" 
-                animationDuration={2000}
+                animationDuration={1200}
+                animationBegin={0}
+                animationEasing="ease-out"
               />
             </AreaChart>
           ) : (
@@ -83,7 +85,8 @@ const AdminChart = ({ data, title, type = "line", color = "#003087" }) => {
                 strokeWidth={4} 
                 dot={{ r: 6, fill: color, strokeWidth: 3, stroke: '#fff' }}
                 activeDot={{ r: 8, strokeWidth: 0 }}
-                animationDuration={2000}
+                animationDuration={1200}
+                animationEasing="ease-out"
               />
             </LineChart>
           )}

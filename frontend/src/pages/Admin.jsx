@@ -74,7 +74,7 @@ function QuickAction({ to, color, title, icon: Icon }) {
   return (
     <Link
       to={to}
-      className={`${colors[color] || colors.blue} p-4 rounded-lg text-white text-center font-semibold text-[11px] uppercase tracking-wider transition hover:-translate-y-0.5 shadow-sm flex flex-col items-center justify-center gap-2 group h-24`}
+      className={`${colors[color] || colors.blue} p-4 rounded-lg text-white text-center font-semibold text-[11px] uppercase tracking-wider hover-lift press-feedback flex flex-col items-center justify-center gap-2 group h-24`}
     >
       <Icon size={22} className="group-hover:scale-110 transition-transform" />
       <span>{title}</span>

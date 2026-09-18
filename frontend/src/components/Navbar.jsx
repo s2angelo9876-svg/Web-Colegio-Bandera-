@@ -203,7 +203,9 @@ const Navbar = () => {
                 className="w-9 h-9 flex items-center justify-center rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition-colors duration-200 active:scale-[0.94]"
                 aria-label="Cambiar tema"
               >
-                {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+                <span key={isDarkMode ? 'sun' : 'moon'} className="animate-icon-swap inline-flex">
+                  {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+                </span>
               </button>
 
               <button
