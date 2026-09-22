@@ -5,11 +5,13 @@ const NOMBRES_DIA = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
 
 /**
  * GET /api/stats
- * Devuelve contadores totales y series temporales reales:
- *  - tendencia_mensual: publicaciones por mes (últimos 6)
- *  - comunicados_por_dia: comunicados por día de la semana (últimas 4 semanas)
- *  - eventos_proximos: cantidad de eventos en los próximos 30 días
- *  - ultimas_actualizaciones: noticias más recientes
+ * Devuelve contadores totales, series temporales y metricas contextuales
+ * para el dashboard del admin (optimizado para no-tecnicos):
+ *  - contadores: totales por recurso
+ *  - pendientes: tramites que requieren accion (mesa_partes pendientes, etc.)
+ *  - recientes: ultimas publicaciones
+ *  - eventos_proximos: eventos en los proximos 30 dias
+ *  - tendencias: graficos
  */
 exports.getStats = async (req, res) => {
   try {
@@ -22,12 +24,14 @@ exports.getStats = async (req, res) => {
       galeriaCount,
       directivosCount,
       admisionesCount,
-      mesaPartesCount,
+      mesaPartesPendientes,
+      mesaPartesTotal,
       transparenciaCount,
       carruselCount,
       ultimasNoticias,
       ultimosComunicados,
       eventosProximos,
+      admisionesRecientes,
     ] = await Promise.all([
       db.query('SELECT COUNT(*)::int AS n FROM noticias'),
       db.query('SELECT COUNT(*)::int AS n FROM eventos'),
@@ -37,12 +41,14 @@ exports.getStats = async (req, res) => {
       db.query('SELECT COUNT(*)::int AS n FROM galeria'),
       db.query('SELECT COUNT(*)::int AS n FROM equipo_directivo'),
       db.query('SELECT COUNT(*)::int AS n FROM admisiones'),
+      db.query("SELECT COUNT(*)::int AS n FROM mesa_partes WHERE estado = 'pendiente'"),
       db.query('SELECT COUNT(*)::int AS n FROM mesa_partes'),
       db.query('SELECT COUNT(*)::int AS n FROM transparencia'),
       db.query('SELECT COUNT(*)::int AS n FROM carrusel'),
       db.query('SELECT id, titulo, fecha FROM noticias ORDER BY fecha DESC LIMIT 5'),
       db.query('SELECT id, titulo, fecha, tipo FROM comunicados ORDER BY fecha DESC LIMIT 5'),
       db.query("SELECT COUNT(*)::int AS n FROM eventos WHERE fecha_evento BETWEEN CURRENT_DATE AND CURRENT_DATE + INTERVAL '30 days'"),
+      db.query("SELECT COUNT(*)::int AS n FROM admisiones WHERE fecha_registro >= NOW() - INTERVAL '7 days'"),
     ]);
 
     // Tendencia mensual: publicaciones de los últimos 6 meses (noticias + comunicados)
@@ -75,11 +81,14 @@ exports.getStats = async (req, res) => {
       ORDER BY dow ASC
     `);
 
-    // Inicializar todos los días en 0 para que el chart no tenga huecos
     const comunicados_por_dia = NOMBRES_DIA.map((name, idx) => ({
       name,
       valor: porDiaRows.find((r) => r.dow === idx)?.total || 0,
     }));
+
+    // Lista plana para el dashboard
+    const tramites_pendientes_detalle = mesaPartesPendientes.rows[0].n;
+    const admisiones_recientes = admisionesRecientes.rows[0].n;
 
     res.json({
       contadores: {
@@ -91,11 +100,15 @@ exports.getStats = async (req, res) => {
         galeria: galeriaCount.rows[0].n,
         directivos: directivosCount.rows[0].n,
         admisiones: admisionesCount.rows[0].n,
-        mesa_partes: mesaPartesCount.rows[0].n,
         transparencia: transparenciaCount.rows[0].n,
         carrusel: carruselCount.rows[0].n,
-        eventos_proximos_30d: eventosProximos.rows[0].n,
       },
+      pendientes: {
+        mesa_partes: tramites_pendientes_detalle,
+        admisiones_esta_semana: admisiones_recientes,
+      },
+      mesa_partes_total: mesaPartesTotal.rows[0].n,
+      eventos_proximos_30d: eventosProximos.rows[0].n,
       tendencia_mensual,
       comunicados_por_dia,
       ultimas_noticias: ultimasNoticias.rows,
