@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import { getNoticias, API, UPLOADS_URL } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
-import { successWithLink, errorMsg } from '../utils/sweetalert';
+import { successWithLink, errorMsg, confirmDelete } from '../utils/sweetalert';
 import {
-  AdminPageHeader, FormCard, TextField, TextAreaField, ImageUploadField,
+  AdminPageHeader, TextField, TextAreaField, ImageUploadField,
   SearchBar, Pagination, ActionButtons
 } from '../components/AdminUI';
-import { Type, FileText, Newspaper, Plus, Edit3 } from 'lucide-react';
+import Wizard from '../components/Wizard';
+import { Type, FileText, Newspaper, Plus, Edit3, Check } from 'lucide-react';
 
 const Toast = Swal.mixin({
   toast: true,
@@ -45,6 +46,7 @@ function AdminNoticias() {
   const [showForm, setShowForm] = useState(false);
   const [editMode, setEditMode] = useState(null);
   const [busqueda, setBusqueda] = useState('');
+  const [currentStep, setCurrentStep] = useState(0);
 
   const [titulo, setTitulo] = useState('');
   const [contenido, setContenido] = useState('');
@@ -77,6 +79,7 @@ function AdminNoticias() {
     setTitulo(n.titulo);
     setContenido(n.contenido);
     setPreview(n.imagen ? `${UPLOADS_URL}/${n.imagen}` : null);
+    setCurrentStep(0);
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
@@ -88,10 +91,16 @@ function AdminNoticias() {
     setContenido('');
     setImagen(null);
     setPreview(null);
+    setCurrentStep(0);
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!titulo.trim() || !contenido.trim()) {
+      errorMsg('Faltan datos', 'El titular y el cuerpo son obligatorios.');
+      setCurrentStep(0);
+      return;
+    }
     setEnviando(true);
 
     const formData = new FormData();
@@ -152,57 +161,110 @@ function AdminNoticias() {
       />
 
       {showForm && (
-        <FormCard
+        <Wizard
           title={editMode ? 'Editar Noticia' : 'Nueva Noticia'}
-          icon={editMode ? <Edit3 size={14} /> : <Plus size={14} />}
+          editMode={!!editMode}
+          currentStep={currentStep}
+          onStepChange={setCurrentStep}
           onSubmit={handleSubmit}
-          submitting={enviando}
-          submitLabel={editMode ? 'Actualizar' : 'Publicar'}
           onCancel={resetForm}
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <div className="space-y-4">
-              <div>
-                <TextField
-                  id="titulo" name="titulo" label="Titular de la noticia"
-                  value={titulo} onChange={(e) => setTitulo(e.target.value)}
-                  placeholder="Ej: Mi colegio ganó olimpiada de matemáticas"
-                  required maxLength="100" icon={Type}
-                />
-                <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-1.5 flex items-start gap-1">
-                  <span className="text-primary">💡</span>
-                  <span>Este es el texto que verán los padres en la portada. Sé claro y directo. Máximo 100 letras.</span>
-                </p>
-              </div>
-
-              <div>
-                <TextAreaField
-                  id="contenido" name="contenido" label="Cuerpo de la noticia"
-                  value={contenido} onChange={(e) => setContenido(e.target.value)}
-                  placeholder="Cuenta aquí todos los detalles de la noticia..."
-                  required rows={10} icon={FileText}
-                />
-                <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-1.5 flex items-start gap-1">
-                  <span className="text-primary">💡</span>
-                  <span>Escribe toda la información. Puedes usar párrafos. Luego, si quieres, puedes agregarle formato (negrita, links).</span>
-                </p>
-              </div>
-            </div>
-
-            <div>
-              <ImageUploadField
-                id="imagen" label="Imagen de portada"
-                preview={preview}
-                onChange={(e) => setImagen(e.target.files[0])}
-                required={!editMode}
-              />
-              <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-1.5 flex items-start gap-1">
-                <span className="text-primary">💡</span>
-                <span>Esta imagen aparecerá arriba del titular en la portada. Tamaño recomendado: 1200×600 píxeles.</span>
-              </p>
-            </div>
-          </div>
-        </FormCard>
+          submitting={enviando}
+          submitLabel={editMode ? 'Guardar cambios' : 'Publicar noticia'}
+          steps={[
+            {
+              id: 'texto',
+              title: 'El texto',
+              description: 'Titular y cuerpo',
+              content: (
+                <div className="space-y-4">
+                  <div>
+                    <TextField
+                      id="titulo" name="titulo" label="¿Qué quieres contar?"
+                      value={titulo} onChange={(e) => setTitulo(e.target.value)}
+                      placeholder="Ej: Mi colegio ganó olimpiada de matemáticas"
+                      maxLength={100} icon={Type}
+                    />
+                    <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-1.5 flex items-start gap-1">
+                      <span className="text-primary">💡</span>
+                      <span>Este es el titular que verán los padres en la portada. Claro y directo. Máx. 100 letras.</span>
+                    </p>
+                    <p className="text-xs text-slate-400 mt-1 text-right">{titulo.length}/100</p>
+                  </div>
+                  <div>
+                    <TextAreaField
+                      id="contenido" name="contenido" label="Cuenta los detalles"
+                      value={contenido} onChange={(e) => setContenido(e.target.value)}
+                      placeholder="Todos los detalles de la noticia. Qué pasó, cuándo, quiénes participaron..."
+                      rows={10} icon={FileText}
+                    />
+                    <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-1.5 flex items-start gap-1">
+                      <span className="text-primary">💡</span>
+                      <span>Sé claro y ordenado. Los párrafos largos cansan al lector.</span>
+                    </p>
+                  </div>
+                </div>
+              ),
+            },
+            {
+              id: 'imagen',
+              title: 'La imagen',
+              description: editMode ? 'Opcional' : 'Recomendada',
+              content: (
+                <div className="space-y-4">
+                  <ImageUploadField
+                    id="imagen" label={editMode ? 'Cambiar imagen (opcional)' : 'Imagen de portada'}
+                    preview={preview}
+                    onChange={(e) => setImagen(e.target.files[0])}
+                    required={!editMode}
+                  />
+                  <p className="text-xs text-slate-500 dark:text-dark-text-muted flex items-start gap-1">
+                    <span className="text-primary">💡</span>
+                    <span>Esta imagen aparece arriba del titular en la portada. Tamaño recomendado: 1200×600 píxeles. Se ve mejor si es horizontal.</span>
+                  </p>
+                </div>
+              ),
+            },
+            {
+              id: 'revisar',
+              title: 'Revisar',
+              description: 'Verifica antes de publicar',
+              content: (
+                <div className="space-y-4">
+                  <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-dark-border rounded-lg p-4 space-y-3">
+                    <div className="flex items-start gap-2">
+                      <Check size={16} className="text-emerald-500 mt-0.5 flex-shrink-0" />
+                      <div>
+                        <p className="text-xs font-bold uppercase text-slate-500 tracking-wider">Titular</p>
+                        <p className="text-sm text-slate-900 dark:text-dark-text">{titulo || <em className="text-slate-400">Sin titular</em>}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Check size={16} className={contenido ? 'text-emerald-500' : 'text-slate-300'} />
+                      <div>
+                        <p className="text-xs font-bold uppercase text-slate-500 tracking-wider">Cuerpo</p>
+                        <p className="text-sm text-slate-600 dark:text-dark-text-muted line-clamp-3">
+                          {contenido || <em className="text-slate-400">Sin contenido</em>}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Check size={16} className={preview ? 'text-emerald-500' : 'text-amber-500'} />
+                      <div>
+                        <p className="text-xs font-bold uppercase text-slate-500 tracking-wider">Imagen</p>
+                        <p className="text-sm text-slate-600 dark:text-dark-text-muted">
+                          {preview ? '✓ Imagen lista para subir' : editMode ? 'Se mantiene la imagen anterior' : '⚠ Sin imagen (opcional pero recomendado)'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-dark-text-muted text-center">
+                    Si todo está bien, pulsa <strong>Publicar noticia</strong>.
+                  </p>
+                </div>
+              ),
+            },
+          ]}
+        />
       )}
 
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm mb-4">
