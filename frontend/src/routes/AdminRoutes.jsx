@@ -9,6 +9,8 @@ import AdminDocumentosInstitucionales from '../pages/AdminDocumentosInstituciona
 import AdminGaleria from '../pages/AdminGaleria';
 import AdminConfigInicio from '../pages/AdminConfigInicio';
 import AdminMesaPartes from '../pages/AdminMesaPartes';
+import AdminMiCuenta from '../pages/AdminMiCuenta';
+import AdminUsuarios from '../pages/AdminUsuarios';
 
 function AdminRoutes() {
   return (
@@ -28,6 +30,10 @@ function AdminRoutes() {
       <Route path="administrativos" element={<AdminAdministrativos />} />
       <Route path="galeria" element={<AdminGaleria />} />
       <Route path="config-inicio" element={<AdminConfigInicio />} />
+
+      {/* Cuenta y Usuarios */}
+      <Route path="mi-cuenta" element={<AdminMiCuenta />} />
+      <Route path="usuarios" element={<AdminUsuarios />} />
 
       {/* Compatibilidad con rutas antiguas */}
       <Route path="transparencia" element={<Navigate to="/admin/documentos-institucionales" replace />} />

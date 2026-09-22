@@ -164,10 +164,10 @@ function AdminGaleria() {
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TextField
-              id="titulo" name="titulo" label="TÃ­tulo"
+              id="titulo" name="titulo" label="Ti­tulo"
               value={form.titulo}
               onChange={(e) => setForm({ ...form, titulo: e.target.value })}
-              placeholder="Ej: Ceremonia del DÃ­a del Logro" required
+              placeholder="Ej: Ceremonia del Dia del Logro" required
             />
             <div className="space-y-1.5">
               <label htmlFor="tipo" className="block text-xs font-semibold text-slate-700">Tipo de Recurso</label>

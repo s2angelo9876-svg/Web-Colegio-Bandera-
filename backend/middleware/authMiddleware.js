@@ -42,4 +42,19 @@ const soloAdmin = (req, res, next) => {
   next();
 };
 
-module.exports = { verificarToken, soloAdmin };
+/**
+ * Middleware que permite acceso a admin Y editor.
+ * Los editores pueden crear/editar contenido pero NO eliminar.
+ */
+const adminOEditor = (req, res, next) => {
+  const rol = req.usuario?.rol;
+  if (rol !== 'admin' && rol !== 'editor') {
+    return res.status(403).json({
+      error: 'No tienes permisos para esta accion',
+      tu_rol_actual: rol,
+    });
+  }
+  next();
+};
+
+module.exports = { verificarToken, soloAdmin, adminOEditor };

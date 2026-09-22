@@ -9,7 +9,8 @@ import {
   Newspaper, Calendar, Megaphone, FolderTree,
   Users, Image as ImageIcon, LayoutDashboard, LogOut,
   ChevronRight, Bell, Briefcase, Moon, Sun,
-  ClipboardList, GraduationCap, FileText, Sparkles, AlertCircle, ArrowRight
+  ClipboardList, GraduationCap, FileText, Sparkles, AlertCircle, ArrowRight,
+  UserCircle, UserCog
 } from 'lucide-react';
 import AdminChart from '../components/AdminChart';
 
@@ -257,7 +258,15 @@ function Admin() {
               <SidebarItem to="administrativos" icon={Briefcase} label="Administrativos" active={isActive('administrativos')} />
               <SidebarItem to="galeria" icon={ImageIcon} label="Galería" active={isActive('galeria')} />
               <SidebarItem to="config-inicio" icon={Sparkles} label="Personalizar" active={isActive('config-inicio')} />
+              <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest px-3 mt-6 mb-2">Cuenta</p>
+              <SidebarItem to="usuarios" icon={UserCog} label="Usuarios" active={isActive('usuarios')} />
+              <SidebarItem to="mi-cuenta" icon={UserCircle} label="Mi Cuenta" active={isActive('mi-cuenta')} />
             </>
+          )}
+
+          {/* Mi cuenta la ven todos los roles */}
+          {usuario?.rol !== 'admin' && (
+            <SidebarItem to="mi-cuenta" icon={UserCircle} label="Mi Cuenta" active={isActive('mi-cuenta')} />
           )}
         </nav>
 

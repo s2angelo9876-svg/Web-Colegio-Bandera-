@@ -68,4 +68,81 @@ const logout = (req, res) => {
   res.json({ mensaje: 'Sesión cerrada' });
 };
 
-module.exports = { login, verificar, logout, COOKIE_NAME };
+// Cambiar contrasena del usuario autenticado
+const cambiarPassword = async (req, res) => {
+  const { passwordActual, passwordNueva } = req.body;
+  const userId = req.usuario.id;
+
+  if (!passwordActual || !passwordNueva) {
+    return res.status(400).json({ error: 'Debes ingresar la contrasena actual y la nueva.' });
+  }
+  if (passwordNueva.length < 6) {
+    return res.status(400).json({ error: 'La nueva contrasena debe tener al menos 6 caracteres.' });
+  }
+  if (passwordActual === passwordNueva) {
+    return res.status(400).json({ error: 'La nueva contrasena debe ser diferente a la actual.' });
+  }
+
+  try {
+    const { rows } = await db.query('SELECT password FROM usuarios WHERE id = $1', [userId]);
+    if (rows.length === 0) return res.status(404).json({ error: 'Usuario no encontrado.' });
+
+    const passwordValida = await bcrypt.compare(passwordActual, rows[0].password);
+    if (!passwordValida) {
+      return res.status(401).json({ error: 'La contrasena actual es incorrecta.' });
+    }
+
+    const nuevoHash = await bcrypt.hash(passwordNueva, 10);
+    await db.query('UPDATE usuarios SET password = $1 WHERE id = $2', [nuevoHash, userId]);
+
+    res.json({ mensaje: 'Contrasena actualizada correctamente.' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al cambiar la contrasena.' });
+  }
+};
+
+// Actualizar perfil del usuario autenticado (email, username)
+const actualizarPerfil = async (req, res) => {
+  const { username, email } = req.body;
+  const userId = req.usuario.id;
+
+  if (!username || username.trim().length < 3) {
+    return res.status(400).json({ error: 'El usuario debe tener al menos 3 caracteres.' });
+  }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return res.status(400).json({ error: 'El email no tiene formato valido.' });
+  }
+
+  try {
+    // Verificar unicidad de username y email
+    const { rows: dupes } = await db.query(
+      'SELECT id FROM usuarios WHERE (username = $1 OR (email = $2 AND $2 IS NOT NULL)) AND id != $3',
+      [username, email || null, userId]
+    );
+    if (dupes.length > 0) {
+      return res.status(409).json({ error: 'Ese usuario o email ya esta en uso.' });
+    }
+
+    await db.query(
+      'UPDATE usuarios SET username = $1, email = $2 WHERE id = $3',
+      [username.trim(), email || null, userId]
+    );
+
+    const { rows } = await db.query(
+      'SELECT id, username, email, rol FROM usuarios WHERE id = $1',
+      [userId]
+    );
+    res.json({ mensaje: 'Perfil actualizado.', usuario: rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al actualizar el perfil.' });
+  }
+};
+
+module.exports = {
+  login,
+  verificar,
+  logout,
+  cambiarPassword,
+  actualizarPerfil,
+  COOKIE_NAME,
+};
