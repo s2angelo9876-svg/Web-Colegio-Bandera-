@@ -1,9 +1,10 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Suspense, lazy, useMemo } from 'react';
+import { Suspense, lazy, useMemo, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { AuthProvider, useAuth } from './context/authContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
+import { TourProvider } from './context/TourContext';
 import Navbar from './components/Navbar';
 import ErrorBoundary from './components/ErrorBoundary';
 import { usePageTracker } from './hooks/usePageTracker';
@@ -51,7 +52,24 @@ RutaProtegida.propTypes = {
 function AppContent() {
   const { usuario } = useAuth();
   const location = useLocation();
+  const [helpOpen, setHelpOpen] = useState(false);
   usePageTracker();
+
+  // Atajo global: tecla ? abre el centro de ayuda (solo si hay sesion)
+  useEffect(() => {
+    if (!usuario) return;
+    const onKey = (e) => {
+      // No abrir si esta escribiendo en un input
+      const tag = (e.target.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || e.target.isContentEditable) return;
+      if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+        e.preventDefault();
+        setHelpOpen(true);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [usuario]);
 
   const isAdminPath = useMemo(() => location.pathname.startsWith('/admin'), [location.pathname]);
 
@@ -114,20 +132,27 @@ function AppContent() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </Suspense>
+
+      <HelpCenterWrapper open={helpOpen} onClose={() => setHelpOpen(false)} />
     </>
   );
 }
 
+// Wrapper para importar dinamicamente y evitar carga inicial
+const HelpCenterWrapper = lazy(() => import('./components/HelpCenterModal'));
+
 function App() {
   return (
     <ErrorBoundary>
-      <ToastProvider>
-        <AuthProvider>
-          <ThemeProvider>
-            <AppContent />
-          </ThemeProvider>
-        </AuthProvider>
-      </ToastProvider>
+      <TourProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <ThemeProvider>
+              <AppContent />
+            </ThemeProvider>
+          </AuthProvider>
+        </ToastProvider>
+      </TourProvider>
     </ErrorBoundary>
   );
 }

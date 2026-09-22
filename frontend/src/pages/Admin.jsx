@@ -6,12 +6,15 @@ import { getStats, getPageViewStats, getActivityLog } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
 import { NotificationBell } from '../components/NotificationBell';
+import HelpCenterModal from '../components/HelpCenterModal';
+import WelcomeModal from '../components/WelcomeModal';
+import TourGuide from '../components/TourGuide';
 import {
   Newspaper, Calendar, Megaphone, FolderTree,
   Users, Image as ImageIcon, LayoutDashboard, LogOut,
-  ChevronRight, Briefcase, Moon, Sun,
+  ChevronRight, Bell, Briefcase, Moon, Sun,
   ClipboardList, GraduationCap, FileText, Sparkles, AlertCircle, ArrowRight,
-  UserCircle, UserCog, Activity, Eye, TrendingUp, Clock, PlusCircle, Edit2, Trash2
+  UserCircle, UserCog, HelpCircle
 } from 'lucide-react';
 import AdminChart from '../components/AdminChart';
 
@@ -185,6 +188,7 @@ function Admin() {
   const [stats, setStats] = useState(null);
   const [pageViewStats, setPageViewStats] = useState(null);
   const [recentActivity, setRecentActivity] = useState([]);
+  const [helpOpen, setHelpOpen] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -241,7 +245,7 @@ function Admin() {
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-dark-bg">
-      <aside className="w-64 bg-slate-900 flex flex-col p-5 sticky top-0 h-screen">
+      <aside data-tour="dashboard-sidebar" className="w-64 bg-slate-900 flex flex-col p-5 sticky top-0 h-screen">
         <div className="mb-8 px-2 flex items-center gap-3">
           <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
             <LayoutDashboard size={20} className="text-white" />
@@ -304,9 +308,20 @@ function Admin() {
       <main className="flex-1 p-6 lg:p-8 overflow-y-auto bg-slate-50 dark:bg-dark-bg">
         {/* Header con saludo y controles superiores */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <SaludoHeader usuario={usuario} />
+          <div data-tour="dashboard-bienvenida" className="flex-1">
+            <SaludoHeader usuario={usuario} />
+          </div>
           <div className="flex items-center gap-2 self-start sm:self-auto bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border p-1 rounded-xl shadow-sm">
             <NotificationBell />
+            <button
+              type="button"
+              onClick={() => setHelpOpen(true)}
+              title="Ayuda y tours (tecla ?)"
+              aria-label="Abrir centro de ayuda"
+              className="p-2 text-slate-500 hover:text-primary dark:text-dark-text-muted dark:hover:text-dark-accent-text hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
+            >
+              <HelpCircle size={20} />
+            </button>
             <button
               type="button"
               onClick={toggleDarkMode}
@@ -320,7 +335,7 @@ function Admin() {
 
         {/* Alertas proactivas */}
         {alertas.length > 0 && (
-          <div className="mb-6 space-y-3">
+          <div className="mb-6 space-y-3" data-tour="dashboard-alertas">
             {alertas.map((a, i) => (
               <AlertCard key={i} {...a} />
             ))}
@@ -328,7 +343,7 @@ function Admin() {
         )}
 
         {/* Acciones rápidas grandes */}
-        <div className="mb-8">
+        <div className="mb-8" data-tour="dashboard-acciones">
           <h2 className="text-xs font-bold text-slate-500 dark:text-dark-text-muted uppercase tracking-wider mb-3">
             ¿Qué quieres hacer hoy?
           </h2>
@@ -365,7 +380,7 @@ function Admin() {
         </div>
 
         {/* Estadísticas con labels amigables */}
-        <div className="mb-8">
+        <div className="mb-8" data-tour="dashboard-stats">
           <h2 className="text-xs font-bold text-slate-500 dark:text-dark-text-muted uppercase tracking-wider mb-3">
             Tu web en números
           </h2>
@@ -554,6 +569,15 @@ function Admin() {
           </div>
         )}
       </main>
+
+      {/* Centro de ayuda (boton ? del header) */}
+      <HelpCenterModal open={helpOpen} onClose={() => setHelpOpen(false)} />
+
+      {/* Modal de bienvenida solo la primera vez */}
+      <WelcomeModal />
+
+      {/* Tour activo (spotlight + tarjeta) */}
+      <TourGuide />
     </div>
   );
 }

@@ -240,6 +240,7 @@ function AdminNoticias() {
         onButtonClick={() => showForm ? resetForm() : setShowForm(true)}
         formOpen={showForm}
         addButtonLabel="Nueva Noticia"
+        buttonTourId="noticias-boton-nueva"
       />
 
       {showForm && (
@@ -267,7 +268,7 @@ function AdminNoticias() {
               description: 'Título, foto y etiquetas',
               content: (
                 <div className="space-y-5">
-                  <div>
+                  <div data-tour="noticias-titulo">
                     <TextField
                       id="titulo" name="titulo" label="¿Cuál es el titular de la noticia?"
                       value={titulo} onChange={(e) => setTitulo(e.target.value)}
@@ -281,7 +282,7 @@ function AdminNoticias() {
                     <p className="text-xs text-slate-400 mt-1 text-right">{titulo.length}/120</p>
                   </div>
 
-                  <div>
+                  <div data-tour="noticias-imagen">
                     <ImageUploadField
                       id="imagen" label={editMode ? 'Cambiar imagen de portada (opcional)' : 'Imagen de portada'}
                       preview={preview}

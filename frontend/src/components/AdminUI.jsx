@@ -1,7 +1,7 @@
 ﻿import PropTypes from 'prop-types';
 import { Plus, X, Search, Edit3, Trash2, Save, FileText, Type, Image as ImageIcon, Calendar, RefreshCw, ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
 
-export function AdminPageHeader({ title, subtitle, badge, onButtonClick, formOpen, addButtonLabel = 'Crear' }) {
+export function AdminPageHeader({ title, subtitle, badge, onButtonClick, formOpen, addButtonLabel = 'Crear', buttonTourId }) {
   return (
     <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
       <div>
@@ -14,6 +14,7 @@ export function AdminPageHeader({ title, subtitle, badge, onButtonClick, formOpe
       {onButtonClick && (
         <button
           onClick={onButtonClick}
+          data-tour={buttonTourId}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-lg font-semibold text-xs uppercase tracking-wider transition active:scale-95 ${
             formOpen
               ? 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'
@@ -35,6 +36,7 @@ AdminPageHeader.propTypes = {
   onButtonClick: PropTypes.func,
   formOpen: PropTypes.bool,
   addButtonLabel: PropTypes.string,
+  buttonTourId: PropTypes.string,
 };
 
 export function FormCard({ title, icon, children, onSubmit, submitting, submitLabel, onCancel }) {
