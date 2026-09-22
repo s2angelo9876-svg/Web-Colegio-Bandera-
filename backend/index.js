@@ -1,4 +1,4 @@
-const express = require('express');
+﻿const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const helmet = require('helmet');
@@ -42,6 +42,7 @@ const mesaPartesRoutes     = require('./routes/mesaPartesRoutes');
 const directivoRoutes      = require('./routes/directivoRoutes');
 const statsRoutes          = require('./routes/statsRoutes');
 const seoRoutes            = require('./routes/seoRoutes');
+const debugRoutes          = require('./routes/debugRoutes');
 const adminResetRoutes     = require('./routes/adminResetRoutes');
 const usuariosRoutes       = require('./routes/usuariosRoutes');
 const tagsRoutes           = require('./routes/tagsRoutes');
@@ -143,6 +144,7 @@ app.use('/api/tags',            tagsRoutes);
 app.use('/api/page-views',      pageViewRoutes);
 app.use('/api/activity-log',    activityLogRoutes);
 app.use('/api/notifications',   notificationRoutes);
+app.use('/api/_debug',         debugRoutes);
 app.use('/',                    seoRoutes);
 app.use('/api/auth',            authRoutes);
 
@@ -197,3 +199,4 @@ app.use((err, req, res, _next) => {
 app.listen(PORT, () => {
   logger.info(`Servidor corriendo en http://localhost:${PORT} (${NODE_ENV})`);
 });
+
