@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { API, getEventos } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
+import { successWithLink, errorMsg, confirmDelete } from '../utils/sweetalert';
 import {
   AdminPageHeader, FormCard, TextField, TextAreaField,
   SearchBar, Pagination, ActionButtons
@@ -69,34 +70,30 @@ function AdminEventos() {
     try {
       if (editMode) {
         await API.put(`/eventos/${editMode}`, form);
-        Toast.fire({ icon: 'success', title: 'Evento actualizado' });
+        Toast.fire({ icon: 'success', title: 'Cambios guardados' });
       } else {
         await API.post('/eventos', form);
-        Toast.fire({ icon: 'success', title: 'Evento agendado' });
+        successWithLink(
+          '¡Evento agendado!',
+          'Tu evento ya aparece en el calendario público de la web.',
+          'https://colegio-bandera.vercel.app/eventos'
+        );
       }
       resetForm();
       cargarEventos();
-    } catch {
-      Swal.fire('Error', 'No se pudo guardar el evento', 'error');
+    } catch (err) {
+      errorMsg('No se pudo guardar', err.response?.data?.error || 'Revisa los datos e intenta de nuevo.');
     } finally { setEnviando(false); }
   };
 
   const handleEliminar = useCallback((id) => {
-    Swal.fire({
-      title: '¿Eliminar evento?',
-      text: 'Desaparecerá del calendario público',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await API.delete(`/eventos/${id}`);
-          Toast.fire({ icon: 'success', title: 'Eliminado' });
-          cargarEventos();
-        } catch { Swal.fire('Error', 'No se pudo eliminar', 'error'); }
+    confirmDelete('este evento', async () => {
+      try {
+        await API.delete(`/eventos/${id}`);
+        Toast.fire({ icon: 'success', title: 'Evento eliminado' });
+        cargarEventos();
+      } catch (err) {
+        errorMsg('No se pudo eliminar', err.response?.data?.error || 'Intenta de nuevo en unos segundos.');
       }
     });
   }, [cargarEventos]);
@@ -141,21 +138,28 @@ function AdminEventos() {
           onCancel={resetForm}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <TextField
+                id="titulo" name="titulo" label="Nombre del evento"
+                value={form.titulo}
+                onChange={(e) => setForm({ ...form, titulo: e.target.value })}
+                placeholder="Ej: Ceremonia de Graduación 2026" required
+              />
+              <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>El nombre del evento tal como aparecerá en el calendario público.</span>
+              </p>
+            </div>
             <TextField
-              id="titulo" name="titulo" label="Nombre del Evento"
-              value={form.titulo}
-              onChange={(e) => setForm({ ...form, titulo: e.target.value })}
-              placeholder="Ej: Ceremonia de Graduación" required
-            />
-            <TextField
-              id="lugar" name="lugar" label="Ubicación"
+              id="lugar" name="lugar" label="Lugar"
               value={form.lugar}
               onChange={(e) => setForm({ ...form, lugar: e.target.value })}
               placeholder="Ej: Auditorio Principal" required
               icon={MapPin}
             />
+            <div></div>
             <TextField
-              id="fecha_evento" name="fecha_evento" label="Fecha"
+              id="fecha_evento" name="fecha_evento" label="Fecha del evento"
               value={form.fecha_evento}
               onChange={(e) => setForm({ ...form, fecha_evento: e.target.value })}
               type="date" required
@@ -170,11 +174,16 @@ function AdminEventos() {
             />
             <div className="md:col-span-2">
               <TextAreaField
-                id="descripcion" name="descripcion" label="Descripción"
+                id="descripcion" name="descripcion" label="Descripción del evento"
                 value={form.descripcion}
                 onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
-                placeholder="Detalle del evento..." rows={4}
+                placeholder="Cuenta de qué trata el evento, qué se necesita llevar, etc."
+                rows={4}
               />
+              <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>Opcional. Detalles útiles: qué llevar, dress code, requisitos, etc.</span>
+              </p>
             </div>
           </div>
         </FormCard>

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { getNoticias, API, UPLOADS_URL } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
+import { successWithLink, errorMsg } from '../utils/sweetalert';
 import {
   AdminPageHeader, FormCard, TextField, TextAreaField, ImageUploadField,
   SearchBar, Pagination, ActionButtons
@@ -101,34 +102,30 @@ function AdminNoticias() {
     try {
       if (editMode) {
         await API.put(`/noticias/${editMode}`, formData);
-        Toast.fire({ icon: 'success', title: 'Noticia actualizada' });
+        Toast.fire({ icon: 'success', title: 'Cambios guardados correctamente' });
       } else {
         await API.post('/noticias', formData);
-        Toast.fire({ icon: 'success', title: 'Noticia publicada' });
+        successWithLink(
+          '¡Noticia publicada!',
+          'Tu noticia ya está visible para todos los visitantes de la web.',
+          'https://colegio-bandera.vercel.app/noticias'
+        );
       }
       resetForm();
       cargarNoticias();
-    } catch {
-      Swal.fire('Error', 'Hubo un problema con la operación', 'error');
+    } catch (err) {
+      errorMsg('No se pudo guardar', err.response?.data?.error || 'Revisa tu conexión e intenta de nuevo.');
     } finally { setEnviando(false); }
   };
 
   const handleEliminar = useCallback((id) => {
-    Swal.fire({
-      title: '¿Confirmar eliminación?',
-      text: 'Esta acción es irreversible',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      confirmButtonText: 'Sí, borrar',
-      cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await API.delete(`/noticias/${id}`);
-          Toast.fire({ icon: 'success', title: 'Eliminado correctamente' });
-          cargarNoticias();
-        } catch { Swal.fire('Error', 'No se pudo eliminar', 'error'); }
+    confirmDelete('esta noticia', async () => {
+      try {
+        await API.delete(`/noticias/${id}`);
+        Toast.fire({ icon: 'success', title: 'Noticia eliminada' });
+        cargarNoticias();
+      } catch (err) {
+        errorMsg('No se pudo eliminar', err.response?.data?.error || 'Intenta de nuevo en unos segundos.');
       }
     });
   }, [cargarNoticias]);
@@ -165,23 +162,45 @@ function AdminNoticias() {
         >
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div className="space-y-4">
-              <TextField
-                id="titulo" name="titulo" label="Título de la Noticia"
-                value={titulo} onChange={(e) => setTitulo(e.target.value)}
-                placeholder="Ingrese un titular..." required maxLength="100" icon={Type}
-              />
-              <TextAreaField
-                id="contenido" name="contenido" label="Contenido"
-                value={contenido} onChange={(e) => setContenido(e.target.value)}
-                placeholder="Desarrolle la información aquí..." required rows={10} icon={FileText}
-              />
+              <div>
+                <TextField
+                  id="titulo" name="titulo" label="Titular de la noticia"
+                  value={titulo} onChange={(e) => setTitulo(e.target.value)}
+                  placeholder="Ej: Mi colegio ganó olimpiada de matemáticas"
+                  required maxLength="100" icon={Type}
+                />
+                <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-1.5 flex items-start gap-1">
+                  <span className="text-primary">💡</span>
+                  <span>Este es el texto que verán los padres en la portada. Sé claro y directo. Máximo 100 letras.</span>
+                </p>
+              </div>
+
+              <div>
+                <TextAreaField
+                  id="contenido" name="contenido" label="Cuerpo de la noticia"
+                  value={contenido} onChange={(e) => setContenido(e.target.value)}
+                  placeholder="Cuenta aquí todos los detalles de la noticia..."
+                  required rows={10} icon={FileText}
+                />
+                <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-1.5 flex items-start gap-1">
+                  <span className="text-primary">💡</span>
+                  <span>Escribe toda la información. Puedes usar párrafos. Luego, si quieres, puedes agregarle formato (negrita, links).</span>
+                </p>
+              </div>
             </div>
-            <ImageUploadField
-              id="imagen" label="Imagen de Portada"
-              preview={preview}
-              onChange={(e) => setImagen(e.target.files[0])}
-              required={!editMode}
-            />
+
+            <div>
+              <ImageUploadField
+                id="imagen" label="Imagen de portada"
+                preview={preview}
+                onChange={(e) => setImagen(e.target.files[0])}
+                required={!editMode}
+              />
+              <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>Esta imagen aparecerá arriba del titular en la portada. Tamaño recomendado: 1200×600 píxeles.</span>
+              </p>
+            </div>
           </div>
         </FormCard>
       )}
