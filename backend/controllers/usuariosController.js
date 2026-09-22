@@ -6,10 +6,13 @@ const VALID_ROLES = ['admin', 'editor', 'user'];
 // Listar usuarios (solo admin)
 exports.getUsuarios = async (req, res) => {
   try {
+    // Usar COALESCE para tolerar tanto 'created_at' (ingles) como
+    // 'creado_en' (espanol) en caso de que la tabla original de Supabase
+    // use el nombre en espanol.
     const { rows } = await db.query(
       `SELECT id, username, email, rol,
-              to_char(ultimo_acceso, 'YYYY-MM-DD HH24:MI') AS ultimo_acceso,
-              to_char(created_at, 'YYYY-MM-DD') AS creado
+              to_char(COALESCE(ultimo_acceso, NOW()), 'YYYY-MM-DD HH24:MI') AS ultimo_acceso,
+              to_char(COALESCE(created_at, creado_en, NOW()), 'YYYY-MM-DD') AS creado
        FROM usuarios
        ORDER BY rol DESC, username ASC`
     );
@@ -21,8 +24,12 @@ exports.getUsuarios = async (req, res) => {
       message: err.message,
       code: err.code,
       detail: err.detail,
+      hint: 'Si la columna no existe, puede ser que la tabla original use nombre diferente. Ej: creado_en en lugar de created_at.',
     });
-    res.status(500).json({ error: 'Error al obtener usuarios' });
+    res.status(500).json({
+      error: 'Error al obtener usuarios',
+      detail: err.message,
+    });
   }
 };
 
@@ -80,6 +87,8 @@ exports.updateUsuario = async (req, res) => {
       );
       if (adminCount[0].n <= 1) {
         return res.status(400).json({ error: 'No puedes quitar el rol admin al ultimo administrador.' });
+      }
+    }
       }
     }
 
