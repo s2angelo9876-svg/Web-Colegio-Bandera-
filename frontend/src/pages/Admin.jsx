@@ -14,7 +14,7 @@ import {
   Users, Image as ImageIcon, LayoutDashboard, LogOut,
   ChevronRight, Bell, Briefcase, Moon, Sun,
   ClipboardList, GraduationCap, FileText, Sparkles, AlertCircle, ArrowRight,
-  UserCircle, UserCog, HelpCircle
+  UserCircle, UserCog, HelpCircle, Activity
 } from 'lucide-react';
 import AdminChart from '../components/AdminChart';
 
