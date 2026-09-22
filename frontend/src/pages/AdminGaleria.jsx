@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
+import { successWithLink, errorMsg, confirmDelete } from '../utils/sweetalert';
 import { ActionButtons, AdminPageHeader, FormCard, ImageUploadField, SearchBar, TextAreaField, TextField } from '../components/AdminUI';
 import { Film, Image as ImageIcon } from 'lucide-react';
 
@@ -79,7 +80,7 @@ function AdminGaleria() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (form.tipo === 'foto' && !file) {
-      Swal.fire('Error', 'Selecciona una imagen para subir', 'error');
+      errorMsg('Falta la imagen', 'Selecciona una imagen para la foto antes de publicar.');
       return;
     }
     setEnviando(true);
@@ -95,30 +96,26 @@ function AdminGaleria() {
       if (file) formData.append('imagen', file);
 
       await API.post('/galeria', formData);
-      Toast.fire({ icon: 'success', title: 'Elemento agregado' });
+      successWithLink(
+        '¡Elemento agregado a la galería!',
+        'Tu foto o video ya está visible para todos.',
+        'https://colegio-bandera.vercel.app/galeria'
+      );
       resetForm();
       cargarGaleria();
-    } catch {
-      Swal.fire('Error', 'No se pudo publicar el elemento', 'error');
+    } catch (err) {
+      errorMsg('No se pudo publicar', err.response?.data?.error || 'Verifica el archivo e intenta de nuevo.');
     } finally { setEnviando(false); }
   };
 
   const handleEliminar = useCallback((id) => {
-    Swal.fire({
-      title: 'Â¿Eliminar elemento?',
-      text: 'Esta acciÃ³n no se puede deshacer',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      confirmButtonText: 'SÃ­, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await API.delete(`/galeria/${id}`);
-          Toast.fire({ icon: 'success', title: 'Eliminado' });
-          cargarGaleria();
-        } catch { Swal.fire('Error', 'No se pudo eliminar', 'error'); }
+    confirmDelete('este elemento de la galería', async () => {
+      try {
+        await API.delete(`/galeria/${id}`);
+        Toast.fire({ icon: 'success', title: 'Elemento eliminado' });
+        cargarGaleria();
+      } catch (err) {
+        errorMsg('No se pudo eliminar', err.response?.data?.error || 'Intenta de nuevo en unos segundos.');
       }
     });
   }, [cargarGaleria]);

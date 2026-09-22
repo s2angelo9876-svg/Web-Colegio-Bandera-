@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { API, getComunicados } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
+import { successWithLink, errorMsg, confirmDelete } from '../utils/sweetalert';
 import {
   AdminPageHeader, FormCard, TextField, TextAreaField,
   SearchBar, ActionButtons
@@ -67,37 +68,33 @@ function AdminComunicados() {
           ...form,
           fecha: new Date().toISOString().slice(0, 19).replace('T', ' ')
         });
-        Toast.fire({ icon: 'success', title: 'Comunicado actualizado' });
+        Toast.fire({ icon: 'success', title: 'Cambios guardados' });
       } else {
         await API.post('/comunicados', {
           ...form,
           fecha: new Date().toISOString().slice(0, 19).replace('T', ' ')
         });
-        Toast.fire({ icon: 'success', title: 'Comunicado publicado' });
+        successWithLink(
+          '¡Comunicado publicado!',
+          'Tu comunicado ya aparece en la sección de Comunicados.',
+          'https://colegio-bandera.vercel.app/comunicados'
+        );
       }
       resetForm();
       cargar();
-    } catch {
-      Swal.fire('Error', 'No se pudo publicar el comunicado', 'error');
+    } catch (err) {
+      errorMsg('No se pudo publicar', err.response?.data?.error || 'Revisa los datos e intenta de nuevo.');
     } finally { setEnviando(false); }
   };
 
   const handleEliminar = useCallback((id) => {
-    Swal.fire({
-      title: '¿Eliminar comunicado?',
-      text: 'Esta acción no se puede deshacer',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await API.delete(`/comunicados/${id}`);
-          Toast.fire({ icon: 'success', title: 'Eliminado' });
-          cargar();
-        } catch { Swal.fire('Error', 'No se pudo eliminar', 'error'); }
+    confirmDelete('este comunicado', async () => {
+      try {
+        await API.delete(`/comunicados/${id}`);
+        Toast.fire({ icon: 'success', title: 'Comunicado eliminado' });
+        cargar();
+      } catch (err) {
+        errorMsg('No se pudo eliminar', err.response?.data?.error || 'Intenta de nuevo en unos segundos.');
       }
     });
   }, [cargar]);
@@ -136,35 +133,51 @@ function AdminComunicados() {
           onCancel={resetForm}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <TextField
-              id="titulo" name="titulo" label="Título del Comunicado"
-              value={form.titulo}
-              onChange={(e) => setForm({ ...form, titulo: e.target.value })}
-              placeholder="Ej: Suspensión de labores..." required
-            />
-            <div className="space-y-1.5">
-              <label htmlFor="tipo" className="block text-xs font-semibold text-slate-700">Tipo de Comunicado</label>
-              <div className="relative">
-                <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                <select
-                  id="tipo"
-                  value={form.tipo}
-                  onChange={(e) => setForm({ ...form, tipo: e.target.value })}
-                  className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
-                >
-                  <option value="aviso">Aviso General</option>
-                  <option value="circular">Circular Administrativa</option>
-                  <option value="urgente">Alerta Urgente</option>
-                </select>
+            <div>
+              <TextField
+                id="titulo" name="titulo" label="Título del comunicado"
+                value={form.titulo}
+                onChange={(e) => setForm({ ...form, titulo: e.target.value })}
+                placeholder="Ej: Suspensión de labores el viernes" required
+              />
+              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>Título claro y directo. Los padres lo verán en la página principal.</span>
+              </p>
+            </div>
+            <div>
+              <div className="space-y-1.5">
+                <label htmlFor="tipo" className="block text-xs font-semibold text-slate-700">Tipo de comunicado</label>
+                <div className="relative">
+                  <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <select
+                    id="tipo"
+                    value={form.tipo}
+                    onChange={(e) => setForm({ ...form, tipo: e.target.value })}
+                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
+                  >
+                    <option value="aviso">Aviso General</option>
+                    <option value="circular">Circular Administrativa</option>
+                    <option value="urgente">Alerta Urgente</option>
+                  </select>
+                </div>
               </div>
+              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>Urgente se muestra con badge rojo. Circular en azul. General en gris.</span>
+              </p>
             </div>
             <div className="md:col-span-2">
               <TextAreaField
-                id="descripcion" name="descripcion" label="Mensaje Detallado"
+                id="descripcion" name="descripcion" label="Cuerpo del comunicado"
                 value={form.descripcion}
                 onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
-                placeholder="Escribe el contenido detallado aquí..." required rows={6}
+                placeholder="Escribe el mensaje completo aquí..." required rows={6}
               />
+              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>Todos los detalles. Si es urgente, ponlo al principio.</span>
+              </p>
             </div>
           </div>
         </FormCard>

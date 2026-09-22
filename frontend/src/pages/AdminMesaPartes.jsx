@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
+import { quickToast, errorMsg, confirmDelete } from '../utils/sweetalert';
 import {
   AdminPageHeader, SearchBar, ActionButtons
 } from '../components/AdminUI';
@@ -65,36 +66,22 @@ function AdminMesaPartes() {
   const handleActualizarEstado = useCallback(async (id, nuevoEstado) => {
     try {
       await API.patch(`/mesa-partes/${id}/estado`, { estado: nuevoEstado });
-      Swal.fire({
-        toast: true,
-        position: 'top-end',
-        icon: 'success',
-        title: `Estado actualizado a ${nuevoEstado}`,
-        showConfirmButton: false,
-        timer: 2000
-      });
+      const label = { pendiente: 'Pendiente', en_proceso: 'En proceso', resuelto: 'Resuelto' }[nuevoEstado] || nuevoEstado;
+      quickToast('success', `Estado: ${label}`);
       cargarTramites();
-    } catch {
-      Swal.fire('Error', 'No se pudo actualizar el estado', 'error');
+    } catch (err) {
+      errorMsg('No se pudo actualizar', err.response?.data?.error || 'Intenta de nuevo en unos segundos.');
     }
   }, [cargarTramites]);
 
   const handleEliminar = useCallback((id) => {
-    Swal.fire({
-      title: '¿Eliminar trámite?',
-      text: 'Esta acción borrará permanentemente este expediente',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      confirmButtonText: 'Sí, borrar',
-      cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await API.delete(`/mesa-partes/${id}`);
-          Toast.fire({ icon: 'success', title: 'Eliminado' });
-          cargarTramites();
-        } catch { Swal.fire('Error', 'No se pudo eliminar', 'error'); }
+    confirmDelete('este trámite', async () => {
+      try {
+        await API.delete(`/mesa-partes/${id}`);
+        Toast.fire({ icon: 'success', title: 'Trámite eliminado' });
+        cargarTramites();
+      } catch (err) {
+        errorMsg('No se pudo eliminar', err.response?.data?.error || 'Intenta de nuevo en unos segundos.');
       }
     });
   }, [cargarTramites]);

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
+import { successWithLink, errorMsg, confirmDelete } from '../utils/sweetalert';
 import { ActionButtons, AdminPageHeader, FormCard, SearchBar, TextField } from '../components/AdminUI';
 import { Edit3, GraduationCap, Image as ImageIcon } from 'lucide-react';
 
@@ -64,15 +65,19 @@ function AdminDocentes() {
     try {
       if (editMode) {
         await API.put(`/docentes/${editMode}`, form);
-        Toast.fire({ icon: 'success', title: 'Docente actualizado' });
+        Toast.fire({ icon: 'success', title: 'Cambios guardados' });
       } else {
         await API.post('/docentes', form);
-        Toast.fire({ icon: 'success', title: 'Docente registrado' });
+        successWithLink(
+          '¡Docente agregado!',
+          'Ya forma parte del plantel docente y aparece en la web.',
+          'https://colegio-bandera.vercel.app/docentes'
+        );
       }
       resetForm();
       cargarDocentes();
-    } catch {
-      Swal.fire('Error', 'No se pudo procesar la solicitud', 'error');
+    } catch (err) {
+      errorMsg('No se pudo guardar', err.response?.data?.error || 'Revisa los datos e intenta de nuevo.');
     } finally { setEnviando(false); }
   };
 
@@ -91,21 +96,13 @@ function AdminDocentes() {
   }, []);
 
   const handleEliminar = useCallback((id) => {
-    Swal.fire({
-      title: 'Â¿Eliminar docente?',
-      text: 'Esta acciÃ³n quitarÃ¡ al docente del plantel',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      confirmButtonText: 'SÃ­, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await API.delete(`/docentes/${id}`);
-          Toast.fire({ icon: 'success', title: 'Eliminado' });
-          cargarDocentes();
-        } catch { Swal.fire('Error', 'No se pudo eliminar', 'error'); }
+    confirmDelete('a este docente', async () => {
+      try {
+        await API.delete(`/docentes/${id}`);
+        Toast.fire({ icon: 'success', title: 'Docente eliminado' });
+        cargarDocentes();
+      } catch (err) {
+        errorMsg('No se pudo eliminar', err.response?.data?.error || 'Intenta de nuevo en unos segundos.');
       }
     });
   }, [cargarDocentes]);
@@ -137,42 +134,78 @@ function AdminDocentes() {
           onCancel={resetForm}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <TextField
-              id="nombre" name="nombre" label="Nombre y Apellidos"
-              value={form.nombre}
-              onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-              placeholder="Ej: Lic. Juan PÃ©rez" required
-            />
-            <TextField
-              id="cargo" name="cargo" label="Cargo AcadÃ©mico"
-              value={form.cargo}
-              onChange={(e) => setForm({ ...form, cargo: e.target.value })}
-              placeholder="Ej: Profesor Titular" required
-            />
-            <TextField
-              id="especialidad" name="especialidad" label="Especialidad"
-              value={form.especialidad}
-              onChange={(e) => setForm({ ...form, especialidad: e.target.value })}
-              placeholder="Ej: Ciencias Exactas"
-            />
-            <TextField
-              id="tutoria" name="tutoria" label="TutorÃ­a (Opcional)"
-              value={form.tutoria}
-              onChange={(e) => setForm({ ...form, tutoria: e.target.value })}
-              placeholder="Ej: 3er AÃ±o A"
-            />
-            <TextField
-              id="imagen_url" name="imagen_url" label="URL FotografÃ­a"
-              value={form.imagen_url}
-              onChange={(e) => setForm({ ...form, imagen_url: e.target.value })}
-              placeholder="https://..."
-            />
-            <TextField
-              id="orden" name="orden" label="Orden de Prioridad"
-              value={form.orden}
-              onChange={(e) => setForm({ ...form, orden: parseInt(e.target.value) || 0 })}
-              type="number"
-            />
+            <div>
+              <TextField
+                id="nombre" name="nombre" label="Nombre y apellidos"
+                value={form.nombre}
+                onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+                placeholder="Ej: Lic. Juan Pérez" required
+              />
+              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>Nombre completo del docente. Aparecerá en la web pública.</span>
+              </p>
+            </div>
+            <div>
+              <TextField
+                id="cargo" name="cargo" label="Cargo"
+                value={form.cargo}
+                onChange={(e) => setForm({ ...form, cargo: e.target.value })}
+                placeholder="Ej: Profesor Titular" required
+              />
+              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>Ejemplos: Director, Subdirector, Profesor, Coordinador.</span>
+              </p>
+            </div>
+            <div>
+              <TextField
+                id="especialidad" name="especialidad" label="Materia o especialidad"
+                value={form.especialidad}
+                onChange={(e) => setForm({ ...form, especialidad: e.target.value })}
+                placeholder="Ej: Matemáticas, Comunicación"
+              />
+              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>Opcional. La materia principal que enseña.</span>
+              </p>
+            </div>
+            <div>
+              <TextField
+                id="tutoria" name="tutoria" label="Tutoría (opcional)"
+                value={form.tutoria}
+                onChange={(e) => setForm({ ...form, tutoria: e.target.value })}
+                placeholder="Ej: 3er Año A"
+              />
+              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>Si es tutor de algún grado, indícalo aquí.</span>
+              </p>
+            </div>
+            <div>
+              <TextField
+                id="imagen_url" name="imagen_url" label="URL de la foto"
+                value={form.imagen_url}
+                onChange={(e) => setForm({ ...form, imagen_url: e.target.value })}
+                placeholder="https://..."
+              />
+              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>Opcional. Sube primero la foto en el módulo de Galería y pega aquí la URL.</span>
+              </p>
+            </div>
+            <div>
+              <TextField
+                id="orden" name="orden" label="Orden de aparición"
+                value={form.orden}
+                onChange={(e) => setForm({ ...form, orden: parseInt(e.target.value) || 0 })}
+                type="number"
+              />
+              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>Menor número = aparece primero. Ej: Director=1, Subdirector=2.</span>
+              </p>
+            </div>
           </div>
         </FormCard>
       )}

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
+import { successWithLink, errorMsg, confirmDelete } from '../utils/sweetalert';
 import { ActionButtons, AdminPageHeader, FormCard, SearchBar, TextField } from '../components/AdminUI';
 import { Briefcase, Image as ImageIcon } from 'lucide-react';
 
@@ -63,15 +64,19 @@ function AdminAdministrativos() {
     try {
       if (editMode) {
         await API.put(`/administrativos/${editMode}`, form);
-        Toast.fire({ icon: 'success', title: 'Personal actualizado' });
+        Toast.fire({ icon: 'success', title: 'Cambios guardados' });
       } else {
         await API.post('/administrativos', form);
-        Toast.fire({ icon: 'success', title: 'Personal registrado' });
+        successWithLink(
+          '¡Personal agregado!',
+          'Ya forma parte del equipo administrativo en la web.',
+          'https://colegio-bandera.vercel.app/administrativos'
+        );
       }
       resetForm();
       cargarPersonal();
-    } catch {
-      Swal.fire('Error', 'No se pudo procesar la solicitud', 'error');
+    } catch (err) {
+      errorMsg('No se pudo guardar', err.response?.data?.error || 'Revisa los datos e intenta de nuevo.');
     } finally { setEnviando(false); }
   };
 
@@ -83,21 +88,13 @@ function AdminAdministrativos() {
   }, []);
 
   const handleEliminar = useCallback((id) => {
-    Swal.fire({
-      title: 'Â¿Eliminar registro?',
-      text: 'Se borrarÃ¡ del organigrama administrativo',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      confirmButtonText: 'SÃ­, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await API.delete(`/administrativos/${id}`);
-          Toast.fire({ icon: 'success', title: 'Eliminado' });
-          cargarPersonal();
-        } catch { Swal.fire('Error', 'No se pudo eliminar', 'error'); }
+    confirmDelete('a este personal', async () => {
+      try {
+        await API.delete(`/administrativos/${id}`);
+        Toast.fire({ icon: 'success', title: 'Personal eliminado' });
+        cargarPersonal();
+      } catch (err) {
+        errorMsg('No se pudo eliminar', err.response?.data?.error || 'Intenta de nuevo en unos segundos.');
       }
     });
   }, [cargarPersonal]);
@@ -129,30 +126,54 @@ function AdminAdministrativos() {
           onCancel={resetForm}
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <TextField
-              id="nombre" name="nombre" label="Nombre Completo"
-              value={form.nombre}
-              onChange={(e) => setForm({ ...form, nombre: e.target.value })}
-              placeholder="Ej: MarÃ­a Gonzales" required
-            />
-            <TextField
-              id="cargo" name="cargo" label="Cargo"
-              value={form.cargo}
-              onChange={(e) => setForm({ ...form, cargo: e.target.value })}
-              placeholder="Ej: Secretaria General" required
-            />
-            <TextField
-              id="area" name="area" label="Ãrea / Oficina"
-              value={form.area}
-              onChange={(e) => setForm({ ...form, area: e.target.value })}
-              placeholder="Ej: TesorerÃ­a"
-            />
-            <TextField
-              id="imagen_url" name="imagen_url" label="URL de Foto"
-              value={form.imagen_url}
-              onChange={(e) => setForm({ ...form, imagen_url: e.target.value })}
-              placeholder="https://..."
-            />
+            <div>
+              <TextField
+                id="nombre" name="nombre" label="Nombre completo"
+                value={form.nombre}
+                onChange={(e) => setForm({ ...form, nombre: e.target.value })}
+                placeholder="Ej: María Gonzales" required
+              />
+              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>Nombre completo del personal administrativo.</span>
+              </p>
+            </div>
+            <div>
+              <TextField
+                id="cargo" name="cargo" label="Cargo"
+                value={form.cargo}
+                onChange={(e) => setForm({ ...form, cargo: e.target.value })}
+                placeholder="Ej: Secretaria General" required
+              />
+              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>El puesto que ocupa en el colegio.</span>
+              </p>
+            </div>
+            <div>
+              <TextField
+                id="area" name="area" label="Área / Oficina"
+                value={form.area}
+                onChange={(e) => setForm({ ...form, area: e.target.value })}
+                placeholder="Ej: Tesorería"
+              />
+              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>Opcional. La oficina o área a la que pertenece.</span>
+              </p>
+            </div>
+            <div>
+              <TextField
+                id="imagen_url" name="imagen_url" label="URL de la foto"
+                value={form.imagen_url}
+                onChange={(e) => setForm({ ...form, imagen_url: e.target.value })}
+                placeholder="https://..."
+              />
+              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                <span className="text-primary">💡</span>
+                <span>Opcional. Sube la foto en Galería y pega aquí la URL.</span>
+              </p>
+            </div>
           </div>
         </FormCard>
       )}

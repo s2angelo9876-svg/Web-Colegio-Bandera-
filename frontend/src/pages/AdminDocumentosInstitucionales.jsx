@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
+import { successWithLink, errorMsg, confirmDelete } from '../utils/sweetalert';
 import { ActionButtons, AdminPageHeader, FormCard, SearchBar, TextAreaField, TextField } from '../components/AdminUI';
 import { ExternalLink, FileText, FolderTree } from 'lucide-react';
 
@@ -68,7 +69,7 @@ function AdminDocumentosInstitucionales() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!selectedFile) {
-      Swal.fire('Error', 'Por favor selecciona un archivo PDF o documento', 'error');
+      errorMsg('Falta el archivo', 'Selecciona primero el PDF o documento que quieres subir.');
       return;
     }
     setEnviando(true);
@@ -82,30 +83,26 @@ function AdminDocumentosInstitucionales() {
       await API.post('/transparencia', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      Toast.fire({ icon: 'success', title: 'Documento publicado' });
+      successWithLink(
+        '¡Documento publicado!',
+        'Ya está disponible en la sección de Transparencia.',
+        'https://colegio-bandera.vercel.app/documentos-institucionales'
+      );
       resetForm();
       cargarDocumentos();
-    } catch {
-      Swal.fire('Error', 'No se pudo subir el archivo', 'error');
+    } catch (err) {
+      errorMsg('No se pudo subir el archivo', err.response?.data?.error || 'Verifica el PDF e intenta de nuevo.');
     } finally { setEnviando(false); }
   };
 
   const handleEliminar = useCallback((id) => {
-    Swal.fire({
-      title: 'Â¿Eliminar documento?',
-      text: 'Esta acciÃ³n es irreversible',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#ef4444',
-      confirmButtonText: 'SÃ­, borrar',
-      cancelButtonText: 'Cancelar'
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        try {
-          await API.delete(`/transparencia/${id}`);
-          Toast.fire({ icon: 'success', title: 'Eliminado' });
-          cargarDocumentos();
-        } catch { Swal.fire('Error', 'No se pudo eliminar', 'error'); }
+    confirmDelete('este documento', async () => {
+      try {
+        await API.delete(`/transparencia/${id}`);
+        Toast.fire({ icon: 'success', title: 'Documento eliminado' });
+        cargarDocumentos();
+      } catch (err) {
+        errorMsg('No se pudo eliminar', err.response?.data?.error || 'Intenta de nuevo en unos segundos.');
       }
     });
   }, [cargarDocumentos]);
