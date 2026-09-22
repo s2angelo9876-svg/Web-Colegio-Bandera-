@@ -89,8 +89,6 @@ exports.updateUsuario = async (req, res) => {
         return res.status(400).json({ error: 'No puedes quitar el rol admin al ultimo administrador.' });
       }
     }
-      }
-    }
 
     // Construir UPDATE dinamico
     const sets = [];
