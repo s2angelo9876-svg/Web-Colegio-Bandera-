@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const { logActivity } = require('../utils/activityLogger');
 
 function parseTagIds(input) {
   if (!input) return [];
@@ -122,6 +123,15 @@ exports.crearNoticia = async (req, res) => {
       }
     }
 
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'crear',
+      entityType: 'noticia',
+      entityId: noticiaId,
+      entityTitle: titulo,
+    });
+
     res.status(201).json({ mensaje: 'Noticia creada con éxito', id: noticiaId });
   } catch (err) {
     res.status(500).json({ error: 'Error al guardar en la BD: ' + err.message });
@@ -170,6 +180,15 @@ exports.actualizarNoticia = async (req, res) => {
       }
     }
 
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'editar',
+      entityType: 'noticia',
+      entityId: id,
+      entityTitle: titulo,
+    });
+
     res.json({ mensaje: 'Noticia actualizada con éxito' });
   } catch (err) {
     res.status(500).json({ error: 'Error al actualizar en la BD: ' + err.message });
@@ -180,7 +199,21 @@ exports.actualizarNoticia = async (req, res) => {
 exports.eliminarNoticia = async (req, res) => {
   const { id } = req.params;
   try {
+    // Obtener título antes de borrar para el log
+    const { rows: prevRows } = await db.query('SELECT titulo FROM noticias WHERE id = $1', [id]);
+    const titulo = prevRows[0]?.titulo;
+
     await db.query('DELETE FROM noticias WHERE id = $1', [id]);
+
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'eliminar',
+      entityType: 'noticia',
+      entityId: id,
+      entityTitle: titulo,
+    });
+
     res.json({ mensaje: 'Noticia eliminada correctamente' });
   } catch (err) {
     res.status(500).json({ error: err.message });

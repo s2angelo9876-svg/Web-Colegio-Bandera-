@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const { logActivity } = require('../utils/activityLogger');
 
 exports.getGaleria = async (req, res) => {
   const wantsPagination = req.query.page !== undefined;
@@ -52,6 +53,16 @@ exports.createFoto = async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
       [titulo, imagen_url, finalAnio, finalDia, finalMes, tipoFinal, video_url || null]
     );
+
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'crear',
+      entityType: 'galeria',
+      entityId: insertId,
+      entityTitle: titulo || (tipoFinal === 'video' ? 'Video' : 'Foto'),
+    });
+
     res.status(201).json({
       message: tipoFinal === 'video' ? 'Video añadido a la galería' : 'Imagen añadida a la galería',
       id: insertId,
@@ -64,7 +75,20 @@ exports.createFoto = async (req, res) => {
 exports.deleteFoto = async (req, res) => {
   const { id } = req.params;
   try {
+    const { rows: prevRows } = await db.query('SELECT titulo, tipo FROM galeria WHERE id = $1', [id]);
+    const prev = prevRows[0];
+
     await db.query('DELETE FROM galeria WHERE id = $1', [id]);
+
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'eliminar',
+      entityType: 'galeria',
+      entityId: id,
+      entityTitle: prev?.titulo || (prev?.tipo === 'video' ? 'Video' : 'Foto'),
+    });
+
     res.json({ message: 'Elemento eliminado correctamente' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -81,6 +105,15 @@ exports.reordenarGaleria = async (req, res) => {
     for (let i = 0; i < ordenIds.length; i++) {
       await db.query('UPDATE galeria SET orden = $1 WHERE id = $2', [i + 1, ordenIds[i]]);
     }
+
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'reordenar',
+      entityType: 'galeria',
+      details: `${ordenIds.length} elementos reordenados`,
+    });
+
     res.json({ mensaje: 'Galería reordenada correctamente' });
   } catch (err) {
     res.status(500).json({ error: 'Error al reordenar galería' });

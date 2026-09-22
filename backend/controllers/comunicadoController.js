@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const { logActivity } = require('../utils/activityLogger');
 
 exports.getComunicados = async (req, res) => {
   const wantsPagination = req.query.page !== undefined;
@@ -77,7 +78,17 @@ exports.crearComunicado = async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6) RETURNING id`,
       [titulo, descripcion, fechaCreacion, tipo || 'aviso', estadoFinal, fechaPubFinal]
     );
-    res.status(201).json({ mensaje: 'Comunicado publicado correctamente', id: rows[0]?.id });
+    const nuevoId = rows[0]?.id;
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'crear',
+      entityType: 'comunicado',
+      entityId: nuevoId,
+      entityTitle: titulo,
+    });
+
+    res.status(201).json({ mensaje: 'Comunicado publicado correctamente', id: nuevoId });
   } catch (err) {
     res.status(500).json({ error: 'Error al publicar comunicado: ' + err.message });
   }
@@ -86,7 +97,20 @@ exports.crearComunicado = async (req, res) => {
 exports.eliminarComunicado = async (req, res) => {
   const { id } = req.params;
   try {
+    const { rows: prevRows } = await db.query('SELECT titulo FROM comunicados WHERE id = $1', [id]);
+    const titulo = prevRows[0]?.titulo;
+
     await db.query('DELETE FROM comunicados WHERE id = $1', [id]);
+
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'eliminar',
+      entityType: 'comunicado',
+      entityId: id,
+      entityTitle: titulo,
+    });
+
     res.json({ mensaje: 'Comunicado eliminado' });
   } catch (err) {
     res.status(500).json({ error: 'Error al eliminar' });
@@ -120,6 +144,16 @@ exports.actualizarComunicado = async (req, res) => {
       `UPDATE comunicados SET ${sets.join(', ')} WHERE id = $${i}`,
       params
     );
+
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'editar',
+      entityType: 'comunicado',
+      entityId: id,
+      entityTitle: titulo,
+    });
+
     res.json({ mensaje: 'Comunicado actualizado correctamente' });
   } catch (err) {
     res.status(500).json({ error: 'Error al actualizar el comunicado: ' + err.message });

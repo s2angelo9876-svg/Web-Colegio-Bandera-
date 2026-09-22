@@ -45,6 +45,9 @@ const seoRoutes            = require('./routes/seoRoutes');
 const adminResetRoutes     = require('./routes/adminResetRoutes');
 const usuariosRoutes       = require('./routes/usuariosRoutes');
 const tagsRoutes           = require('./routes/tagsRoutes');
+const pageViewRoutes       = require('./routes/pageViewRoutes');
+const activityLogRoutes    = require('./routes/activityLogRoutes');
+const notificationRoutes   = require('./routes/notificationRoutes');
 
 const app = express();
 
@@ -137,6 +140,9 @@ app.use('/api/stats',           statsRoutes);
 app.use('/api/_admin',          adminResetRoutes);
 app.use('/api/usuarios',        usuariosRoutes);
 app.use('/api/tags',            tagsRoutes);
+app.use('/api/page-views',      pageViewRoutes);
+app.use('/api/activity-log',    activityLogRoutes);
+app.use('/api/notifications',   notificationRoutes);
 app.use('/',                    seoRoutes);
 app.use('/api/auth',            authRoutes);
 

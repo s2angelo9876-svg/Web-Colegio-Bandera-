@@ -1,16 +1,17 @@
-﻿import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { useAuth } from '../context/authContext';
 import { useNavigate, Link, useLocation } from 'react-router-dom';
-import { getStats } from '../services/api';
+import { getStats, getPageViewStats, getActivityLog } from '../services/api';
 import { useTheme } from '../context/ThemeContext';
 import { useToast } from '../context/ToastContext';
+import { NotificationBell } from '../components/NotificationBell';
 import {
   Newspaper, Calendar, Megaphone, FolderTree,
   Users, Image as ImageIcon, LayoutDashboard, LogOut,
-  ChevronRight, Bell, Briefcase, Moon, Sun,
+  ChevronRight, Briefcase, Moon, Sun,
   ClipboardList, GraduationCap, FileText, Sparkles, AlertCircle, ArrowRight,
-  UserCircle, UserCog
+  UserCircle, UserCog, Activity, Eye, TrendingUp, Clock, PlusCircle, Edit2, Trash2
 } from 'lucide-react';
 import AdminChart from '../components/AdminChart';
 
@@ -156,15 +157,15 @@ function SaludoHeader({ usuario }) {
   });
 
   return (
-    <div className="mb-6">
+    <div>
       <div className="flex items-center gap-2 text-slate-500 dark:text-dark-text-muted text-sm">
         <Sparkles size={14} className="text-primary" />
         <span className="capitalize">{fecha}</span>
       </div>
-      <h1 className="text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-dark-text mt-1">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-dark-text mt-1">
         {saludo}, {usuario?.username || 'Admin'} 👋
       </h1>
-      <p className="text-slate-600 dark:text-dark-text-muted mt-1">
+      <p className="text-slate-600 dark:text-dark-text-muted mt-1 text-sm">
         Esto es lo que está pasando en tu web hoy.
       </p>
     </div>
@@ -182,20 +183,29 @@ function Admin() {
   const location = useLocation();
   const toast = useToast();
   const [stats, setStats] = useState(null);
+  const [pageViewStats, setPageViewStats] = useState(null);
+  const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchStats = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const res = await getStats();
-        setStats(res.data || null);
+        const [statsRes, viewsRes, activityRes] = await Promise.allSettled([
+          getStats(),
+          getPageViewStats(),
+          getActivityLog({ limit: 5 }),
+        ]);
+
+        if (statsRes.status === 'fulfilled') setStats(statsRes.value.data || null);
+        if (viewsRes.status === 'fulfilled') setPageViewStats(viewsRes.value.data || null);
+        if (activityRes.status === 'fulfilled') setRecentActivity(activityRes.value.data?.data || []);
       } catch (err) {
         toast.error('No se pudieron cargar las estadísticas');
       } finally {
         setLoading(false);
       }
     };
-    fetchStats();
+    fetchDashboardData();
   }, []);
 
   const handleLogout = () => { logout(); navigate('/'); };
@@ -260,6 +270,7 @@ function Admin() {
               <SidebarItem to="config-inicio" icon={Sparkles} label="Personalizar" active={isActive('config-inicio')} />
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest px-3 mt-6 mb-2">Cuenta</p>
               <SidebarItem to="usuarios" icon={UserCog} label="Usuarios" active={isActive('usuarios')} />
+              <SidebarItem to="actividad" icon={Activity} label="Actividad" active={isActive('actividad')} />
               <SidebarItem to="mi-cuenta" icon={UserCircle} label="Mi Cuenta" active={isActive('mi-cuenta')} />
             </>
           )}
@@ -291,7 +302,21 @@ function Admin() {
       </aside>
 
       <main className="flex-1 p-6 lg:p-8 overflow-y-auto bg-slate-50 dark:bg-dark-bg">
-        <SaludoHeader usuario={usuario} />
+        {/* Header con saludo y controles superiores */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+          <SaludoHeader usuario={usuario} />
+          <div className="flex items-center gap-2 self-start sm:self-auto bg-white dark:bg-dark-card border border-slate-200 dark:border-dark-border p-1 rounded-xl shadow-sm">
+            <NotificationBell />
+            <button
+              type="button"
+              onClick={toggleDarkMode}
+              title={isDarkMode ? 'Modo claro' : 'Modo oscuro'}
+              className="p-2 text-slate-500 hover:text-slate-800 dark:text-dark-text-muted dark:hover:text-dark-text hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition"
+            >
+              {isDarkMode ? <Sun className="w-5 h-5 text-amber-500" /> : <Moon className="w-5 h-5" />}
+            </button>
+          </div>
+        </div>
 
         {/* Alertas proactivas */}
         {alertas.length > 0 && (
@@ -390,7 +415,134 @@ function Admin() {
           </div>
         </div>
 
-        {/* Gráficos */}
+        {/* Visitas al portal */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-xs font-bold text-slate-500 dark:text-dark-text-muted uppercase tracking-wider flex items-center gap-1.5">
+              <Eye size={14} className="text-primary" />
+              Visitas al Portal
+            </h2>
+            <span className="text-[11px] text-slate-400">Páginas públicas</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="bg-white dark:bg-dark-card rounded-xl border border-slate-100 dark:border-dark-border p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-slate-500 dark:text-dark-text-muted uppercase tracking-wider">Hoy</span>
+                <span className="p-1.5 bg-blue-50 text-blue-600 rounded-lg">
+                  <TrendingUp size={16} />
+                </span>
+              </div>
+              <p className="text-3xl font-extrabold text-slate-900 dark:text-dark-text">
+                {pageViewStats ? pageViewStats.total_hoy.toLocaleString() : '…'}
+              </p>
+              <p className="text-xs text-slate-400 mt-1">Visitas registradas hoy</p>
+            </div>
+
+            <div className="bg-white dark:bg-dark-card rounded-xl border border-slate-100 dark:border-dark-border p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-slate-500 dark:text-dark-text-muted uppercase tracking-wider">Últimos 7 Días</span>
+                <span className="p-1.5 bg-emerald-50 text-emerald-600 rounded-lg">
+                  <TrendingUp size={16} />
+                </span>
+              </div>
+              <p className="text-3xl font-extrabold text-slate-900 dark:text-dark-text">
+                {pageViewStats ? pageViewStats.total_7d.toLocaleString() : '…'}
+              </p>
+              <p className="text-xs text-slate-400 mt-1">Tráfico acumulado semanal</p>
+            </div>
+
+            <div className="bg-white dark:bg-dark-card rounded-xl border border-slate-100 dark:border-dark-border p-5 shadow-sm">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-slate-500 dark:text-dark-text-muted uppercase tracking-wider">Últimos 30 Días</span>
+                <span className="p-1.5 bg-purple-50 text-purple-600 rounded-lg">
+                  <TrendingUp size={16} />
+                </span>
+              </div>
+              <p className="text-3xl font-extrabold text-slate-900 dark:text-dark-text">
+                {pageViewStats ? pageViewStats.total_30d.toLocaleString() : '…'}
+              </p>
+              <p className="text-xs text-slate-400 mt-1">Tráfico acumulado del mes</p>
+            </div>
+          </div>
+
+          {pageViewStats?.tendencia_7d && pageViewStats.tendencia_7d.length > 0 && (
+            <div className="h-[340px]">
+              <AdminChart
+                data={pageViewStats.tendencia_7d}
+                title="Visitas al Portal (Últimos 7 días)"
+                type="area"
+                color="#059669"
+              />
+            </div>
+          )}
+        </div>
+
+        {/* Actividad reciente del equipo */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-xs font-bold text-slate-500 dark:text-dark-text-muted uppercase tracking-wider flex items-center gap-1.5">
+              <Activity size={14} className="text-primary" />
+              Actividad Reciente del Equipo
+            </h2>
+            {usuario?.rol === 'admin' && (
+              <Link
+                to="actividad"
+                className="text-xs text-primary hover:text-red-700 font-semibold flex items-center gap-1 transition"
+              >
+                Ver historial completo
+                <ChevronRight size={14} />
+              </Link>
+            )}
+          </div>
+
+          <div className="bg-white dark:bg-dark-card border border-slate-100 dark:border-dark-border rounded-xl shadow-sm divide-y divide-slate-100 dark:divide-dark-border overflow-hidden">
+            {recentActivity.length === 0 ? (
+              <div className="p-6 text-center text-xs text-slate-400">
+                No hay actividades recientes registradas aún.
+              </div>
+            ) : (
+              recentActivity.map((item) => (
+                <div key={item.id} className="p-4 flex items-center justify-between gap-3 hover:bg-slate-50/60 dark:hover:bg-dark-border/20 transition">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-dark-text flex items-center justify-center font-bold text-xs flex-shrink-0">
+                      {item.username?.charAt(0).toUpperCase()}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-slate-800 dark:text-dark-text truncate">
+                        <strong className="text-slate-900 dark:text-white">{item.username}</strong>{' '}
+                        <span className="font-normal text-slate-600 dark:text-dark-text-muted">
+                          {item.action === 'crear' && 'creó'}
+                          {item.action === 'editar' && 'editó'}
+                          {item.action === 'eliminar' && 'eliminó'}
+                          {item.action === 'reordenar' && 'reordenó'}
+                        </span>{' '}
+                        <span className="capitalize">{item.entity_type?.replace('_', ' ')}</span>
+                        {item.entity_title && (
+                          <span className="text-slate-700 dark:text-dark-text font-medium"> &ldquo;{item.entity_title}&rdquo;</span>
+                        )}
+                      </p>
+                      {item.details && (
+                        <p className="text-[11px] text-slate-400 truncate mt-0.5">{item.details}</p>
+                      )}
+                    </div>
+                  </div>
+                  <span className="text-[10px] text-slate-400 whitespace-nowrap flex-shrink-0 flex items-center gap-1">
+                    <Clock size={12} />
+                    {new Date(item.created_at).toLocaleDateString('es-PE', {
+                      day: 'numeric',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })}
+                  </span>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Gráficos institucionales */}
         {stats && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
             <div className="h-[340px]">

@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const { logActivity } = require('../utils/activityLogger');
 
 exports.getDocentes = async (req, res) => {
   const wantsPagination = req.query.page !== undefined;
@@ -39,6 +40,16 @@ exports.createDocente = async (req, res) => {
       'INSERT INTO docentes (nombre, cargo, especialidad, imagen_url, orden) VALUES ($1, $2, $3, $4, $5) RETURNING id',
       [nombre, cargo, especialidad, imagen_url, orden || 0]
     );
+
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'crear',
+      entityType: 'docente',
+      entityId: insertId,
+      entityTitle: nombre,
+    });
+
     res.status(201).json({ message: 'Docente registrado correctamente', id: insertId });
   } catch (err) {
     res.status(500).json({ error: 'Error al registrar docente' });
@@ -48,7 +59,20 @@ exports.createDocente = async (req, res) => {
 exports.deleteDocente = async (req, res) => {
   const { id } = req.params;
   try {
+    const { rows: prevRows } = await db.query('SELECT nombre FROM docentes WHERE id = $1', [id]);
+    const nombre = prevRows[0]?.nombre;
+
     await db.query('DELETE FROM docentes WHERE id = $1', [id]);
+
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'eliminar',
+      entityType: 'docente',
+      entityId: id,
+      entityTitle: nombre,
+    });
+
     res.json({ message: 'Docente eliminado' });
   } catch (err) {
     res.status(500).json({ error: 'No se pudo eliminar el docente' });
@@ -72,6 +96,16 @@ exports.updateDocente = async (req, res) => {
         [nombre, cargo, especialidad, orden || 0, id]
       );
     }
+
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'editar',
+      entityType: 'docente',
+      entityId: id,
+      entityTitle: nombre,
+    });
+
     res.json({ message: 'Docente actualizado correctamente' });
   } catch (err) {
     res.status(500).json({ error: 'Error al actualizar el docente' });
@@ -88,6 +122,15 @@ exports.reordenarDocentes = async (req, res) => {
     for (let i = 0; i < ordenIds.length; i++) {
       await db.query('UPDATE docentes SET orden = $1 WHERE id = $2', [i + 1, ordenIds[i]]);
     }
+
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'reordenar',
+      entityType: 'docente',
+      details: `${ordenIds.length} docentes reordenados`,
+    });
+
     res.json({ message: 'Docentes reordenados correctamente' });
   } catch (err) {
     res.status(500).json({ error: 'Error al reordenar docentes' });

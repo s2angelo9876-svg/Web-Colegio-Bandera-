@@ -1,4 +1,4 @@
-﻿import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { Suspense, lazy, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { AuthProvider, useAuth } from './context/authContext';
@@ -6,6 +6,7 @@ import { ThemeProvider } from './context/ThemeContext';
 import { ToastProvider } from './context/ToastContext';
 import Navbar from './components/Navbar';
 import ErrorBoundary from './components/ErrorBoundary';
+import { usePageTracker } from './hooks/usePageTracker';
 
 const Inicio = lazy(() => import('./pages/Inicio'));
 const Noticias = lazy(() => import('./pages/Noticias'));
@@ -50,6 +51,7 @@ RutaProtegida.propTypes = {
 function AppContent() {
   const { usuario } = useAuth();
   const location = useLocation();
+  usePageTracker();
 
   const isAdminPath = useMemo(() => location.pathname.startsWith('/admin'), [location.pathname]);
 

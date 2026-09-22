@@ -2,6 +2,8 @@ const db = require('../config/db');
 const path = require('path');
 const nodemailer = require('nodemailer');
 const logger = require('../config/logger');
+const { createNotification } = require('../utils/notifier');
+const { logActivity } = require('../utils/activityLogger');
 
 // ── Configurar transporte de correo (Gmail) ─────────────────────────────
 const transporter = nodemailer.createTransport({
@@ -145,6 +147,14 @@ const enviarTramite = async (req, res) => {
 
     enviarCorreoConfirmacion({ correo, nombres_completos, asunto, codigo_seguimiento });
 
+    // Notificación para administradores del CMS
+    createNotification({
+      type: 'mesa_partes',
+      title: 'Nuevo trámite registrado',
+      message: `${nombres_completos} ingresó el expediente ${codigo_seguimiento}: "${asunto}"`,
+      link: '/admin/mesa-partes',
+    });
+
     res.status(201).json({
       mensaje: 'Trámite registrado exitosamente.',
       codigo_seguimiento,
@@ -195,6 +205,19 @@ const actualizarEstado = async (req, res) => {
     if (rows.length > 0) {
       enviarCorreoResolucion({ ...rows[0], estado });
     }
+
+    if (req.usuario) {
+      logActivity({
+        userId: req.usuario.id,
+        username: req.usuario.username,
+        action: 'editar',
+        entityType: 'mesa_partes',
+        entityId: id,
+        entityTitle: rows[0]?.codigo_seguimiento || `Trámite #${id}`,
+        details: `Estado cambiado a ${estado}`,
+      });
+    }
+
     res.json({ mensaje: 'Estado actualizado' });
   } catch (err) {
     res.status(500).json({ error: 'Error al actualizar estado' });
@@ -205,7 +228,24 @@ const actualizarEstado = async (req, res) => {
 const eliminarTramite = async (req, res) => {
   const { id } = req.params;
   try {
+    const { rows: prevRows } = await db.query(
+      'SELECT codigo_seguimiento FROM mesa_partes WHERE id = $1',
+      [id]
+    );
+
     await db.query('DELETE FROM mesa_partes WHERE id = $1', [id]);
+
+    if (req.usuario) {
+      logActivity({
+        userId: req.usuario.id,
+        username: req.usuario.username,
+        action: 'eliminar',
+        entityType: 'mesa_partes',
+        entityId: id,
+        entityTitle: prevRows[0]?.codigo_seguimiento || `Trámite #${id}`,
+      });
+    }
+
     res.json({ mensaje: 'Trámite eliminado' });
   } catch (err) {
     res.status(500).json({ error: 'Error al eliminar trámite' });

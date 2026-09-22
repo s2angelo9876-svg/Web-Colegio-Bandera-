@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const { logActivity } = require('../utils/activityLogger');
 
 // 1. Obtener eventos con paginación opcional y filtros de estado
 exports.obtenerEventos = async (req, res) => {
@@ -83,7 +84,17 @@ exports.crearEvento = async (req, res) => {
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
       [titulo, descripcion || null, fecha_evento, hora_evento || null, lugar || null, imagen_url, estadoFinal, fechaPubFinal]
     );
-    res.status(201).json({ mensaje: 'Evento creado con éxito', id: rows[0]?.id });
+    const nuevoId = rows[0]?.id;
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'crear',
+      entityType: 'evento',
+      entityId: nuevoId,
+      entityTitle: titulo,
+    });
+
+    res.status(201).json({ mensaje: 'Evento creado con éxito', id: nuevoId });
   } catch (err) {
     res.status(500).json({ error: 'Error al insertar en la base de datos: ' + err.message });
   }
@@ -93,7 +104,20 @@ exports.crearEvento = async (req, res) => {
 exports.eliminarEvento = async (req, res) => {
   const { id } = req.params;
   try {
+    const { rows: prevRows } = await db.query('SELECT titulo FROM eventos WHERE id = $1', [id]);
+    const titulo = prevRows[0]?.titulo;
+
     await db.query('DELETE FROM eventos WHERE id = $1', [id]);
+
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'eliminar',
+      entityType: 'evento',
+      entityId: id,
+      entityTitle: titulo,
+    });
+
     res.json({ mensaje: 'Evento eliminado correctamente' });
   } catch (err) {
     res.status(500).json({ error: 'Error al eliminar el evento' });
@@ -145,6 +169,16 @@ exports.actualizarEvento = async (req, res) => {
       `UPDATE eventos SET ${sets.join(', ')} WHERE id = $${i}`,
       params
     );
+
+    await logActivity({
+      userId: req.usuario?.id,
+      username: req.usuario?.username,
+      action: 'editar',
+      entityType: 'evento',
+      entityId: id,
+      entityTitle: titulo,
+    });
+
     res.json({ mensaje: 'Evento actualizado correctamente' });
   } catch (err) {
     res.status(500).json({ error: 'Error al actualizar el evento: ' + err.message });

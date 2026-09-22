@@ -70,3 +70,12 @@ export const getComunicados = (params) => API.get('/comunicados', { params })
 export const getConfig      = () => API.get('/configuracion')
 export const updateConfig  = (data) => API.post('/configuracion', data)
 export const getStats      = () => API.get('/stats')
+
+// ── Engagement (Fase U7) ──────────────────────────────────────────────────
+export const trackPageView               = (page) => API.post('/page-views/track', { page })
+export const getPageViewStats            = () => API.get('/page-views/stats')
+export const getActivityLog              = (params) => API.get('/activity-log', { params })
+export const getNotifications            = (params) => API.get('/notifications', { params })
+export const getUnreadNotificationsCount = () => API.get('/notifications/unread-count')
+export const markNotificationRead        = (id) => API.put(`/notifications/${id}/read`)
+export const markAllNotificationsRead    = () => API.put('/notifications/read-all')
