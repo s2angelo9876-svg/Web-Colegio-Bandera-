@@ -15,6 +15,13 @@ exports.getUsuarios = async (req, res) => {
     );
     res.json(rows);
   } catch (err) {
+    // Loguear el error completo para diagnostico
+    const logger = require('../config/logger');
+    logger.error('Error en getUsuarios', {
+      message: err.message,
+      code: err.code,
+      detail: err.detail,
+    });
     res.status(500).json({ error: 'Error al obtener usuarios' });
   }
 };
