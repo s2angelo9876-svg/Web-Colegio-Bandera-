@@ -4,7 +4,7 @@ exports.getGaleria = async (req, res) => {
   const wantsPagination = req.query.page !== undefined;
   if (!wantsPagination) {
     try {
-      const { rows } = await db.query('SELECT * FROM galeria ORDER BY fecha_publicacion DESC');
+      const { rows } = await db.query('SELECT * FROM galeria ORDER BY COALESCE(orden, 0) ASC, fecha_publicacion DESC');
       return res.json(rows);
     } catch (err) {
       return res.status(500).json({ error: err.message });
@@ -18,7 +18,7 @@ exports.getGaleria = async (req, res) => {
     const { rows: countRows } = await db.query('SELECT COUNT(*)::int AS total FROM galeria');
     const total = countRows[0].total;
     const { rows } = await db.query(
-      'SELECT * FROM galeria ORDER BY fecha_publicacion DESC LIMIT $1 OFFSET $2',
+      'SELECT * FROM galeria ORDER BY COALESCE(orden, 0) ASC, fecha_publicacion DESC LIMIT $1 OFFSET $2',
       [limit, offset]
     );
     res.json({
@@ -68,5 +68,21 @@ exports.deleteFoto = async (req, res) => {
     res.json({ message: 'Elemento eliminado correctamente' });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+exports.reordenarGaleria = async (req, res) => {
+  const { ordenIds } = req.body;
+  if (!Array.isArray(ordenIds) || ordenIds.length === 0) {
+    return res.status(400).json({ error: 'ordenIds debe ser un array con los IDs en el nuevo orden' });
+  }
+
+  try {
+    for (let i = 0; i < ordenIds.length; i++) {
+      await db.query('UPDATE galeria SET orden = $1 WHERE id = $2', [i + 1, ordenIds[i]]);
+    }
+    res.json({ mensaje: 'Galería reordenada correctamente' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al reordenar galería' });
   }
 };

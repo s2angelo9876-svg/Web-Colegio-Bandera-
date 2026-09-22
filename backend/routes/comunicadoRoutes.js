@@ -1,7 +1,7 @@
-﻿const express = require('express');
+const express = require('express');
 const router = express.Router();
 const { getComunicados, crearComunicado, actualizarComunicado, eliminarComunicado } = require('../controllers/comunicadoController');
-const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
+const { verificarToken, soloAdmin, adminOEditor } = require('../middleware/authMiddleware');
 const { handleValidation } = require('../middleware/validate');
 const { comunicado: validateComunicado, idParam } = require('../validators/schemas');
 const { sanitizeBody } = require('../utils/sanitize');
@@ -10,7 +10,7 @@ router.get('/', getComunicados);
 
 router.post(
   '/',
-  verificarToken, soloAdmin,
+  verificarToken, adminOEditor,
   sanitizeBody(['titulo', 'descripcion']),
   ...validateComunicado, handleValidation,
   crearComunicado
@@ -18,7 +18,7 @@ router.post(
 
 router.put(
   '/:id',
-  verificarToken, soloAdmin,
+  verificarToken, adminOEditor,
   ...idParam, handleValidation,
   sanitizeBody(['titulo', 'descripcion']),
   ...validateComunicado, handleValidation,

@@ -1,7 +1,7 @@
-﻿const express = require('express');
+const express = require('express');
 const router = express.Router();
 const eventoController = require('../controllers/eventoController');
-const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
+const { verificarToken, soloAdmin, adminOEditor } = require('../middleware/authMiddleware');
 const { upload, verifyMagicBytes, processAndUpload } = require('../middleware/uploadMiddleware');
 const { handleValidation } = require('../middleware/validate');
 const { evento: validateEvento, idParam } = require('../validators/schemas');
@@ -11,7 +11,7 @@ router.get('/', eventoController.obtenerEventos);
 
 router.post(
   '/',
-  verificarToken, soloAdmin,
+  verificarToken, adminOEditor,
   upload.single('imagen'),
   verifyMagicBytes,
   processAndUpload('eventos'),
@@ -22,7 +22,7 @@ router.post(
 
 router.put(
   '/:id',
-  verificarToken, soloAdmin,
+  verificarToken, adminOEditor,
   ...idParam, handleValidation,
   upload.single('imagen'),
   verifyMagicBytes,

@@ -33,3 +33,19 @@ exports.deleteSlide = async (req, res) => {
     res.status(500).json({ message: 'Error al eliminar slide' });
   }
 };
+
+exports.reordenarSlides = async (req, res) => {
+  const { ordenIds } = req.body;
+  if (!Array.isArray(ordenIds) || ordenIds.length === 0) {
+    return res.status(400).json({ error: 'ordenIds debe ser un array con los IDs en el nuevo orden' });
+  }
+
+  try {
+    for (let i = 0; i < ordenIds.length; i++) {
+      await db.query('UPDATE carrusel SET orden = $1 WHERE id = $2', [i + 1, ordenIds[i]]);
+    }
+    res.json({ mensaje: 'Carrusel reordenado correctamente' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al reordenar slides' });
+  }
+};

@@ -44,6 +44,7 @@ const statsRoutes          = require('./routes/statsRoutes');
 const seoRoutes            = require('./routes/seoRoutes');
 const adminResetRoutes     = require('./routes/adminResetRoutes');
 const usuariosRoutes       = require('./routes/usuariosRoutes');
+const tagsRoutes           = require('./routes/tagsRoutes');
 
 const app = express();
 
@@ -79,14 +80,6 @@ const apiLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Rate limit estricto para login (anti-fuerza bruta)
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 5,
-  message: { error: 'Demasiados intentos de inicio de sesión. Intenta en 15 minutos.' },
-  standardHeaders: true,
-  legacyHeaders: false,
-});
 
 // ── Middlewares base ───────────────────────────────────────────────────
 app.use(express.json({ limit: '2mb' }));
@@ -143,8 +136,9 @@ app.use('/api/directivos',      directivoRoutes);
 app.use('/api/stats',           statsRoutes);
 app.use('/api/_admin',          adminResetRoutes);
 app.use('/api/usuarios',        usuariosRoutes);
+app.use('/api/tags',            tagsRoutes);
 app.use('/',                    seoRoutes);
-app.use('/api/auth',            authLimiter, authRoutes);
+app.use('/api/auth',            authRoutes);
 
 // Rate limit solo se aplica a partir de aquí (excepto /api/auth que ya tiene el suyo)
 app.use('/api/', apiLimiter);

@@ -1,7 +1,7 @@
-﻿const express = require('express');
+const express = require('express');
 const router = express.Router();
 const noticiaController = require('../controllers/noticiaController');
-const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
+const { verificarToken, soloAdmin, adminOEditor } = require('../middleware/authMiddleware');
 const { upload, verifyMagicBytes, processAndUpload } = require('../middleware/uploadMiddleware');
 const { handleValidation } = require('../middleware/validate');
 const { noticia: validateNoticia, idParam } = require('../validators/schemas');
@@ -17,7 +17,7 @@ router.get('/', noticiaController.getNoticias);
 
 router.post(
   '/',
-  verificarToken, soloAdmin,
+  verificarToken, adminOEditor,
   ...uploadNoticia,
   sanitizeBody(['titulo', 'contenido']),
   ...validateNoticia, handleValidation,
@@ -26,7 +26,7 @@ router.post(
 
 router.put(
   '/:id',
-  verificarToken, soloAdmin,
+  verificarToken, adminOEditor,
   ...idParam, handleValidation,
   ...uploadNoticia,
   sanitizeBody(['titulo', 'contenido']),

@@ -1,7 +1,7 @@
-﻿const express = require('express');
+const express = require('express');
 const router = express.Router();
-const { getDocentes, createDocente, updateDocente, deleteDocente } = require('../controllers/docenteController');
-const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
+const { getDocentes, createDocente, updateDocente, deleteDocente, reordenarDocentes } = require('../controllers/docenteController');
+const { verificarToken, soloAdmin, adminOEditor } = require('../middleware/authMiddleware');
 const { upload, verifyMagicBytes, processAndUpload } = require('../middleware/uploadMiddleware');
 const { handleValidation } = require('../middleware/validate');
 const { docente: validateDocente, idParam } = require('../validators/schemas');
@@ -9,9 +9,11 @@ const { sanitizeBody } = require('../utils/sanitize');
 
 router.get('/', getDocentes);
 
+router.put('/reordenar', verificarToken, adminOEditor, reordenarDocentes);
+
 router.post(
   '/',
-  verificarToken, soloAdmin,
+  verificarToken, adminOEditor,
   upload.single('imagen'),
   verifyMagicBytes,
   processAndUpload('docentes'),
@@ -22,7 +24,7 @@ router.post(
 
 router.put(
   '/:id',
-  verificarToken, soloAdmin,
+  verificarToken, adminOEditor,
   ...idParam, handleValidation,
   upload.single('imagen'),
   verifyMagicBytes,

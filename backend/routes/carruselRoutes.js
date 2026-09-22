@@ -1,7 +1,7 @@
-﻿const express = require('express');
+const express = require('express');
 const router = express.Router();
 const carruselController = require('../controllers/carruselController');
-const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
+const { verificarToken, soloAdmin, adminOEditor } = require('../middleware/authMiddleware');
 const { upload, verifyMagicBytes, processAndUpload } = require('../middleware/uploadMiddleware');
 const { handleValidation } = require('../middleware/validate');
 const { carrusel: validateCarrusel, idParam } = require('../validators/schemas');
@@ -9,9 +9,11 @@ const { sanitizeBody } = require('../utils/sanitize');
 
 router.get('/', carruselController.getSlides);
 
+router.put('/reordenar', verificarToken, adminOEditor, carruselController.reordenarSlides);
+
 router.post(
   '/',
-  verificarToken, soloAdmin,
+  verificarToken, adminOEditor,
   upload.single('imagen'),
   verifyMagicBytes,
   processAndUpload('carrusel'),

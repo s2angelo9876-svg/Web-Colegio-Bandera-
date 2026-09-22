@@ -1,4 +1,4 @@
-﻿const express = require('express');
+const express = require('express');
 const router = express.Router();
 const { login, verificar, logout, cambiarPassword, actualizarPerfil } = require('../controllers/authController');
 const { verificarToken } = require('../middleware/authMiddleware');
@@ -6,7 +6,18 @@ const { handleValidation } = require('../middleware/validate');
 const { body } = require('express-validator');
 const { login: validateLogin } = require('../validators/schemas');
 
-router.post('/login', validateLogin, handleValidation, login);
+const rateLimit = require('express-rate-limit');
+
+// Rate limit estricto solo para el login (anti-fuerza bruta)
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { error: 'Demasiados intentos de inicio de sesión. Intenta en 15 minutos.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+router.post('/login', loginLimiter, validateLogin, handleValidation, login);
 router.post('/logout', logout);
 router.get('/verificar', verificarToken, verificar);
 

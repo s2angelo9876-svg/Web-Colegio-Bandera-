@@ -1,4 +1,6 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { useAuth } from '../context/authContext';
 import Admin from '../pages/Admin';
 import AdminNoticias from '../pages/AdminNoticias';
 import AdminEventos from '../pages/AdminEventos';
@@ -11,6 +13,18 @@ import AdminConfigInicio from '../pages/AdminConfigInicio';
 import AdminMesaPartes from '../pages/AdminMesaPartes';
 import AdminMiCuenta from '../pages/AdminMiCuenta';
 import AdminUsuarios from '../pages/AdminUsuarios';
+
+function SoloAdminRoute({ children }) {
+  const { usuario } = useAuth();
+  if (usuario && usuario.rol !== 'admin') {
+    return <Navigate to="/admin" replace />;
+  }
+  return children;
+}
+
+SoloAdminRoute.propTypes = {
+  children: PropTypes.node.isRequired,
+};
 
 function AdminRoutes() {
   return (
@@ -33,7 +47,7 @@ function AdminRoutes() {
 
       {/* Cuenta y Usuarios */}
       <Route path="mi-cuenta" element={<AdminMiCuenta />} />
-      <Route path="usuarios" element={<AdminUsuarios />} />
+      <Route path="usuarios" element={<SoloAdminRoute><AdminUsuarios /></SoloAdminRoute>} />
 
       {/* Compatibilidad con rutas antiguas */}
       <Route path="transparencia" element={<Navigate to="/admin/documentos-institucionales" replace />} />

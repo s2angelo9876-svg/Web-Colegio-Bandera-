@@ -77,3 +77,19 @@ exports.updateDocente = async (req, res) => {
     res.status(500).json({ error: 'Error al actualizar el docente' });
   }
 };
+
+exports.reordenarDocentes = async (req, res) => {
+  const { ordenIds } = req.body;
+  if (!Array.isArray(ordenIds) || ordenIds.length === 0) {
+    return res.status(400).json({ error: 'ordenIds debe ser un array con los IDs en el nuevo orden' });
+  }
+
+  try {
+    for (let i = 0; i < ordenIds.length; i++) {
+      await db.query('UPDATE docentes SET orden = $1 WHERE id = $2', [i + 1, ordenIds[i]]);
+    }
+    res.json({ message: 'Docentes reordenados correctamente' });
+  } catch (err) {
+    res.status(500).json({ error: 'Error al reordenar docentes' });
+  }
+};
