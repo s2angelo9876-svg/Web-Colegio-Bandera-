@@ -5,9 +5,10 @@ import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
 import { successWithLink, errorMsg, confirmDelete } from '../utils/sweetalert';
 import {
-  AdminPageHeader, FormCard, TextField, TextAreaField,
+  AdminPageHeader, TextField, TextAreaField,
   SearchBar, Pagination, ActionButtons
 } from '../components/AdminUI';
+import Wizard from '../components/Wizard';
 import { Calendar, MapPin, Clock, CalendarDays } from 'lucide-react';
 
 const Toast = Swal.mixin({
@@ -39,6 +40,7 @@ function AdminEventos() {
   const [eventos, setEventos] = useState([]);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1 });
   const [showForm, setShowForm] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState('');
   const [editMode, setEditMode] = useState(null);
@@ -62,10 +64,16 @@ function AdminEventos() {
     setForm(initialForm);
     setShowForm(false);
     setEditMode(null);
+    setCurrentStep(0);
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.titulo.trim() || !form.fecha_evento || !form.hora_evento || !form.lugar.trim()) {
+      errorMsg('Faltan datos', 'El nombre, la fecha, hora y lugar son obligatorios.');
+      setCurrentStep(form.fecha_evento && form.hora_evento && form.lugar ? 0 : 1);
+      return;
+    }
     setEnviando(true);
     try {
       if (editMode) {
@@ -107,6 +115,7 @@ function AdminEventos() {
       hora_evento: ev.hora_evento,
       lugar: ev.lugar
     });
+    setCurrentStep(0);
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
@@ -129,64 +138,128 @@ function AdminEventos() {
       />
 
       {showForm && (
-        <FormCard
+        <Wizard
           title={editMode ? 'Editar Evento' : 'Nuevo Evento'}
-          icon={<Calendar size={14} />}
+          editMode={!!editMode}
+          currentStep={currentStep}
+          onStepChange={setCurrentStep}
           onSubmit={handleSubmit}
-          submitting={enviando}
-          submitLabel={editMode ? 'Actualizar' : 'Guardar'}
           onCancel={resetForm}
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="md:col-span-2">
-              <TextField
-                id="titulo" name="titulo" label="Nombre del evento"
-                value={form.titulo}
-                onChange={(e) => setForm({ ...form, titulo: e.target.value })}
-                placeholder="Ej: Ceremonia de Graduación 2026" required
-              />
-              <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-1.5 flex items-start gap-1">
-                <span className="text-primary">💡</span>
-                <span>El nombre del evento tal como aparecerá en el calendario público.</span>
-              </p>
-            </div>
-            <TextField
-              id="lugar" name="lugar" label="Lugar"
-              value={form.lugar}
-              onChange={(e) => setForm({ ...form, lugar: e.target.value })}
-              placeholder="Ej: Auditorio Principal" required
-              icon={MapPin}
-            />
-            <div></div>
-            <TextField
-              id="fecha_evento" name="fecha_evento" label="Fecha del evento"
-              value={form.fecha_evento}
-              onChange={(e) => setForm({ ...form, fecha_evento: e.target.value })}
-              type="date" required
-              icon={Calendar}
-            />
-            <TextField
-              id="hora_evento" name="hora_evento" label="Hora"
-              value={form.hora_evento}
-              onChange={(e) => setForm({ ...form, hora_evento: e.target.value })}
-              type="time" required
-              icon={Clock}
-            />
-            <div className="md:col-span-2">
-              <TextAreaField
-                id="descripcion" name="descripcion" label="Descripción del evento"
-                value={form.descripcion}
-                onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
-                placeholder="Cuenta de qué trata el evento, qué se necesita llevar, etc."
-                rows={4}
-              />
-              <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-1.5 flex items-start gap-1">
-                <span className="text-primary">💡</span>
-                <span>Opcional. Detalles útiles: qué llevar, dress code, requisitos, etc.</span>
-              </p>
-            </div>
-          </div>
-        </FormCard>
+          submitting={enviando}
+          submitLabel={editMode ? 'Guardar cambios' : 'Agendar evento'}
+          steps={[
+            {
+              id: 'info',
+              title: 'Información',
+              description: 'Nombre y descripción',
+              content: (
+                <div className="space-y-4">
+                  <div>
+                    <TextField
+                      id="titulo" name="titulo" label="Nombre del evento"
+                      value={form.titulo}
+                      onChange={(e) => setForm({ ...form, titulo: e.target.value })}
+                      placeholder="Ej: Ceremonia de Graduación 2026"
+                    />
+                    <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-1.5 flex items-start gap-1">
+                      <span className="text-primary">💡</span>
+                      <span>El nombre del evento tal como aparecerá en el calendario público.</span>
+                    </p>
+                  </div>
+                  <div>
+                    <TextAreaField
+                      id="descripcion" name="descripcion" label="Descripción"
+                      value={form.descripcion}
+                      onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
+                      placeholder="Cuenta de qué trata el evento, qué se necesita llevar, etc."
+                      rows={8}
+                    />
+                    <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-1.5 flex items-start gap-1">
+                      <span className="text-primary">💡</span>
+                      <span>Opcional. Detalles útiles: qué llevar, dress code, requisitos, etc.</span>
+                    </p>
+                  </div>
+                </div>
+              ),
+            },
+            {
+              id: 'cuando',
+              title: 'Cuándo y dónde',
+              description: 'Fecha, hora y lugar',
+              content: (
+                <div className="space-y-4">
+                  <div>
+                    <TextField
+                      id="lugar" name="lugar" label="Lugar"
+                      value={form.lugar}
+                      onChange={(e) => setForm({ ...form, lugar: e.target.value })}
+                      placeholder="Ej: Auditorio Principal"
+                      icon={MapPin}
+                    />
+                    <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-1.5 flex items-start gap-1">
+                      <span className="text-primary">💡</span>
+                      <span>Donde se realizará el evento. Sé específico para que los padres sepan llegar.</span>
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <TextField
+                        id="fecha_evento" name="fecha_evento" label="Fecha"
+                        value={form.fecha_evento}
+                        onChange={(e) => setForm({ ...form, fecha_evento: e.target.value })}
+                        type="date"
+                        icon={Calendar}
+                      />
+                    </div>
+                    <div>
+                      <TextField
+                        id="hora_evento" name="hora_evento" label="Hora"
+                        value={form.hora_evento}
+                        onChange={(e) => setForm({ ...form, hora_evento: e.target.value })}
+                        type="time"
+                        icon={Clock}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ),
+            },
+            {
+              id: 'revisar',
+              title: 'Revisar',
+              description: 'Confirma los datos',
+              content: (
+                <div className="space-y-3">
+                  <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-dark-border rounded-lg p-4 space-y-3">
+                    <div>
+                      <p className="text-xs font-bold uppercase text-slate-500 tracking-wider">Evento</p>
+                      <p className="text-base font-semibold text-slate-900 dark:text-dark-text mt-1">
+                        {form.titulo || <em className="text-slate-400">Sin nombre</em>}
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 pt-2 border-t border-slate-200">
+                      <div>
+                        <p className="text-xs font-bold uppercase text-slate-500 tracking-wider">Fecha y hora</p>
+                        <p className="text-sm text-slate-700 dark:text-dark-text-muted mt-1">
+                          {form.fecha_evento || '—'} {form.hora_evento && `· ${form.hora_evento}`}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold uppercase text-slate-500 tracking-wider">Lugar</p>
+                        <p className="text-sm text-slate-700 dark:text-dark-text-muted mt-1">
+                          {form.lugar || '—'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-dark-text-muted text-center">
+                    Si todo está bien, pulsa <strong>Agendar evento</strong>.
+                  </p>
+                </div>
+              ),
+            },
+          ]}
+        />
       )}
 
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm mb-4">

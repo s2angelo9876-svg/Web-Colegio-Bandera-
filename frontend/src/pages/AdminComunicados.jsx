@@ -5,9 +5,10 @@ import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
 import { successWithLink, errorMsg, confirmDelete } from '../utils/sweetalert';
 import {
-  AdminPageHeader, FormCard, TextField, TextAreaField,
-  SearchBar, ActionButtons
+  AdminPageHeader, TextField, TextAreaField,
+  SearchBar, Pagination, ActionButtons
 } from '../components/AdminUI';
+import Wizard from '../components/Wizard';
 import { Megaphone, Tag, MessageSquare } from 'lucide-react';
 
 const Toast = Swal.mixin({
@@ -35,6 +36,7 @@ function AdminComunicados() {
   const toast = useToast();
   const [comunicados, setComunicados] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState('');
   const [editMode, setEditMode] = useState(null);
@@ -54,13 +56,19 @@ function AdminComunicados() {
   useEffect(() => { cargar(); }, [cargar]);
 
   const resetForm = useCallback(() => {
-    setForm({ titulo: '', descripcion: '', tipo: 'aviso' });
+    setForm(initialForm);
     setShowForm(false);
     setEditMode(null);
+    setCurrentStep(0);
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!form.titulo.trim() || !form.descripcion.trim()) {
+      errorMsg('Faltan datos', 'El titulo y el cuerpo son obligatorios.');
+      setCurrentStep(0);
+      return;
+    }
     setEnviando(true);
     try {
       if (editMode) {
@@ -102,6 +110,7 @@ function AdminComunicados() {
   const prepararEdicion = useCallback((c) => {
     setEditMode(c.id);
     setForm({ titulo: c.titulo, descripcion: c.descripcion, tipo: c.tipo || 'aviso' });
+    setCurrentStep(0);
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, []);
@@ -124,63 +133,120 @@ function AdminComunicados() {
       />
 
       {showForm && (
-        <FormCard
+        <Wizard
           title={editMode ? 'Editar Comunicado' : 'Nuevo Comunicado'}
-          icon={<MessageSquare size={14} />}
+          editMode={!!editMode}
+          currentStep={currentStep}
+          onStepChange={setCurrentStep}
           onSubmit={handleSubmit}
-          submitting={enviando}
-          submitLabel={editMode ? 'Actualizar' : 'Publicar'}
           onCancel={resetForm}
-        >
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <TextField
-                id="titulo" name="titulo" label="Título del comunicado"
-                value={form.titulo}
-                onChange={(e) => setForm({ ...form, titulo: e.target.value })}
-                placeholder="Ej: Suspensión de labores el viernes" required
-              />
-              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
-                <span className="text-primary">💡</span>
-                <span>Título claro y directo. Los padres lo verán en la página principal.</span>
-              </p>
-            </div>
-            <div>
-              <div className="space-y-1.5">
-                <label htmlFor="tipo" className="block text-xs font-semibold text-slate-700">Tipo de comunicado</label>
-                <div className="relative">
-                  <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                  <select
-                    id="tipo"
-                    value={form.tipo}
-                    onChange={(e) => setForm({ ...form, tipo: e.target.value })}
-                    className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
-                  >
-                    <option value="aviso">Aviso General</option>
-                    <option value="circular">Circular Administrativa</option>
-                    <option value="urgente">Alerta Urgente</option>
-                  </select>
+          submitting={enviando}
+          submitLabel={editMode ? 'Guardar cambios' : 'Publicar comunicado'}
+          steps={[
+            {
+              id: 'tipo',
+              title: 'Tipo',
+              description: 'Qué tipo de aviso es',
+              content: (
+                <div className="space-y-4">
+                  <p className="text-sm text-slate-700 dark:text-dark-text-muted">
+                    ¿Qué tan urgente es este comunicado?
+                  </p>
+                  <div>
+                    <label htmlFor="tipo" className="block text-xs font-semibold text-slate-700 mb-1.5">
+                      Tipo de comunicado
+                    </label>
+                    <div className="relative">
+                      <Tag size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <select
+                        id="tipo"
+                        value={form.tipo}
+                        onChange={(e) => setForm({ ...form, tipo: e.target.value })}
+                        className="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
+                      >
+                        <option value="aviso">Aviso General (gris)</option>
+                        <option value="circular">Circular Administrativa (azul)</option>
+                        <option value="urgente">Alerta Urgente (rojo)</option>
+                      </select>
+                    </div>
+                    <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                      <span className="text-primary">💡</span>
+                      <span>Elige <strong>Urgente</strong> solo para emergencias reales (suspensión de clases, alerta meteorológica, etc.).</span>
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
-                <span className="text-primary">💡</span>
-                <span>Urgente se muestra con badge rojo. Circular en azul. General en gris.</span>
-              </p>
-            </div>
-            <div className="md:col-span-2">
-              <TextAreaField
-                id="descripcion" name="descripcion" label="Cuerpo del comunicado"
-                value={form.descripcion}
-                onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
-                placeholder="Escribe el mensaje completo aquí..." required rows={6}
-              />
-              <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
-                <span className="text-primary">💡</span>
-                <span>Todos los detalles. Si es urgente, ponlo al principio.</span>
-              </p>
-            </div>
-          </div>
-        </FormCard>
+              ),
+            },
+            {
+              id: 'contenido',
+              title: 'Contenido',
+              description: 'Titular y mensaje',
+              content: (
+                <div className="space-y-4">
+                  <div>
+                    <TextField
+                      id="titulo" name="titulo" label="Título del comunicado"
+                      value={form.titulo}
+                      onChange={(e) => setForm({ ...form, titulo: e.target.value })}
+                      placeholder="Ej: Suspensión de labores el viernes"
+                    />
+                    <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                      <span className="text-primary">💡</span>
+                      <span>Título claro y directo. Los padres lo verán en la página principal.</span>
+                    </p>
+                  </div>
+                  <div>
+                    <TextAreaField
+                      id="descripcion" name="descripcion" label="Cuerpo del comunicado"
+                      value={form.descripcion}
+                      onChange={(e) => setForm({ ...form, descripcion: e.target.value })}
+                      placeholder="Escribe el mensaje completo aquí..."
+                      rows={10}
+                    />
+                    <p className="text-xs text-slate-500 mt-1.5 flex items-start gap-1">
+                      <span className="text-primary">💡</span>
+                      <span>Todos los detalles. Si es urgente, ponlo al principio.</span>
+                    </p>
+                  </div>
+                </div>
+              ),
+            },
+            {
+              id: 'revisar',
+              title: 'Revisar',
+              description: 'Confirma antes de publicar',
+              content: (
+                <div className="space-y-3">
+                  <div className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-dark-border rounded-lg p-4 space-y-3">
+                    <div>
+                      <p className="text-xs font-bold uppercase text-slate-500 tracking-wider">Tipo</p>
+                      <p className="text-sm font-semibold text-slate-900 dark:text-dark-text mt-1 capitalize">
+                        {form.tipo === 'aviso' && 'Aviso General'}
+                        {form.tipo === 'circular' && 'Circular Administrativa'}
+                        {form.tipo === 'urgente' && 'Alerta Urgente'}
+                      </p>
+                    </div>
+                    <div className="pt-2 border-t border-slate-200">
+                      <p className="text-xs font-bold uppercase text-slate-500 tracking-wider">Título</p>
+                      <p className="text-base font-semibold text-slate-900 dark:text-dark-text mt-1">
+                        {form.titulo || <em className="text-slate-400">Sin título</em>}
+                      </p>
+                    </div>
+                    <div className="pt-2 border-t border-slate-200">
+                      <p className="text-xs font-bold uppercase text-slate-500 tracking-wider">Cuerpo</p>
+                      <p className="text-sm text-slate-600 dark:text-dark-text-muted line-clamp-4 mt-1">
+                        {form.descripcion || <em className="text-slate-400">Sin contenido</em>}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-dark-text-muted text-center">
+                    Si todo está bien, pulsa <strong>Publicar comunicado</strong>.
+                  </p>
+                </div>
+              ),
+            },
+          ]}
+        />
       )}
 
       <div className="bg-white rounded-xl border border-slate-100 shadow-sm">
