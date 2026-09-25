@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 import {
   ChevronDown, Search, Menu, X, BookOpen, Users, Cpu,
   Newspaper, ClipboardList, Image, GraduationCap, Home,
-  Info, Shield, Zap, Building2, Moon, Sun, Lightbulb, Monitor, FlaskConical
+  Info, Shield, Zap, Building2, Moon, Sun, Lightbulb, Monitor, FlaskConical,
+  Sparkles
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { API } from '../services/api';
@@ -32,7 +33,6 @@ const navLinks = [
       { name: 'Nuestros Docentes',    path: '/docentes',    icon: Users },
       { name: 'Talleres',             path: '/talleres',    icon: Zap },
       { name: 'Calendario Escolar',   path: '/eventos',     icon: ClipboardList },
-      { name: 'Aula de Innovación Pedagógica', path: '/tic/aula', icon: Lightbulb },
     ]
   },
   {
@@ -43,6 +43,16 @@ const navLinks = [
       { name: 'Comunicados', path: '/comunicados', icon: ClipboardList },
       { name: 'Galería',     path: '/galeria',     icon: Image },
       { name: 'Documentos Inst.', path: '/documentos-institucionales', icon: BookOpen },
+    ]
+  },
+  {
+    name: 'Aula de Innovación Pedagógica',
+    icon: Lightbulb,
+    highlight: true,
+    submenu: [
+      { name: 'Aula de Innovación',    path: '/tic/aula',      icon: Lightbulb,   desc: 'Espacio creativo de aprendizaje activo' },
+      { name: 'Recursos Digitales',    path: '/tic/recursos',  icon: Monitor,     desc: 'Plataformas y herramientas' },
+      { name: 'Proyectos Tecnológicos',path: '/tic/proyectos', icon: FlaskConical, desc: 'Iniciativas innovadoras' },
     ]
   },
 ];
@@ -151,26 +161,80 @@ const Navbar = () => {
                 <div key={link.name} className="relative group">
                   {link.submenu ? (
                     <>
-                      <button className="flex items-center gap-1 text-white/90 hover:text-white font-medium text-sm py-2 px-3 transition-colors duration-200">
+                      <button className={`flex items-center gap-1 font-medium text-sm py-2 px-3 transition-all duration-200 rounded-lg ${
+                        link.highlight
+                          ? 'text-amber-300 hover:text-amber-200 bg-amber-400/10 hover:bg-amber-400/20 ring-1 ring-amber-400/30'
+                          : 'text-white/90 hover:text-white'
+                      }`}>
+                        {link.highlight && (
+                          <Sparkles size={12} className="text-amber-300" />
+                        )}
                         {link.name}
                         <ChevronDown size={14} className="transition-transform duration-300 group-hover:rotate-180" />
                       </button>
 
-                      <div className="absolute top-full left-0 w-56 bg-white dark:bg-dark-card shadow-xl rounded-xl p-2 border border-slate-100 dark:border-dark-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-[opacity,transform,visibility] duration-200 ease-out translate-y-2 group-hover:translate-y-0">
-                        {link.submenu.map((sub) => {
-                          const SubIcon = sub.icon;
-                          return (
-                            <Link
-                              key={sub.name}
-                              to={sub.path}
-                              className="flex items-center gap-3 px-4 py-2.5 text-slate-600 dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-accent-text hover:bg-slate-50 dark:hover:bg-dark-hover rounded-lg text-sm font-medium transition-colors duration-200"
-                            >
-                              <SubIcon size={15} />
-                              {sub.name}
-                            </Link>
-                          );
-                        })}
-                      </div>
+                      {/* Dropdown especial con diseno vistoso para Aula de Innovacion */}
+                      {link.highlight ? (
+                        <div className="absolute top-full right-0 mt-3 w-80 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-[opacity,transform,visibility] duration-300 ease-out translate-y-2 group-hover:translate-y-0 z-50">
+                          {/* Flecha pointing up */}
+                          <div className="absolute -top-2 right-8 w-4 h-4 rotate-45 bg-gradient-to-br from-amber-400 to-amber-500" />
+
+                          <div className="relative bg-gradient-to-br from-amber-400 via-amber-500 to-orange-500 rounded-2xl p-[2px] shadow-2xl">
+                            <div className="bg-white dark:bg-slate-900 rounded-[14px] p-4">
+                              <div className="flex items-center gap-2 mb-3 px-2">
+                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center">
+                                  <Lightbulb size={16} className="text-white" />
+                                </div>
+                                <p className="text-xs font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                                  Aula de Innovacion
+                                </p>
+                              </div>
+
+                              {link.submenu.map((sub) => {
+                                const SubIcon = sub.icon;
+                                return (
+                                  <Link
+                                    key={sub.name}
+                                    to={sub.path}
+                                    className="group/item flex items-start gap-3 px-3 py-2.5 rounded-xl hover:bg-gradient-to-r hover:from-amber-50 hover:to-orange-50 dark:hover:from-amber-900/20 dark:hover:to-orange-900/20 transition-all duration-200"
+                                  >
+                                    <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-gradient-to-br from-amber-400/10 to-orange-400/10 group-hover/item:from-amber-400 group-hover/item:to-orange-500 flex items-center justify-center transition-all duration-200">
+                                      <SubIcon size={16} className="text-amber-600 group-hover/item:text-white transition-colors duration-200" />
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm font-semibold text-slate-900 dark:text-dark-text leading-tight">
+                                        {sub.name}
+                                      </p>
+                                      {sub.desc && (
+                                        <p className="text-xs text-slate-500 dark:text-dark-text-muted mt-0.5">
+                                          {sub.desc}
+                                        </p>
+                                      )}
+                                    </div>
+                                  </Link>
+                                );
+                              })}
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        /* Dropdown normal para los demas items */
+                        <div className="absolute top-full left-0 w-56 bg-white dark:bg-dark-card shadow-xl rounded-xl p-2 border border-slate-100 dark:border-dark-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-[opacity,transform,visibility] duration-200 ease-out translate-y-2 group-hover:translate-y-0">
+                          {link.submenu.map((sub) => {
+                            const SubIcon = sub.icon;
+                            return (
+                              <Link
+                                key={sub.name}
+                                to={sub.path}
+                                className="flex items-center gap-3 px-4 py-2.5 text-slate-600 dark:text-dark-text-muted hover:text-primary dark:hover:text-dark-accent-text hover:bg-slate-50 dark:hover:bg-dark-hover rounded-lg text-sm font-medium transition-colors duration-200"
+                              >
+                                <SubIcon size={15} />
+                                {sub.name}
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
                     </>
                   ) : (
                     <Link
