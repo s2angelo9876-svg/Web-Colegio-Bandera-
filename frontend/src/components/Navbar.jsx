@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import {
   ChevronDown, Search, Menu, X, BookOpen, Users, Cpu,
   Newspaper, ClipboardList, Image, GraduationCap, Home,
-  Info, Shield, Zap, Building2, Moon, Sun
+  Info, Shield, Zap, Building2, Moon, Sun, Lightbulb, Monitor, FlaskConical
 } from 'lucide-react';
 import { useTheme } from '../context/ThemeContext';
 import { API } from '../services/api';
@@ -32,6 +32,7 @@ const navLinks = [
       { name: 'Nuestros Docentes',    path: '/docentes',    icon: Users },
       { name: 'Talleres',             path: '/talleres',    icon: Zap },
       { name: 'Calendario Escolar',   path: '/eventos',     icon: ClipboardList },
+      { name: 'Aula de Innovación Pedagógica', path: '/tic/aula', icon: Lightbulb },
     ]
   },
   {
@@ -44,15 +45,6 @@ const navLinks = [
       { name: 'Documentos Inst.', path: '/documentos-institucionales', icon: BookOpen },
     ]
   },
-  {
-    name: 'Zona TIC',
-    icon: Cpu,
-    submenu: [
-      { name: 'Aula de Innovación',    path: '/tic/aula',      icon: Zap },
-      { name: 'Recursos Digitales',    path: '/tic/recursos',  icon: BookOpen },
-      { name: 'Proyectos Tecnológicos',path: '/tic/proyectos', icon: Cpu },
-    ]
-  }
 ];
 
 const Navbar = () => {

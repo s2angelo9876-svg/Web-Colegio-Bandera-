@@ -4,7 +4,8 @@ import PropTypes from 'prop-types';
 import {
   ArrowRight, Calendar, BookOpen, Trophy, Users, GraduationCap,
   Newspaper, Bell, Shield, Zap, Globe, Award, ChevronRight,
-  ClipboardList, BookMarked, Send, Play, X, School, CheckCircle2
+  ClipboardList, BookMarked, Send, Play, X, School, CheckCircle2,
+  Lightbulb, Monitor, FlaskConical
 } from 'lucide-react';
 import Footer from '../components/Footer';
 import { API, UPLOADS_URL } from '../services/api';
@@ -291,6 +292,93 @@ function Inicio() {
                 <p className="text-slate-400 text-sm mt-1">No se encontraron noticias ni comunicados recientes.</p>
               </div>
             )}
+          </div>
+        </div>
+      </section>
+
+      {/* Aula de Innovacion Pedagogica */}
+      <section className="py-24 px-6 lg:px-8 bg-gradient-to-br from-primary via-blue-700 to-indigo-900 text-white relative overflow-hidden">
+        {/* Decoracion de fondo */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-20 -right-20 w-96 h-96 bg-amber-400/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-white/5 rounded-full blur-3xl" />
+        </div>
+
+        <div className="max-w-7xl mx-auto relative">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-400/20 border border-amber-400/30 text-amber-200 rounded-full text-xs font-bold uppercase tracking-widest mb-4">
+              <Lightbulb size={14} />
+              Innovacion Pedagogica
+            </div>
+            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+              Aula de Innovacion Pedagogica
+            </h2>
+            <p className="text-blue-100 text-lg max-w-2xl mx-auto">
+              Tecnologia, creatividad y aprendizaje activo convergen
+              para formar estudiantes preparados para el futuro.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 stagger">
+            {[
+              {
+                icon: Lightbulb,
+                title: 'Aula de Innovacion',
+                desc: 'Espacio creativo donde convergen la tecnologia y el aprendizaje activo para formar estudiantes preparados para el futuro.',
+                href: '/tic/aula',
+                color: 'from-amber-400 to-orange-500',
+              },
+              {
+                icon: Monitor,
+                title: 'Recursos Digitales',
+                desc: 'Plataformas, herramientas y materiales digitales que potencian el proceso de ensehanza-aprendizaje.',
+                href: '/tic/recursos',
+                color: 'from-cyan-400 to-blue-500',
+              },
+              {
+                icon: FlaskConical,
+                title: 'Proyectos Innovadores',
+                desc: 'Iniciativas donde los estudiantes aplican tecnologia para resolver problemas reales de su comunidad.',
+                href: '/tic/proyectos',
+                color: 'from-emerald-400 to-teal-500',
+              },
+            ].map(({ icon: Icon, title, desc, href, color }) => (
+              <Link
+                key={title}
+                to={href}
+                className="group relative bg-white/10 hover:bg-white/15 backdrop-blur-sm border border-white/20 rounded-2xl p-7 hover-lift press-feedback transition-all duration-300 overflow-hidden"
+              >
+                {/* Glow effect on hover */}
+                <div className={`absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br ${color} opacity-20 group-hover:opacity-40 rounded-full blur-2xl transition-opacity duration-500`} />
+
+                <div className={`relative w-16 h-16 rounded-2xl bg-gradient-to-br ${color} flex items-center justify-center mb-5 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300 shadow-lg`}>
+                  <Icon size={32} className="text-white" />
+                </div>
+
+                <h3 className="relative text-xl font-bold mb-2 group-hover:text-amber-200 transition-colors">
+                  {title}
+                </h3>
+                <p className="relative text-blue-100 text-sm leading-relaxed mb-4">
+                  {desc}
+                </p>
+
+                <div className="relative inline-flex items-center gap-1 text-amber-300 text-sm font-semibold group-hover:gap-2 transition-all">
+                  Explorar
+                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Link
+              to="/tic/aula"
+              className="inline-flex items-center gap-2 px-8 py-3.5 bg-amber-400 text-slate-900 rounded-xl font-bold text-sm uppercase tracking-wider hover:bg-amber-300 hover:scale-105 press-feedback transition-all shadow-lg"
+            >
+              <Lightbulb size={18} />
+              Conoce el Aula de Innovacion
+            </Link>
           </div>
         </div>
       </section>
