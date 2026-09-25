@@ -3,28 +3,45 @@ const bcrypt = require('bcryptjs');
 
 const VALID_ROLES = ['admin', 'editor', 'user'];
 
+// Cache del nombre de la columna de fecha de creacion
+// (puede ser 'created_at' o 'creado_en' segun como se creo la tabla original)
+let createdAtColumnCache = null;
+async function getCreatedAtColumn() {
+  if (createdAtColumnCache) return createdAtColumnCache;
+  try {
+    const { rows } = await db.query(`
+      SELECT column_name
+      FROM information_schema.columns
+      WHERE table_schema = 'public'
+        AND table_name = 'usuarios'
+        AND column_name IN ('created_at', 'creado_en')
+      LIMIT 1
+    `);
+    createdAtColumnCache = rows[0]?.column_name || 'created_at';
+  } catch {
+    createdAtColumnCache = 'created_at';
+  }
+  return createdAtColumnCache;
+}
+
 // Listar usuarios (solo admin)
 exports.getUsuarios = async (req, res) => {
   try {
-    // Usar COALESCE para tolerar tanto 'created_at' (ingles) como
-    // 'creado_en' (espanol) en caso de que la tabla original de Supabase
-    // use el nombre en espanol.
+    const createdAt = await getCreatedAtColumn();
     const { rows } = await db.query(
       `SELECT id, username, email, rol,
-              to_char(COALESCE(ultimo_acceso, NOW()), 'YYYY-MM-DD HH24:MI') AS ultimo_acceso,
-              to_char(COALESCE(created_at, creado_en, NOW()), 'YYYY-MM-DD') AS creado
+              to_char(ultimo_acceso, 'YYYY-MM-DD HH24:MI') AS ultimo_acceso,
+              to_char(${createdAt}, 'YYYY-MM-DD') AS creado
        FROM usuarios
        ORDER BY rol DESC, username ASC`
     );
     res.json(rows);
   } catch (err) {
-    // Loguear el error completo para diagnostico
     const logger = require('../config/logger');
     logger.error('Error en getUsuarios', {
       message: err.message,
       code: err.code,
       detail: err.detail,
-      hint: 'Si la columna no existe, puede ser que la tabla original use nombre diferente. Ej: creado_en en lugar de created_at.',
     });
     res.status(500).json({
       error: 'Error al obtener usuarios',
