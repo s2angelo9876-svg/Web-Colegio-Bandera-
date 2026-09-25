@@ -9,12 +9,14 @@ let createdAtColumnCache = null;
 async function getCreatedAtColumn() {
   if (createdAtColumnCache) return createdAtColumnCache;
   try {
+    // Preferir 'created_at' sobre 'creado_en' (orden determinista)
     const { rows } = await db.query(`
       SELECT column_name
       FROM information_schema.columns
       WHERE table_schema = 'public'
         AND table_name = 'usuarios'
         AND column_name IN ('created_at', 'creado_en')
+      ORDER BY (column_name = 'created_at') DESC
       LIMIT 1
     `);
     createdAtColumnCache = rows[0]?.column_name || 'created_at';
