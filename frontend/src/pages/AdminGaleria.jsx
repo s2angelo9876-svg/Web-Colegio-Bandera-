@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
-import { successWithLink, errorMsg, confirmDelete } from '../utils/sweetalert';
+import { successWithLink, successMsg, errorMsg, confirmDelete } from '../utils/sweetalert';
 import { ActionButtons, AdminPageHeader, FormCard, ImageUploadField, SearchBar, TextAreaField, TextField } from '../components/AdminUI';
-import { Film, Image as ImageIcon } from 'lucide-react';
+import ReorderModal from '../components/ReorderModal';
+import { Film, Image as ImageIcon, ArrowUpDown } from 'lucide-react';
 
 const Toast = Swal.mixin({
   toast: true,
@@ -49,6 +50,7 @@ function AdminGaleria() {
   const [preview, setPreview] = useState(null);
   const [enviando, setEnviando] = useState(false);
   const [busqueda, setBusqueda] = useState('');
+  const [reorderOpen, setReorderOpen] = useState(false);
 
   const cargarGaleria = useCallback(async () => {
     setCargando(true);
@@ -142,15 +144,68 @@ function AdminGaleria() {
     return items;
   }, [mediaItems, selectedYear, busqueda]);
 
+  const renderGaleriaItem = (item) => (
+    <div className="flex items-center gap-3 min-w-0">
+      <div className="w-10 h-10 rounded-md bg-slate-100 flex-shrink-0 overflow-hidden">
+        {item.imagen_url ? (
+          <img src={`${UPLOADS_URL}/${item.imagen_url}`} alt="" className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-slate-400">
+            <Film size={16} />
+          </div>
+        )}
+      </div>
+      <div className="min-w-0">
+        <p className="text-sm font-semibold text-slate-800 truncate">{item.titulo}</p>
+        <p className="text-[10px] text-slate-400 uppercase tracking-wider">
+          {item.tipo === 'video' ? 'Video' : 'Foto'} · {item.dia}/{item.mes}/{item.anio}
+        </p>
+      </div>
+    </div>
+  );
+
+  const handleReordenar = async (ordenIds) => {
+    try {
+      const { reordenarGaleria } = await import('../services/api');
+      await reordenarGaleria(ordenIds);
+      successMsg('Galería reordenada', 'El nuevo orden se guardo correctamente.');
+      cargarGaleria();
+      setReorderOpen(false);
+    } catch (err) {
+      errorMsg('No se pudo reordenar', err.response?.data?.error || err.message);
+    }
+  };
+
   return (
     <div className="p-6 lg:p-8 bg-slate-50 min-h-screen">
       <AdminPageHeader
-        title="GalerÃ­a Multimedia"
+        title="Galería Multimedia"
         subtitle="Archivo Visual"
         badge={<ImageIcon size={11} />}
         onButtonClick={() => showForm ? resetForm() : setShowForm(true)}
         formOpen={showForm}
         addButtonLabel="Nuevo Elemento"
+      />
+      <div className="mb-4 flex justify-end">
+        <button
+          type="button"
+          onClick={() => setReorderOpen(true)}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-50 shadow-sm transition active:scale-95"
+        >
+          <ArrowUpDown size={14} />
+          Reordenar galería
+        </button>
+      </div>
+
+      <ReorderModal
+        open={reorderOpen}
+        onClose={() => setReorderOpen(false)}
+        title="Reordenar galería"
+        description="Arrastra cada item a su nueva posición. Guarda para aplicar el orden."
+        items={mediaItems}
+        renderItem={renderGaleriaItem}
+        onSave={handleReordenar}
+        entityName="fotos y videos"
       />
 
       {showForm && (

@@ -1,6 +1,6 @@
 ﻿const express = require('express');
 const router = express.Router();
-const { getAdministrativos, createAdministrativo, updateAdministrativo, deleteAdministrativo } = require('../controllers/administrativoController');
+const { getAdministrativos, createAdministrativo, updateAdministrativo, deleteAdministrativo, reordenarAdministrativos } = require('../controllers/administrativoController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
 const { upload, verifyMagicBytes, processAndUpload } = require('../middleware/uploadMiddleware');
 const { handleValidation } = require('../middleware/validate');
@@ -33,6 +33,12 @@ router.put(
 );
 
 router.delete('/:id', verificarToken, soloAdmin, ...idParam, handleValidation, deleteAdministrativo);
+
+router.put('/reordenar', verificarToken, soloAdmin,
+  require('express-validator').body('ordenIds').isArray(),
+  handleValidation,
+  reordenarAdministrativos
+);
 
 module.exports = router;
 

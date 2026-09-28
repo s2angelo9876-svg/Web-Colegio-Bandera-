@@ -1,4 +1,6 @@
 const db = require('../config/db');
+const { reorderItems } = require('../utils/reorder');
+const logger = require('../config/logger');
 const { logActivity } = require('../utils/activityLogger');
 
 exports.getGaleria = async (req, res) => {

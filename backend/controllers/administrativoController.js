@@ -1,4 +1,6 @@
 const db = require('../config/db');
+const { reorderItems } = require('../utils/reorder');
+const logger = require('../config/logger');
 
 exports.getAdministrativos = async (req, res) => {
   try {
@@ -54,5 +56,20 @@ exports.updateAdministrativo = async (req, res) => {
     res.json({ message: 'Registro actualizado correctamente' });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+exports.reordenarAdministrativos = async (req, res) => {
+  const { ordenIds } = req.body;
+  if (!Array.isArray(ordenIds) || ordenIds.length === 0) {
+    return res.status(400).json({ error: 'ordenIds debe ser un array con los IDs en el nuevo orden' });
+  }
+  try {
+    const { updated } = await reorderItems(db, 'administrativos', ordenIds);
+    logger.info('Administrativos reordenados', { updated });
+    res.json({ mensaje: 'Personal reordenado correctamente', updated });
+  } catch (err) {
+    logger.error('Error en reordenarAdministrativos', { message: err.message });
+    res.status(500).json({ error: 'Error al reordenar' });
   }
 };

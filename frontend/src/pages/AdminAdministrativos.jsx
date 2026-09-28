@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import { API, UPLOADS_URL } from '../services/api';
 import { useToast } from '../context/ToastContext';
 import Swal from 'sweetalert2';
-import { successWithLink, errorMsg, confirmDelete } from '../utils/sweetalert';
+import { successWithLink } from '../utils/sweetalert';
 import { ActionButtons, AdminPageHeader, FormCard, SearchBar, TextField } from '../components/AdminUI';
-import { Briefcase, Image as ImageIcon } from 'lucide-react';
+import ReorderModal from '../components/ReorderModal';
+import { Briefcase, Image as ImageIcon, ArrowUpDown } from 'lucide-react';
 
 const Toast = Swal.mixin({
   toast: true,
@@ -39,6 +40,7 @@ function AdminAdministrativos() {
   const [form, setForm] = useState(initialForm);
   const [enviando, setEnviando] = useState(false);
   const [busqueda, setBusqueda] = useState('');
+  const [reorderOpen, setReorderOpen] = useState(false);
 
   const cargarPersonal = useCallback(async () => {
     setCargando(true);
@@ -105,15 +107,66 @@ function AdminAdministrativos() {
     return personal.filter(p => (p.nombre || '').toLowerCase().includes(q) || (p.cargo || '').toLowerCase().includes(q));
   }, [personal, busqueda]);
 
+  const renderAdminItem = (item) => (
+    <div className="flex items-center gap-3 min-w-0">
+      <div className="w-10 h-10 rounded-full bg-slate-100 flex-shrink-0 overflow-hidden">
+        {item.imagen_url ? (
+          <img src={`${UPLOADS_URL}/${item.imagen_url}`} alt="" className="w-full h-full object-cover" />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-slate-400 font-semibold">
+            {item.nombre?.charAt(0).toUpperCase()}
+          </div>
+        )}
+      </div>
+      <div className="min-w-0">
+        <p className="text-sm font-semibold text-slate-800 truncate">{item.nombre}</p>
+        <p className="text-[10px] text-slate-400 uppercase tracking-wider">{item.cargo}{item.area ? ` · ${item.area}` : ''}</p>
+      </div>
+    </div>
+  );
+
+  const handleReordenar = async (ordenIds) => {
+    try {
+      const { reordenarAdministrativos } = await import('../services/api');
+      await reordenarAdministrativos(ordenIds);
+      successMsg('Personal reordenado', 'El nuevo orden se guardo correctamente.');
+      cargarPersonal();
+      setReorderOpen(false);
+    } catch (err) {
+      errorMsg('No se pudo reordenar', err.response?.data?.error || err.message);
+    }
+  };
+
   return (
     <div className="p-6 lg:p-8 bg-slate-50 min-h-screen">
       <AdminPageHeader
-        title="GestiÃ³n Administrativa"
+        title="Gestión Administrativa"
         subtitle="Operaciones Institucionales"
         badge={<Briefcase size={11} />}
         onButtonClick={() => showForm ? resetForm() : setShowForm(true)}
         formOpen={showForm}
         addButtonLabel="Nuevo Administrativo"
+      />
+      <div className="mb-4 flex justify-end">
+        <button
+          type="button"
+          onClick={() => setReorderOpen(true)}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-lg text-xs font-semibold hover:bg-slate-50 shadow-sm transition active:scale-95"
+        >
+          <ArrowUpDown size={14} />
+          Reordenar personal
+        </button>
+      </div>
+
+      <ReorderModal
+        open={reorderOpen}
+        onClose={() => setReorderOpen(false)}
+        title="Reordenar personal"
+        description="Cambia el orden de aparicion en la web publica."
+        items={personal}
+        renderItem={renderAdminItem}
+        onSave={handleReordenar}
+        entityName="personal"
       />
 
       {showForm && (

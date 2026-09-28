@@ -89,3 +89,9 @@ export const setComunicadoTags            = (id, tagIds) => API.put(`/tags/comun
 export const setEventoTags                = (id, tagIds) => API.put(`/tags/eventos/${id}/tags`, { tagIds })
 export const getContenidoByTag            = (slug) => API.get(`/tags/${slug}/contenido`)
 export const getNubeTags                  = () => API.get('/tags/nube')
+
+// Reordenar items
+export const reordenarGaleria            = (ordenIds) => API.put('/galeria/reordenar', { ordenIds })
+export const reordenarDocentes           = (ordenIds) => API.put('/docentes/reordenar', { ordenIds })
+export const reordenarAdministrativos    = (ordenIds) => API.put('/administrativos/reordenar', { ordenIds })
+export const reordenarCarrusel           = (ordenIds) => API.put('/carrusel/reordenar', { ordenIds })
