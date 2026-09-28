@@ -18,6 +18,8 @@ const Galeria = lazy(() => import('./pages/Galeria'));
 const Login = lazy(() => import('./pages/Login'));
 const MesaPartes = lazy(() => import('./pages/MesaPartes'));
 const SeccionInstitucion = lazy(() => import('./pages/SeccionInstitucion'));
+const TagsPage = lazy(() => import('./pages/TagsPage'));
+const TagPage = lazy(() => import('./pages/TagPage'));
 const DocumentosInstitucionales = lazy(() => import('./pages/DocumentosInstitucionales'));
 const Administrativos = lazy(() => import('./pages/Administrativos'));
 const Directivos = lazy(() => import('./pages/Directivos'));
@@ -105,6 +107,8 @@ function AppContent() {
           <Route path="/mesa-partes" element={<MesaPartes />} />
           <Route path="/documentos-institucionales" element={<DocumentosInstitucionales />} />
           <Route path="/transparencia" element={<Navigate to="/documentos-institucionales" replace />} />
+          <Route path="/tags" element={<TagsPage />} />
+          <Route path="/tags/:slug" element={<TagPage />} />
           <Route path="/admision" element={<Navigate to="/mesa-partes" replace />} />
 
           <Route path="/nosotros" element={<SeccionInstitucion />} />

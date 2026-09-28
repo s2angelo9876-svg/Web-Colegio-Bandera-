@@ -80,3 +80,12 @@ export const getNotifications            = (params) => API.get('/notifications',
 export const getUnreadNotificationsCount = () => API.get('/notifications/unread-count')
 export const markNotificationRead        = (id) => API.put(`/notifications/${id}/read`)
 export const markAllNotificationsRead    = () => API.put('/notifications/read-all')
+
+export const getTags                       = (params) => API.get('/tags', { params })
+export const createTag                    = (data) => API.post('/tags', data)
+export const deleteTag                    = (id) => API.delete(`/tags/${id}`)
+export const setNoticiaTags               = (id, tagIds) => API.put(`/tags/noticias/${id}/tags`, { tagIds })
+export const setComunicadoTags            = (id, tagIds) => API.put(`/tags/comunicados/${id}/tags`, { tagIds })
+export const setEventoTags                = (id, tagIds) => API.put(`/tags/eventos/${id}/tags`, { tagIds })
+export const getContenidoByTag            = (slug) => API.get(`/tags/${slug}/contenido`)
+export const getNubeTags                  = () => API.get('/tags/nube')

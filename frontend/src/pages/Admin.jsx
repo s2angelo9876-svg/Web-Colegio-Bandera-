@@ -10,11 +10,11 @@ import HelpCenterModal from '../components/HelpCenterModal';
 import WelcomeModal from '../components/WelcomeModal';
 import TourGuide from '../components/TourGuide';
 import {
-  Newspaper, Calendar, Megaphone, FolderTree,
+  Newspaper, Calendar, Megaphone, FolderTree, Tag, Activity,
   Users, Image as ImageIcon, LayoutDashboard, LogOut,
   ChevronRight, Bell, Briefcase, Moon, Sun,
   ClipboardList, GraduationCap, FileText, Sparkles, AlertCircle, ArrowRight,
-  UserCircle, UserCog, HelpCircle, Activity, Eye, TrendingUp, Clock
+  UserCircle, UserCog, HelpCircle, Eye, TrendingUp, Clock
 } from 'lucide-react';
 import AdminChart from '../components/AdminChart';
 
@@ -275,6 +275,7 @@ function Admin() {
               <p className="text-[9px] font-bold text-slate-500 uppercase tracking-widest px-3 mt-6 mb-2">Cuenta</p>
               <SidebarItem to="usuarios" icon={UserCog} label="Usuarios" active={isActive('usuarios')} />
               <SidebarItem to="actividad" icon={Activity} label="Actividad" active={isActive('actividad')} />
+              <SidebarItem to="tags" icon={Tag} label="Etiquetas" active={isActive('tags')} />
               <SidebarItem to="mi-cuenta" icon={UserCircle} label="Mi Cuenta" active={isActive('mi-cuenta')} />
             </>
           )}

@@ -14,6 +14,7 @@ import AdminMesaPartes from '../pages/AdminMesaPartes';
 import AdminMiCuenta from '../pages/AdminMiCuenta';
 import AdminUsuarios from '../pages/AdminUsuarios';
 import AdminActividad from '../pages/AdminActividad';
+import AdminTags from '../pages/AdminTags';
 
 function SoloAdminRoute({ children }) {
   const { usuario } = useAuth();
@@ -50,6 +51,7 @@ function AdminRoutes() {
       <Route path="mi-cuenta" element={<AdminMiCuenta />} />
       <Route path="usuarios" element={<SoloAdminRoute><AdminUsuarios /></SoloAdminRoute>} />
       <Route path="actividad" element={<SoloAdminRoute><AdminActividad /></SoloAdminRoute>} />
+      <Route path="tags" element={<SoloAdminRoute><AdminTags /></SoloAdminRoute>} />
 
       {/* Compatibilidad con rutas antiguas */}
       <Route path="transparencia" element={<Navigate to="/admin/documentos-institucionales" replace />} />
