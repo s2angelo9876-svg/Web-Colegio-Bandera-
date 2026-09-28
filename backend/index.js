@@ -49,6 +49,7 @@ const tagsRoutes           = require('./routes/tagsRoutes');
 const pageViewRoutes       = require('./routes/pageViewRoutes');
 const activityLogRoutes    = require('./routes/activityLogRoutes');
 const notificationRoutes   = require('./routes/notificationRoutes');
+const cronRoutes           = require('./routes/cronRoutes');
 
 const app = express();
 
@@ -144,6 +145,7 @@ app.use('/api/tags',            tagsRoutes);
 app.use('/api/page-views',      pageViewRoutes);
 app.use('/api/activity-log',    activityLogRoutes);
 app.use('/api/notifications',   notificationRoutes);
+app.use('/api/cron',            cronRoutes);
 app.use('/api/_debug',         debugRoutes);
 app.use('/',                    seoRoutes);
 app.use('/api/auth',            authRoutes);
