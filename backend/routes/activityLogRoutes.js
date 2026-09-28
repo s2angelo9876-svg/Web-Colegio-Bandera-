@@ -1,9 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { getActivityLog } = require('../controllers/activityLogController');
+const {
+  getActivityLog,
+  getActivityLogById,
+  exportActivityLogCSV,
+  getActivityLogStats,
+} = require('../controllers/activityLogController');
 const { verificarToken, soloAdmin } = require('../middleware/authMiddleware');
 
-// Solo admin puede ver el log de actividad
 router.get('/', verificarToken, soloAdmin, getActivityLog);
+router.get('/stats', verificarToken, soloAdmin, getActivityLogStats);
+router.get('/export/csv', verificarToken, soloAdmin, exportActivityLogCSV);
+router.get('/:id', verificarToken, soloAdmin, getActivityLogById);
 
 module.exports = router;
