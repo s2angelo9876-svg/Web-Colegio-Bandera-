@@ -1,0 +1,126 @@
+{
+  "commit": "b2db12d1b731551cdc8807ec9c6068a7f8005c6a",
+  "date": "2026-11-17",
+  "files": [
+    {
+      "archivo": "README.md",
+      "sha256": "deb6e5b050193ca9bf6b416712f586e6c028a1c85af57d6d75689b96d826e480",
+      "bytes": 6480
+    },
+    {
+      "archivo": "api.json",
+      "sha256": "12c8a22b00c1c16b200c490804785ae6c6c401b3e8d783fb3a45a20060ea0e7c",
+      "bytes": 2384
+    },
+    {
+      "archivo": "audit-backend-prod.json",
+      "sha256": "749f71fcbe94b9fb2a8f030d3b58092ff9e21d7de816f391707dcc87cf60bd0b",
+      "bytes": 28817
+    },
+    {
+      "archivo": "audit-backend.json",
+      "sha256": "65dab28828b93f11d7e6de2cdede6bfae926c2e1f274a0cb31ccaf929ffa0d02",
+      "bytes": 29420
+    },
+    {
+      "archivo": "audit-frontend-prod.json",
+      "sha256": "42b4c83e88629dd27327968d7a5885abc18827d1925e5fc9568ae2294b9d5ff9",
+      "bytes": 36564
+    },
+    {
+      "archivo": "audit-frontend.json",
+      "sha256": "2fb502586064b8ea3c2e1c684b5bb1f9f2296e588ace3dd85912a68fe97f0678",
+      "bytes": 65597
+    },
+    {
+      "archivo": "browser.json",
+      "sha256": "0e7159e7dca68fa17773fe3fe45a2e27be32c9e9e0baf2c2cd3a1f5be36b4764",
+      "bytes": 32744
+    },
+    {
+      "archivo": "build.log",
+      "sha256": "790ea6755b3b41cd0ad305a3d78333f312921a82881ea8347db479d9aa58cc74",
+      "bytes": 7650
+    },
+    {
+      "archivo": "desktop-admin-noticias.png",
+      "sha256": "1c89d283acfe84e23a42e1e7ab5b30ceb471377aec6c95222fcbdeda8414ef11",
+      "bytes": 58872
+    },
+    {
+      "archivo": "desktop-admin.png",
+      "sha256": "2d87ca742789c5a0291afdb445e0faf2f1ee018944b0f6df1def8cae36a5ba84",
+      "bytes": 265502
+    },
+    {
+      "archivo": "desktop-comunicados.png",
+      "sha256": "bd3955b888abe9b55d7a79e6fcf73c0f6b12aa49282cecc903a1e4678ea0e9e7",
+      "bytes": 112525
+    },
+    {
+      "archivo": "desktop-inicio.png",
+      "sha256": "ed84feda3c8cd33c1268734aaf8305e8c6e9c1857f3dfd12dad1dbbec880804f",
+      "bytes": 1144022
+    },
+    {
+      "archivo": "desktop-mesa-partes.png",
+      "sha256": "f0438000598c4c2835ed06ee1248dae7fa1bb432920c55124b6eb4e334dc522a",
+      "bytes": 209762
+    },
+    {
+      "archivo": "desktop-noticias.png",
+      "sha256": "0e6fdc07386f851864f852b519b2c9212d82a7e6448151fcc8e36a951001a6eb",
+      "bytes": 115884
+    },
+    {
+      "archivo": "fixtures.sql",
+      "sha256": "5cad4816e590b415361709be8fd8ec8fd6f7f44b1541ec789877b7e2dce3db5a",
+      "bytes": 1220
+    },
+    {
+      "archivo": "keyboard.json",
+      "sha256": "f8bd745e8415d15ab9ded4e705f0597d8feb520750f0389bd46e01b60447f40d",
+      "bytes": 53
+    },
+    {
+      "archivo": "lint.log",
+      "sha256": "f278d64bde83bf5e05300685a72d45d736170f17d47b1c811be01805eca1ea8b",
+      "bytes": 18790
+    },
+    {
+      "archivo": "mobile-admin-noticias.png",
+      "sha256": "6cc07a0abd0a9fac1f0f86230d5046748b2069dbfe1395e5d2c0406dc055133f",
+      "bytes": 39300
+    },
+    {
+      "archivo": "mobile-admin.png",
+      "sha256": "30b4b2f1e9ce314056fdfeeca9633f3b37dd38cb02b652725ee9d1259b75329f",
+      "bytes": 197450
+    },
+    {
+      "archivo": "mobile-comunicados.png",
+      "sha256": "e74463103ee83fb3886719840b708a32cfa7b5f2a6a0077191a4fcade134cf93",
+      "bytes": 100197
+    },
+    {
+      "archivo": "mobile-inicio.png",
+      "sha256": "04039d5e2449d5c3780cab79a4bc5ef0af6b4d56141aa11f63e2a33874da503f",
+      "bytes": 591286
+    },
+    {
+      "archivo": "mobile-mesa-partes.png",
+      "sha256": "adb477997fd1ebb0c882a959190d7984933948fcf52e6fdd39c876995a4df9a1",
+      "bytes": 188018
+    },
+    {
+      "archivo": "mobile-noticias.png",
+      "sha256": "b493f02983eb4cbf148c72057e7ca094ba7cb43183534a828186bbdc7639600f",
+      "bytes": 101857
+    },
+    {
+      "archivo": "tests.log",
+      "sha256": "c5d11475ceb481fb5583e568b6045ee0dea6151334bae642362c347b84545566",
+      "bytes": 1468
+    }
+  ]
+}

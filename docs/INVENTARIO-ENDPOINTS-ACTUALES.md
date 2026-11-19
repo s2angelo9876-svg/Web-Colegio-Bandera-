@@ -1,0 +1,94 @@
+# Inventario de endpoints de la línea base
+
+Se detectaron **86 declaraciones de rutas HTTP** en routers montados y rutas directas del backend. Fuente: commit `b2db12d1b731551cdc8807ec9c6068a7f8005c6a`.
+
+Inventario estático: no equivale a cobertura de pruebas ni prueba permisos. Las rutas de diagnóstico/emergencia y contratos defectuosos se retiran o corrigen en el destino. El SDD conserva capacidades de negocio y documenta compatibilidad; no exige reproducir APIs inseguras.
+
+| Método | Ruta actual | Fuente |
+|---|---|---|
+| GET | `/` | [backend/index.js:101](../backend/index.js#L101) |
+| POST | `/api/_admin/reset-password` | [backend/routes/adminResetRoutes.js:26](../backend/routes/adminResetRoutes.js#L26) |
+| GET | `/api/_debug/debug/columns` | [backend/routes/debugRoutes.js:6](../backend/routes/debugRoutes.js#L6) |
+| GET | `/api/_debug/debug/tables` | [backend/routes/debugRoutes.js:21](../backend/routes/debugRoutes.js#L21) |
+| GET | `/api/_debug/debug/test-query` | [backend/routes/debugRoutes.js:36](../backend/routes/debugRoutes.js#L36) |
+| GET | `/api/activity-log` | [backend/routes/activityLogRoutes.js:11](../backend/routes/activityLogRoutes.js#L11) |
+| GET | `/api/activity-log/:id` | [backend/routes/activityLogRoutes.js:14](../backend/routes/activityLogRoutes.js#L14) |
+| GET | `/api/activity-log/export/csv` | [backend/routes/activityLogRoutes.js:13](../backend/routes/activityLogRoutes.js#L13) |
+| GET | `/api/activity-log/stats` | [backend/routes/activityLogRoutes.js:12](../backend/routes/activityLogRoutes.js#L12) |
+| GET | `/api/administrativos` | [backend/routes/administrativoRoutes.js:10](../backend/routes/administrativoRoutes.js#L10) |
+| POST | `/api/administrativos` | [backend/routes/administrativoRoutes.js:12](../backend/routes/administrativoRoutes.js#L12) |
+| DELETE | `/api/administrativos/:id` | [backend/routes/administrativoRoutes.js:35](../backend/routes/administrativoRoutes.js#L35) |
+| PUT | `/api/administrativos/:id` | [backend/routes/administrativoRoutes.js:23](../backend/routes/administrativoRoutes.js#L23) |
+| PUT | `/api/administrativos/reordenar` | [backend/routes/administrativoRoutes.js:37](../backend/routes/administrativoRoutes.js#L37) |
+| GET | `/api/admision` | [backend/routes/admisionRoutes.js:16](../backend/routes/admisionRoutes.js#L16) |
+| POST | `/api/admision` | [backend/routes/admisionRoutes.js:9](../backend/routes/admisionRoutes.js#L9) |
+| DELETE | `/api/admision/:id` | [backend/routes/admisionRoutes.js:17](../backend/routes/admisionRoutes.js#L17) |
+| POST | `/api/auth/cambiar-password` | [backend/routes/authRoutes.js:25](../backend/routes/authRoutes.js#L25) |
+| POST | `/api/auth/login` | [backend/routes/authRoutes.js:20](../backend/routes/authRoutes.js#L20) |
+| POST | `/api/auth/logout` | [backend/routes/authRoutes.js:21](../backend/routes/authRoutes.js#L21) |
+| PUT | `/api/auth/perfil` | [backend/routes/authRoutes.js:35](../backend/routes/authRoutes.js#L35) |
+| GET | `/api/auth/verificar` | [backend/routes/authRoutes.js:22](../backend/routes/authRoutes.js#L22) |
+| GET | `/api/buscar` | [backend/index.js:157](../backend/index.js#L157) |
+| GET | `/api/carrusel` | [backend/routes/carruselRoutes.js:10](../backend/routes/carruselRoutes.js#L10) |
+| POST | `/api/carrusel` | [backend/routes/carruselRoutes.js:14](../backend/routes/carruselRoutes.js#L14) |
+| DELETE | `/api/carrusel/:id` | [backend/routes/carruselRoutes.js:25](../backend/routes/carruselRoutes.js#L25) |
+| PUT | `/api/carrusel/reordenar` | [backend/routes/carruselRoutes.js:12](../backend/routes/carruselRoutes.js#L12) |
+| GET | `/api/comunicados` | [backend/routes/comunicadoRoutes.js:9](../backend/routes/comunicadoRoutes.js#L9) |
+| POST | `/api/comunicados` | [backend/routes/comunicadoRoutes.js:11](../backend/routes/comunicadoRoutes.js#L11) |
+| DELETE | `/api/comunicados/:id` | [backend/routes/comunicadoRoutes.js:28](../backend/routes/comunicadoRoutes.js#L28) |
+| PUT | `/api/comunicados/:id` | [backend/routes/comunicadoRoutes.js:19](../backend/routes/comunicadoRoutes.js#L19) |
+| GET | `/api/configuracion` | [backend/routes/configuracionRoutes.js:6](../backend/routes/configuracionRoutes.js#L6) |
+| POST | `/api/configuracion` | [backend/routes/configuracionRoutes.js:7](../backend/routes/configuracionRoutes.js#L7) |
+| GET | `/api/cron/health` | [backend/routes/cronRoutes.js:6](../backend/routes/cronRoutes.js#L6) |
+| GET | `/api/cron/publish-scheduled` | [backend/routes/cronRoutes.js:7](../backend/routes/cronRoutes.js#L7) |
+| GET | `/api/directivos` | [backend/routes/directivoRoutes.js:10](../backend/routes/directivoRoutes.js#L10) |
+| POST | `/api/directivos` | [backend/routes/directivoRoutes.js:12](../backend/routes/directivoRoutes.js#L12) |
+| DELETE | `/api/directivos/:id` | [backend/routes/directivoRoutes.js:35](../backend/routes/directivoRoutes.js#L35) |
+| PUT | `/api/directivos/:id` | [backend/routes/directivoRoutes.js:23](../backend/routes/directivoRoutes.js#L23) |
+| GET | `/api/docentes` | [backend/routes/docenteRoutes.js:10](../backend/routes/docenteRoutes.js#L10) |
+| POST | `/api/docentes` | [backend/routes/docenteRoutes.js:14](../backend/routes/docenteRoutes.js#L14) |
+| DELETE | `/api/docentes/:id` | [backend/routes/docenteRoutes.js:37](../backend/routes/docenteRoutes.js#L37) |
+| PUT | `/api/docentes/:id` | [backend/routes/docenteRoutes.js:25](../backend/routes/docenteRoutes.js#L25) |
+| PUT | `/api/docentes/reordenar` | [backend/routes/docenteRoutes.js:12](../backend/routes/docenteRoutes.js#L12) |
+| GET | `/api/eventos` | [backend/routes/eventoRoutes.js:10](../backend/routes/eventoRoutes.js#L10) |
+| POST | `/api/eventos` | [backend/routes/eventoRoutes.js:12](../backend/routes/eventoRoutes.js#L12) |
+| DELETE | `/api/eventos/:id` | [backend/routes/eventoRoutes.js:35](../backend/routes/eventoRoutes.js#L35) |
+| PUT | `/api/eventos/:id` | [backend/routes/eventoRoutes.js:23](../backend/routes/eventoRoutes.js#L23) |
+| GET | `/api/galeria` | [backend/routes/galeriaRoutes.js:10](../backend/routes/galeriaRoutes.js#L10) |
+| POST | `/api/galeria` | [backend/routes/galeriaRoutes.js:14](../backend/routes/galeriaRoutes.js#L14) |
+| DELETE | `/api/galeria/:id` | [backend/routes/galeriaRoutes.js:25](../backend/routes/galeriaRoutes.js#L25) |
+| PUT | `/api/galeria/reordenar` | [backend/routes/galeriaRoutes.js:12](../backend/routes/galeriaRoutes.js#L12) |
+| GET | `/api/health` | [backend/index.js:106](../backend/index.js#L106) |
+| GET | `/api/mesa-partes` | [backend/routes/mesaPartesRoutes.js:22](../backend/routes/mesaPartesRoutes.js#L22) |
+| POST | `/api/mesa-partes` | [backend/routes/mesaPartesRoutes.js:10](../backend/routes/mesaPartesRoutes.js#L10) |
+| DELETE | `/api/mesa-partes/:id` | [backend/routes/mesaPartesRoutes.js:24](../backend/routes/mesaPartesRoutes.js#L24) |
+| PATCH | `/api/mesa-partes/:id/estado` | [backend/routes/mesaPartesRoutes.js:23](../backend/routes/mesaPartesRoutes.js#L23) |
+| GET | `/api/mesa-partes/seguimiento` | [backend/routes/mesaPartesRoutes.js:20](../backend/routes/mesaPartesRoutes.js#L20) |
+| GET | `/api/noticias` | [backend/routes/noticiaRoutes.js:16](../backend/routes/noticiaRoutes.js#L16) |
+| POST | `/api/noticias` | [backend/routes/noticiaRoutes.js:18](../backend/routes/noticiaRoutes.js#L18) |
+| DELETE | `/api/noticias/:id` | [backend/routes/noticiaRoutes.js:37](../backend/routes/noticiaRoutes.js#L37) |
+| PUT | `/api/noticias/:id` | [backend/routes/noticiaRoutes.js:27](../backend/routes/noticiaRoutes.js#L27) |
+| GET | `/api/notifications` | [backend/routes/notificationRoutes.js:14](../backend/routes/notificationRoutes.js#L14) |
+| PUT | `/api/notifications/:id/read` | [backend/routes/notificationRoutes.js:16](../backend/routes/notificationRoutes.js#L16) |
+| PUT | `/api/notifications/read-all` | [backend/routes/notificationRoutes.js:17](../backend/routes/notificationRoutes.js#L17) |
+| GET | `/api/notifications/unread-count` | [backend/routes/notificationRoutes.js:15](../backend/routes/notificationRoutes.js#L15) |
+| GET | `/api/page-views/stats` | [backend/routes/pageViewRoutes.js:20](../backend/routes/pageViewRoutes.js#L20) |
+| POST | `/api/page-views/track` | [backend/routes/pageViewRoutes.js:17](../backend/routes/pageViewRoutes.js#L17) |
+| GET | `/api/stats` | [backend/routes/statsRoutes.js:5](../backend/routes/statsRoutes.js#L5) |
+| GET | `/api/tags` | [backend/routes/tagsRoutes.js:18](../backend/routes/tagsRoutes.js#L18) |
+| POST | `/api/tags` | [backend/routes/tagsRoutes.js:23](../backend/routes/tagsRoutes.js#L23) |
+| DELETE | `/api/tags/:id` | [backend/routes/tagsRoutes.js:28](../backend/routes/tagsRoutes.js#L28) |
+| GET | `/api/tags/:slug/contenido` | [backend/routes/tagsRoutes.js:20](../backend/routes/tagsRoutes.js#L20) |
+| PUT | `/api/tags/comunicados/:id/tags` | [backend/routes/tagsRoutes.js:40](../backend/routes/tagsRoutes.js#L40) |
+| PUT | `/api/tags/eventos/:id/tags` | [backend/routes/tagsRoutes.js:46](../backend/routes/tagsRoutes.js#L46) |
+| PUT | `/api/tags/noticias/:id/tags` | [backend/routes/tagsRoutes.js:34](../backend/routes/tagsRoutes.js#L34) |
+| GET | `/api/tags/nube` | [backend/routes/tagsRoutes.js:19](../backend/routes/tagsRoutes.js#L19) |
+| GET | `/api/transparencia` | [backend/routes/transparenciaRoutes.js:10](../backend/routes/transparenciaRoutes.js#L10) |
+| POST | `/api/transparencia` | [backend/routes/transparenciaRoutes.js:12](../backend/routes/transparenciaRoutes.js#L12) |
+| DELETE | `/api/transparencia/:id` | [backend/routes/transparenciaRoutes.js:23](../backend/routes/transparenciaRoutes.js#L23) |
+| GET | `/api/usuarios` | [backend/routes/usuariosRoutes.js:35](../backend/routes/usuariosRoutes.js#L35) |
+| POST | `/api/usuarios` | [backend/routes/usuariosRoutes.js:37](../backend/routes/usuariosRoutes.js#L37) |
+| DELETE | `/api/usuarios/:id` | [backend/routes/usuariosRoutes.js:52](../backend/routes/usuariosRoutes.js#L52) |
+| PUT | `/api/usuarios/:id` | [backend/routes/usuariosRoutes.js:45](../backend/routes/usuariosRoutes.js#L45) |
+| GET | `/robots.txt` | [backend/routes/seoRoutes.js:8](../backend/routes/seoRoutes.js#L8) |
+| GET | `/sitemap.xml` | [backend/routes/seoRoutes.js:20](../backend/routes/seoRoutes.js#L20) |

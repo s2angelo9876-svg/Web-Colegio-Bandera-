@@ -1,0 +1,120 @@
+[
+  {
+    "path": "/api/noticias",
+    "status": 200,
+    "anonymous": true,
+    "rateLimitHeader": null,
+    "containsDraft": false,
+    "shape": "object",
+    "count": 1
+  },
+  {
+    "path": "/api/noticias?admin=true",
+    "status": 200,
+    "anonymous": true,
+    "rateLimitHeader": null,
+    "containsDraft": true,
+    "shape": "object",
+    "count": 3
+  },
+  {
+    "path": "/api/buscar?q=AUDIT_BORRADOR",
+    "status": 200,
+    "anonymous": true,
+    "rateLimitHeader": null,
+    "containsDraft": true,
+    "shape": "object"
+  },
+  {
+    "path": "/api/stats",
+    "status": 200,
+    "anonymous": true,
+    "rateLimitHeader": null,
+    "containsDraft": true,
+    "shape": "object"
+  },
+  {
+    "path": "/api/_debug/debug/tables",
+    "status": 200,
+    "anonymous": true,
+    "rateLimitHeader": null,
+    "containsDraft": false,
+    "shape": "array",
+    "count": 22
+  },
+  {
+    "path": "/api/_debug/debug/test-query",
+    "status": 200,
+    "anonymous": true,
+    "rateLimitHeader": null,
+    "containsDraft": false,
+    "shape": "object"
+  },
+  {
+    "path": "/api/noticias?page=-1",
+    "status": 500,
+    "anonymous": true,
+    "rateLimitHeader": null,
+    "containsDraft": false,
+    "shape": "object",
+    "details": "OFFSET must not be negative"
+  },
+  {
+    "path": "/api/noticias?limit=-1",
+    "status": 500,
+    "anonymous": true,
+    "rateLimitHeader": null,
+    "containsDraft": false,
+    "shape": "object",
+    "details": "LIMIT must not be negative"
+  },
+  {
+    "path": "/sitemap.xml",
+    "status": 200,
+    "anonymous": true,
+    "rateLimitHeader": null,
+    "containsDraft": false,
+    "shape": "string"
+  },
+  {
+    "path": "/api/sitemap.xml",
+    "status": 404,
+    "anonymous": true,
+    "rateLimitHeader": null,
+    "containsDraft": false,
+    "shape": "object",
+    "details": "Endpoint no encontrado"
+  },
+  {
+    "name": "administrativo_reorder",
+    "status": 400,
+    "body": {
+      "errors": [
+        {
+          "field": "id",
+          "msg": "ID inválido"
+        }
+      ]
+    }
+  },
+  {
+    "name": "revoked_editor_can_still_create_tag",
+    "status": 201
+  },
+  {
+    "name": "deleted_user_token_still_valid",
+    "status": 200,
+    "valid": true
+  },
+  {
+    "name": "administrativos_orden_column",
+    "exists": false
+  },
+  {
+    "name": "duplicate_tag_join_tables",
+    "names": [
+      "noticia_tags",
+      "noticias_tags"
+    ]
+  }
+]
