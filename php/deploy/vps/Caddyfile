@@ -1,0 +1,65 @@
+(private_log_format) {
+	format filter {
+		wrap json
+		fields {
+			request>headers delete
+			request>uri delete
+			resp_headers delete
+		}
+	}
+}
+
+{
+	admin off
+	email {$COLEGIO_ACME_EMAIL}
+	http_port 8080
+	https_port 8443
+	auto_https disable_redirects
+	log {
+		import private_log_format
+	}
+}
+
+http://{$COLEGIO_DOMAIN} {
+	redir https://{$COLEGIO_DOMAIN}{uri} 308
+}
+
+https://{$COLEGIO_DOMAIN} {
+	encode zstd gzip
+	root * /srv/public
+
+	log {
+		output stdout
+		import private_log_format
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options nosniff
+		X-Frame-Options DENY
+		Referrer-Policy strict-origin-when-cross-origin
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+
+	@static {
+		path /assets/* /images/* /site.css /navigation.css /site-start.js /site.js
+		file
+	}
+	handle @static {
+		file_server
+	}
+
+	handle {
+		rewrite * /index.php
+		request_body {
+			max_size 16777216
+		}
+		reverse_proxy app:9000 {
+			transport fastcgi {
+				root /app/public
+				split .php
+			}
+		}
+	}
+}

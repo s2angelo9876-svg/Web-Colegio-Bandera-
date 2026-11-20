@@ -13,10 +13,18 @@ function db(): PDO
         && !preg_match('~(?:^pgsql:|;)\s*sslmode=verify-full(?:;|$)~', $dsn)) {
         throw new RuntimeException('PostgreSQL remoto requiere verificación de TLS.');
     }
+    $password = getenv('COLEGIO_DB_PASSWORD');
+    $passwordFile = getenv('COLEGIO_DB_PASSWORD_FILE');
+    if ($passwordFile !== false && $passwordFile !== '') {
+        $password = is_readable($passwordFile) ? file_get_contents($passwordFile) : false;
+        if ($password === false || ($password = rtrim($password, "\r\n")) === '') {
+            throw new RuntimeException('No se pudo leer la credencial de PostgreSQL.');
+        }
+    }
     $pdo = new PDO(
         $dsn,
         getenv('COLEGIO_DB_USER') ?: null,
-        getenv('COLEGIO_DB_PASSWORD') ?: null,
+        $password === false ? null : $password,
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_EMULATE_PREPARES => false]
     );
     return $pdo;

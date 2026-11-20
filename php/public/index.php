@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/';
 $method = $_SERVER['REQUEST_METHOD'];
-if (PHP_SAPI === 'cli-server' && in_array($path, ['/site.css','/navigation.css','/site-start.js','/site.js','/assets/manrope.woff2','/assets/symbols.woff2','/images/escudo.jpeg','/images/frontis_colegio.webp','/images/frontis_colegio-640.webp'], true)
+if (PHP_SAPI === 'cli-server' && getenv('COLEGIO_ENV') !== 'production'
+    && in_array($path, ['/site.css','/navigation.css','/site-start.js','/site.js','/assets/manrope.woff2','/assets/symbols.woff2','/images/escudo.jpeg','/images/frontis_colegio.webp','/images/frontis_colegio-640.webp'], true)
     && in_array($method, ['GET','HEAD'], true)) {
     return false;
 }
@@ -24,6 +25,14 @@ $json = ($_SERVER['HTTP_ACCEPT'] ?? '') === 'application/json';
 ob_start();
 
 try {
+    if (getenv('COLEGIO_ENV') === 'production') {
+        if (configuredOrigin() === '') {
+            fail(503, 'El origen HTTPS del portal no está configurado.');
+        }
+        if (($_SERVER['HTTPS'] ?? '') !== 'on') {
+            fail(400, 'Esta solicitud requiere HTTPS.');
+        }
+    }
     if (!in_array($method, ['GET','POST','HEAD'], true)) {
         header('Allow: GET, HEAD, POST');
         fail(405, 'Método no admitido.');

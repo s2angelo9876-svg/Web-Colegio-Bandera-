@@ -22,7 +22,11 @@ docker stop colegio-php-web colegio-php-pg
 
 ## Operación
 
+El despliegue preparado para un VPS Linux incluye Caddy, PHP-FPM y PostgreSQL por socket local. [Arranque, SSH y restauración](deploy/vps/README.md)
+
 Configura `COLEGIO_ENV=production`, `COLEGIO_DSN`, `COLEGIO_DB_USER`, `COLEGIO_DB_PASSWORD` y `COLEGIO_PUBLIC_ORIGIN` en el proceso PHP. Expón solo `public/` y dirige las rutas dinámicas a `public/index.php`. Usa HTTPS, una identidad PostgreSQL de migración con permisos DDL y una identidad de aplicación con los permisos DML necesarios. Para una base remota usa `sslmode=verify-full` y la CA correspondiente en el DSN de PostgreSQL. El origen configurado debe ser HTTPS y coincidir con el origen público real del portal. Se usa para CSRF, enlaces canónicos y sitemap. En producción las cookies de sesión usan Secure. El script local configura HTTP solo para desarrollo.
+
+El despliegue de VPS lee la contraseña de la base desde `COLEGIO_DB_PASSWORD_FILE`. El servidor HTTPS marca `HTTPS=on` mediante FastCGI para que la aplicación acepte la solicitud en modo producción.
 
 Usa PHP 8.4 con PDO PostgreSQL, Argon2id, DOM, mbstring, GD con JPEG/PNG/WebP, EXIF y fileinfo. Instala qpdf, timeout y prlimit. Configura un límite de carga PHP de 15 MiB, límite de solicitud de 16 MiB y `display_errors=Off`. Antes de habilitar tráfico, ejecuta `php bin/console.php migrate` y comprueba `/health/ready`. Para crear o actualizar cuentas, usa `php bin/console.php account USUARIO ROL` y proporciona la clave por entrada estándar. `php bin/console.php disable USUARIO` desactiva la cuenta. Configura una tarea de sistema para ejecutar `php bin/console.php publish` y otra para `php bin/console.php cleanup`. Los horarios editoriales se ingresan en hora de Lima. La tarea de publicación materializa las revisiones vencidas y las lecturas muestran la revisión programada al alcanzar el horario, aunque la tarea todavía no se haya ejecutado.
 
