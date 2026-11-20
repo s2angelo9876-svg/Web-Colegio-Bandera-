@@ -1,0 +1,100 @@
+#!/usr/bin/env bash
+set -euo pipefail
+cd "$(dirname "$0")/.."
+mode=${1:-start}
+case "$mode" in
+  start|test) ;;
+  *) echo "Uso: bin/dev [start|test]" >&2; exit 2 ;;
+esac
+
+umask 077
+state="${COLEGIO_DEV_STATE:-$(realpath ..)/../colegio-cloud/php}"
+mkdir -p "$state"
+if [[ "$mode" == test ]]; then
+  temporary=$(mktemp -d "$state/test.XXXXXXXX")
+  state=$temporary
+  database="colegio-php-${state##*.}"
+  web="$database-web"
+  port=4171
+  trap 'docker rm -fv "$web" "$database" >/dev/null 2>&1 || true; rm -f -- "$state/credentials" "$state/cookies" "$state/response" "$state/headers" "$state/example.pdf" "$state/example-2.pdf"; rmdir -- "$state"' EXIT
+else
+  database=colegio-php-pg
+  web=colegio-php-web
+  port=4170
+fi
+if [[ ! -e "$state/credentials" ]]; then
+  if docker container inspect "$database" >/dev/null 2>&1; then
+    echo "Faltan las credenciales locales de $database." >&2
+    exit 1
+  fi
+  {
+    printf 'POSTGRES_PASSWORD=%s\n' "$(openssl rand -hex 32)"
+    printf 'LOCAL_ADMIN_PASSWORD=%s\n' "$(openssl rand -hex 24)"
+  } > "$state/credentials"
+fi
+# Generated above with hexadecimal values and mode 0600.
+source "$state/credentials"
+export POSTGRES_PASSWORD
+
+docker build --quiet -t colegio-php-dev . >/dev/null
+if ! docker container inspect "$database" >/dev/null 2>&1; then
+  docker run -d --name "$database" --network bridge \
+    -e POSTGRES_PASSWORD -e POSTGRES_DB=colegio_php postgres:16 >/dev/null
+else
+  docker start "$database" >/dev/null
+fi
+for attempt in {1..30}; do
+  if docker exec "$database" pg_isready -h 127.0.0.1 -U postgres -d colegio_php >/dev/null 2>&1; then
+    break
+  fi
+  sleep 1
+done
+docker exec "$database" pg_isready -h 127.0.0.1 -U postgres -d colegio_php >/dev/null
+db_ip=$(docker inspect --format '{{.NetworkSettings.Networks.bridge.IPAddress}}' "$database")
+export COLEGIO_DSN="pgsql:host=$db_ip;dbname=colegio_php;connect_timeout=3"
+export COLEGIO_DB_USER=postgres COLEGIO_DB_PASSWORD=$POSTGRES_PASSWORD COLEGIO_SECURE_COOKIE=0
+if [[ "$mode" == test ]]; then
+  export COLEGIO_PUBLIC_ORIGIN=https://colegio.example
+fi
+php_run=(docker run --rm --network bridge --user "$(id -u):$(id -g)" -v "$PWD:/app:ro"
+  -e COLEGIO_DSN -e COLEGIO_DB_USER -e COLEGIO_DB_PASSWORD -e COLEGIO_SECURE_COOKIE -e COLEGIO_PUBLIC_ORIGIN)
+"${php_run[@]}" colegio-php-dev php bin/console.php migrate
+if [[ $(docker exec "$database" psql -U postgres -d colegio_php -Atc "SELECT count(*) FROM accounts WHERE username='admin'") == 0 ]]; then
+  printf '%s\n' "$LOCAL_ADMIN_PASSWORD" | "${php_run[@]}" -i colegio-php-dev php bin/console.php account admin
+fi
+
+if docker container inspect "$web" >/dev/null 2>&1; then
+  docker rm -f "$web" >/dev/null
+fi
+"${php_run[@]}" -d --name "$web" -p "127.0.0.1:$port:8080" colegio-php-dev \
+  php -d upload_max_filesize=15M -d post_max_size=16M -d max_input_vars=10000 -d display_errors=0 -S 0.0.0.0:8080 -t public public/index.php >/dev/null
+url="http://127.0.0.1:$port"
+for attempt in {1..20}; do
+  if curl -fsS "$url/health/ready" >/dev/null 2>&1; then break; fi
+  sleep 1
+done
+curl -fsS "$url/health/ready" >/dev/null
+curl -fsS "$url/" >/dev/null
+if [[ "$mode" == test ]]; then
+  docker exec "$web" bash -o pipefail -c 'find bin public src tests -name "*.php" -print0 | xargs -0 -n1 php -l'
+  "${php_run[@]}" colegio-php-dev php tests/domain.php
+  if ! bash tests/http.sh "$url" "$state" "$database" "$web"; then
+    docker logs --tail 20 "$web" >&2
+    exit 1
+  fi
+  bash tests/upgrade.sh "$database" "$web"
+  if [[ "${COLEGIO_BROWSER_TESTS:-0}" == 1 ]]; then
+    printf '%s\n' "$LOCAL_ADMIN_PASSWORD" | "${php_run[@]}" -i colegio-php-dev php bin/console.php account admin
+    python tests/browser.py "$url" "$state"
+  fi
+  if docker logs "$web" 2>&1 | grep -E 'PHP (Warning|Fatal error|Notice|Deprecated)|"event":"request_failed"'; then
+    echo 'El servidor registró errores no esperados durante las pruebas.' >&2
+    exit 1
+  fi
+  docker stop "$database" >/dev/null
+  [[ $(curl -sS -o /dev/null -w '%{http_code}' "$url/health/live") == 200 ]]
+  [[ $(curl -sS -o /dev/null -w '%{http_code}' "$url/health/ready") == 503 ]]
+  echo 'Disponibilidad sin PostgreSQL verificada. Liveness 200 y readiness 503.'
+else
+  printf 'PHP escuchando en el puerto %s. La credencial local de admin se encuentra en %s/credentials.\n' "$port" "$state"
+fi
