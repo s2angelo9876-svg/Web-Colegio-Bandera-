@@ -94,6 +94,7 @@ Verifica cuentas, publicaciones y descargas tras la restauración antes de promo
 docker compose pull db
 docker compose build --pull
 docker compose up -d
+docker compose exec -T app php -v
 ```
 
 Desde la raíz del repo, `bash php/tests/vps.sh` valida el despliegue aislado con una CA local. La emisión del certificado público, las reglas del firewall, las sesiones SSH y el respaldo externo se comprueban en el VPS real.

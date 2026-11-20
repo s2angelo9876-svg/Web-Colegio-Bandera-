@@ -21,11 +21,16 @@ function db(): PDO
             throw new RuntimeException('No se pudo leer la credencial de PostgreSQL.');
         }
     }
+    $options = [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_EMULATE_PREPARES => false];
+    // PDO_PGSQL appends its own connection timeout after the DSN options.
+    if (preg_match('~(?:^pgsql:|;)\s*connect_timeout\s*=\s*(\d+)\s*(?:;|$)~', $dsn, $timeout) === 1) {
+        $options[PDO::ATTR_TIMEOUT] = (int) $timeout[1];
+    }
     $pdo = new PDO(
         $dsn,
         getenv('COLEGIO_DB_USER') ?: null,
         $password === false ? null : $password,
-        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_EMULATE_PREPARES => false]
+        $options
     );
     return $pdo;
 }

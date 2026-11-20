@@ -1,9 +1,9 @@
 ARG PHP_VARIANT=cli
-FROM php:8.4-${PHP_VARIANT}-bookworm AS php-runtime
+FROM php:8.6-${PHP_VARIANT}-bookworm AS php-runtime
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libpq-dev libjpeg62-turbo-dev libpng-dev libwebp-dev qpdf \
+    && apt-get install -y --no-install-recommends libpq-dev libjpeg62-turbo-dev libpng-dev libwebp-dev libonig-dev qpdf \
     && docker-php-ext-configure gd --with-jpeg --with-webp \
-    && docker-php-ext-install -j"$(nproc)" pdo_pgsql gd exif \
+    && docker-php-ext-install -j"$(nproc)" pdo_pgsql gd exif mbstring \
     && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 

@@ -1,6 +1,6 @@
 # Portal institucional en PHP
 
-La aplicación usa PHP 8.4, PostgreSQL 16, HTML renderizado en servidor, CSS propio y JavaScript nativo. El CMS y el portal usan el mismo origen. El portal anterior conserva su flujo de desarrollo.
+La aplicación usa PHP 8.6, PostgreSQL 16, HTML renderizado en servidor, CSS propio y JavaScript nativo. El CMS y el portal usan el mismo origen. El portal anterior conserva su flujo de desarrollo.
 
 ## Desarrollo
 
@@ -28,6 +28,6 @@ Configura `COLEGIO_ENV=production`, `COLEGIO_DSN`, `COLEGIO_DB_USER`, `COLEGIO_D
 
 El despliegue de VPS lee la contraseña de la base desde `COLEGIO_DB_PASSWORD_FILE`. El servidor HTTPS marca `HTTPS=on` mediante FastCGI para que la aplicación acepte la solicitud en modo producción.
 
-Usa PHP 8.4 con PDO PostgreSQL, Argon2id, DOM, mbstring, GD con JPEG/PNG/WebP, EXIF y fileinfo. Instala qpdf, timeout y prlimit. Configura un límite de carga PHP de 15 MiB, límite de solicitud de 16 MiB y `display_errors=Off`. Antes de habilitar tráfico, ejecuta `php bin/console.php migrate` y comprueba `/health/ready`. Para crear o actualizar cuentas, usa `php bin/console.php account USUARIO ROL` y proporciona la clave por entrada estándar. `php bin/console.php disable USUARIO` desactiva la cuenta. Configura una tarea de sistema para ejecutar `php bin/console.php publish` y otra para `php bin/console.php cleanup`. Los horarios editoriales se ingresan en hora de Lima. La tarea de publicación materializa las revisiones vencidas y las lecturas muestran la revisión programada al alcanzar el horario, aunque la tarea todavía no se haya ejecutado.
+Usa PHP 8.6 con PDO PostgreSQL, Argon2id, DOM, mbstring, GD con JPEG/PNG/WebP, EXIF y fileinfo. Instala qpdf, timeout y prlimit. Configura un límite de carga PHP de 15 MiB, límite de solicitud de 16 MiB y `display_errors=Off`. Antes de habilitar tráfico, ejecuta `php bin/console.php migrate` y comprueba `/health/ready`. Para crear o actualizar cuentas, usa `php bin/console.php account USUARIO ROL` y proporciona la clave por entrada estándar. `php bin/console.php disable USUARIO` desactiva la cuenta. Configura una tarea de sistema para ejecutar `php bin/console.php publish` y otra para `php bin/console.php cleanup`. Los horarios editoriales se ingresan en hora de Lima. La tarea de publicación materializa las revisiones vencidas y las lecturas muestran la revisión programada al alcanzar el horario, aunque la tarea todavía no se haya ejecutado.
 
 Consulta los [criterios de aceptación](DESIGN.md) y los [controles de seguridad](SECURITY.md). El [sistema visual para Stitch](design/DESIGN.md) documenta los estilos del portal y del CMS.
