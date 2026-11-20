@@ -1,0 +1,22 @@
+@view-transition {
+    navigation: auto;
+}
+
+.site-header {
+    position: relative;
+    z-index: 1;
+    view-transition-name: portal-header;
+}
+
+::view-transition-group(root) {
+    animation-duration: 140ms;
+}
+
+::view-transition-group(portal-header),
+::view-transition-new(portal-header) {
+    animation: none;
+}
+
+::view-transition-old(portal-header) {
+    display: none;
+}

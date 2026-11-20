@@ -38,6 +38,29 @@ with sync_playwright() as playwright:
         expect(primary).to_be_hidden()
     early.close()
 
+    navigation = browser.new_page(reduced_motion="no-preference")
+    navigation.add_init_script("""addEventListener('pagereveal', ({viewTransition}) => {
+        const root = document.documentElement;
+        if (viewTransition) {
+            viewTransition.ready.then(
+                () => { root.dataset.reveal = 'animated'; },
+                () => { root.dataset.reveal = 'skipped'; }
+            );
+        } else {
+            root.dataset.reveal = 'instant';
+        }
+    })""")
+    navigation.goto(origin)
+    if navigation.evaluate("'onpagereveal' in window"):
+        links = navigation.get_by_role("navigation", name="Principal")
+        links.get_by_role("link", name="Eventos", exact=True).click()
+        expect(navigation.locator("html")).to_have_attribute("data-reveal", "animated")
+        navigation.emulate_media(reduced_motion="reduce")
+        links.get_by_role("link", name="Noticias", exact=True).click()
+        expect(navigation.locator("html")).to_have_attribute("data-reveal", "instant")
+        expect(navigation.get_by_role("heading", name="Noticias", exact=True)).to_be_visible()
+    navigation.close()
+
     page.goto(origin + "/admin")
     page.get_by_label("Usuario").fill("admin")
     page.get_by_label("Contraseña").fill(credentials["LOCAL_ADMIN_PASSWORD"])

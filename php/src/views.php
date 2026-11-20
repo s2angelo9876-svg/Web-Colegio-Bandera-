@@ -14,6 +14,10 @@ function layout(string $title, callable $render, ?array $admin = null, string $d
 <meta property="og:title" content="<?=e($title)?>"><?php endif ?>
 <link rel="icon" type="image/jpeg" href="/images/escudo.jpeg">
 <link rel="stylesheet" href="/site.css">
+<?php if ($area === 'public-site'): ?>
+<link rel="stylesheet" href="/navigation.css" media="(prefers-reduced-motion: no-preference)">
+<link rel="expect" href="#contenido" blocking="render" media="(prefers-reduced-motion: no-preference)">
+<?php endif ?>
 <script src="/site.js" defer></script></head>
 <body class="<?=$area?>"><a class="skip" href="#contenido">Saltar al contenido</a>
 <header class="site-header">
