@@ -20,6 +20,24 @@ with sync_playwright() as playwright:
     page.keyboard.press("Escape")
     expect(page.get_by_role("button", name="Menú")).to_be_focused()
 
+    early = browser.new_page(viewport={"width": 390, "height": 844}, color_scheme="light")
+    early.route("**/site.js", lambda route: route.abort())
+    early.goto(origin)
+    early.evaluate("localStorage.setItem('colegio-theme', 'dark')")
+    early.reload()
+    expect(early.locator("html")).to_have_attribute("data-theme", "dark")
+    expect(early.locator('meta[name="color-scheme"]')).to_have_attribute("content", "dark")
+    primary = early.get_by_role("navigation", name="Principal")
+    menu = early.get_by_role("button", name="Menú")
+    expect(primary).to_be_hidden()
+    for destination in ("Eventos", "Noticias"):
+        menu.press("Enter")
+        primary.get_by_role("link", name=destination, exact=True).click()
+        expect(early.get_by_role("heading", name=destination, exact=True)).to_be_visible()
+        expect(early.locator("html")).to_have_attribute("data-theme", "dark")
+        expect(primary).to_be_hidden()
+    early.close()
+
     page.goto(origin + "/admin")
     page.get_by_label("Usuario").fill("admin")
     page.get_by_label("Contraseña").fill(credentials["LOCAL_ADMIN_PASSWORD"])
@@ -96,9 +114,10 @@ with sync_playwright() as playwright:
                 compare(tone('--link'),tone('--surface')),
                 compare('#fff',tone('--accent')),
                 compare(getComputedStyle(document.querySelector('header')).getPropertyValue('--focus'),tone('--brand')),
+                compare(tone('--control-border'),tone('--surface')),
             ];
         }""")
-        assert min(contrasts[:3]) >= 4.5 and contrasts[3] >= 3, contrasts
+        assert min(contrasts[:3]) >= 4.5 and min(contrasts[3:]) >= 3, contrasts
 
     page.emulate_media(color_scheme="light")
     validate_palette()
@@ -108,7 +127,8 @@ with sync_playwright() as playwright:
     expect(page.locator("html")).to_have_attribute("data-theme", "dark")
     validate_palette()
     page.get_by_role("button", name="Alternar modo claro y oscuro").press("Enter")
-    expect(page.locator("html")).to_have_attribute("data-theme", "light")
+    expect(page.locator('meta[name="color-scheme"]')).to_have_attribute("content", "light dark")
+    assert page.evaluate("localStorage.getItem('colegio-theme')") is None
 
     page.goto(origin + "/admin/docentes/reordenar")
     move = page.get_by_role("button", name="Bajar Docente primera")

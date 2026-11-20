@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/';
 $method = $_SERVER['REQUEST_METHOD'];
-if (PHP_SAPI === 'cli-server' && in_array($path, ['/site.css','/site.js','/assets/manrope.woff2','/assets/symbols.woff2','/images/escudo.jpeg','/images/frontis_colegio.webp','/images/frontis_colegio-640.webp'], true)
+if (PHP_SAPI === 'cli-server' && in_array($path, ['/site.css','/site-start.js','/site.js','/assets/manrope.woff2','/assets/symbols.woff2','/images/escudo.jpeg','/images/frontis_colegio.webp','/images/frontis_colegio-640.webp'], true)
     && in_array($method, ['GET','HEAD'], true)) {
     return false;
 }
@@ -437,7 +437,7 @@ function publicRoute(string $path, array $session): void
         }
         layout((string) $tag, function () use ($tag,$rows,$page,$path): void {
             echo '<h1>' . e($tag) . '</h1><h2>Noticias etiquetadas</h2>';
-            listCards(array_slice($rows, 0, 24));
+            listCards(array_slice($rows, 0, 24), headingLevel: 3);
             paginate($path, [], $page, count($rows)>24);
         }, canonical: $origin ? $origin . $path : '', current: 'noticias');
         return;
@@ -452,7 +452,7 @@ function publicRoute(string $path, array $session): void
             <button class="primary"><?=uiIcon('search')?> Buscar</button></form>
             <?php if ($search !== ''): ?><h2>Resultados</h2><?php
                 $rows = published(null, $search, limit: 25, offset: ($page-1)*24);
-                listCards(array_slice($rows, 0, 24), true);
+                listCards(array_slice($rows, 0, 24), showModule: true, headingLevel: 3);
                 paginate('/buscar', ['q'=>$search], $page, count($rows) > 24);
             endif;
         }, current: 'buscar');
@@ -490,7 +490,7 @@ function publicRoute(string $path, array $session): void
                 detail($row);
                 if ($related) {
                     echo '<section class="home-section"><div class="section-head"><h2>Noticias relacionadas</h2></div>';
-                    listCards($related);
+                    listCards($related, headingLevel: 3);
                     echo '</section>';
                 }
             }, description: $row['summary'], canonical: $origin ? $origin . $path : '', current: $module);
@@ -510,7 +510,7 @@ function publicRoute(string $path, array $session): void
                 if ($module === 'eventos' && $filters['mes'] !== '') {
                     eventCalendar($filters['mes'], array_slice($rows, 0, 24));
                 } else {
-                    listCards(array_slice($rows, 0, 24));
+                    listCards(array_slice($rows, 0, 24), headingLevel: $tag === '' ? 2 : 3);
                 }
                 paginate('/' . $module, array_filter($filters + ['etiqueta'=>$tag,'q'=>$search], fn($value)=>$value !== ''),
                     $page, count($rows)>24);

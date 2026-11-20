@@ -19,7 +19,7 @@ Use density 4, visual variance 7 and motion 3 for the portal. The CMS uses densi
 | Navy Ink | `#14233A` | `#F2F6FC` | Primary text |
 | Muted Slate | `#566479` | `#C2CEE1` | Metadata, hints and secondary text |
 | Structural Border | `#DAE1E9` | `#36455B` | Dividers and surface boundaries |
-| Field Boundary | `#A4B1C2` | `#7C8DA9` | Inputs and editable surfaces |
+| Field Boundary | `#7D8CA1` | `#7C8DA9` | Inputs and editable surfaces |
 | Institutional Navy | `#15263F` | `#15263F` | Hero, publication rail and footer |
 | School Red | `#BC2838` | `#BC2838` | The single action accent and selected-navigation tint |
 | Structured Link | `#274B7C` | `#AACBFF` | Text links and informational icons |

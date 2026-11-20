@@ -6,6 +6,8 @@ function layout(string $title, callable $render, ?array $admin = null, string $d
     $area = $admin ? 'admin-site' : ($current === 'acceso' ? 'auth-site' : 'public-site');
     ?><!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<script src="/site-start.js"></script>
 <title><?=e($title)?> | I.E. Bandera del Perú</title>
 <?php if ($description !== ''): ?><meta name="description" content="<?=e($description)?>"><meta property="og:description" content="<?=e($description)?>"><?php endif ?>
 <?php if ($canonical !== ''): ?><link rel="canonical" href="<?=e($canonical)?>"><meta property="og:url" content="<?=e($canonical)?>">
@@ -31,7 +33,7 @@ function layout(string $title, callable $render, ?array $admin = null, string $d
       </div>
       <div class="nav-tools">
         <?php if (!$admin): ?><a class="icon-button" href="/buscar" aria-label="Buscar" title="Buscar"<?=currentAttr($current === 'buscar')?>><?=uiIcon('search')?></a><?php endif ?>
-        <button type="button" class="icon-button" data-theme-toggle aria-label="Alternar modo claro y oscuro" title="Alternar modo claro y oscuro" hidden><?=uiIcon('contrast')?></button>
+        <button type="button" class="icon-button theme-toggle" data-theme-toggle aria-label="Alternar modo claro y oscuro" title="Alternar modo claro y oscuro"><span class="icon" aria-hidden="true"></span></button>
         <?php if ($admin): ?>
           <form method="post" action="/admin/salir"><?=token($admin)?><button class="button secondary"><?=uiIcon('logout')?> Cerrar sesión</button></form>
         <?php elseif ($current !== 'acceso'): ?>
@@ -61,7 +63,7 @@ function uiIcon(string $name): string
 
 function brand(string $href): void
 {
-    ?><a class="brand" href="<?=e($href)?>" aria-label="Inicio · I.E. Bandera del Perú">
+    ?><a class="brand" href="<?=e($href)?>">
       <span class="brand-mark"><img src="/images/escudo.jpeg" alt="" width="34" height="46"></span>
       <span class="brand-name"><strong>Bandera del Perú</strong><small>Institución educativa</small></span>
     </a><?php
@@ -135,7 +137,7 @@ function emptyState(string $icon = 'description', string $title = 'No hay public
     </div><?php
 }
 
-function listCards(array $rows, bool $showModule = false): void
+function listCards(array $rows, bool $showModule = false, int $headingLevel = 2): void
 {
     if (!$rows) {
         emptyState('search', 'No hay contenido publicado que coincida.');
@@ -154,7 +156,7 @@ function listCards(array $rows, bool $showModule = false): void
           <?php if (in_array($row['module'], ['noticias','comunicados','documentos'], true) && $row['publication_date']): ?>
             <time class="card-date" datetime="<?=e($row['publication_date'])?>"><?=e(publicationLabel($row['publication_date']))?></time>
           <?php endif ?>
-          <h3><a href="/<?=e($row['module'])?>/<?=e($row['slug'])?>"><?=e($row['title'])?></a><?=uiIcon('arrow_outward')?></h3>
+          <h<?=$headingLevel?> class="card-title"><a href="/<?=e($row['module'])?>/<?=e($row['slug'])?>"><?=e($row['title'])?></a><?=uiIcon('arrow_outward')?></h<?=$headingLevel?>>
           <?php if (!empty($fields['fecha'])): ?><p class="card-date"><?=uiIcon('calendar_month')?> <?=e(eventDateLabel($fields))?></p><?php endif ?>
           <?php if (!empty($fields['fecha_galeria'])): ?><p class="card-date"><time datetime="<?=e($fields['fecha_galeria'])?>"><?=e(limaDisplay($fields['fecha_galeria']))?></time></p><?php endif ?>
           <?php if ($row['summary']): ?><p><?=e($row['summary'])?></p><?php endif ?>
@@ -311,7 +313,7 @@ function home(?array $settings, ?int $preview = null): void
     <section class="home-section home-news" aria-labelledby="novedades">
       <div class="section-head"><h2 id="novedades">Noticias recientes</h2><a class="section-link" href="/noticias">Todas las noticias <?=uiIcon('arrow_forward')?></a></div>
       <?php if ($news === null): ?><p class="notice" role="status">No fue posible cargar las noticias. <a href="/">Reintentar</a></p>
-      <?php elseif ($news): listCards($news); else: emptyState('news', 'Todavía no hay noticias publicadas.'); endif ?>
+      <?php elseif ($news): listCards($news, headingLevel: 3); else: emptyState('news', 'Todavía no hay noticias publicadas.'); endif ?>
     </section>
     <div class="overview-grid">
       <?php foreach ([
@@ -346,7 +348,7 @@ function home(?array $settings, ?int $preview = null): void
     <?php endforeach ?></div></section>
     <?php elseif ($slides === null): ?><p class="notice" role="status">No fue posible cargar los destacados. <a href="/">Reintentar</a></p><?php endif ?>
     <?php if ($gallery): ?>
-      <section class="home-section"><div class="section-head"><h2>Galería</h2><a class="section-link" href="/galeria">Ver galería <?=uiIcon('arrow_forward')?></a></div><?php listCards($gallery); ?></section>
+      <section class="home-section"><div class="section-head"><h2>Galería</h2><a class="section-link" href="/galeria">Ver galería <?=uiIcon('arrow_forward')?></a></div><?php listCards($gallery, headingLevel: 3); ?></section>
     <?php elseif ($gallery === null): ?><p class="notice" role="status">No fue posible cargar la galería. <a href="/">Reintentar</a></p><?php endif ?>
     <?php $pillars = array_filter([1,2,3], fn(int $i) => !empty($fields["pilar{$i}_titulo"])); ?>
     <?php if ($pillars): ?><section class="home-section"><div class="section-head"><h2>Formación</h2></div><div class="cards"><?php foreach ($pillars as $i): ?>
@@ -599,8 +601,8 @@ function eventCalendar(string $month, array $rows): void
         $fields = json_decode($row['fields'], true);
         $byDay[substr($fields['fecha'],0,10)][] = $row;
     }
-    ?><section aria-label="Calendario <?=e($month)?>">
-      <p>Calendario <?=e($month)?></p>
+    ?><section aria-labelledby="calendar-title">
+      <h2 id="calendar-title" class="calendar-title">Calendario <?=e($month)?></h2>
       <div class="calendar">
         <?php for ($slot=1; $slot < (int) $first->format('N'); $slot++): ?><span class="calendar-gap" aria-hidden="true"></span><?php endfor ?>
         <?php for ($day=1; $day <= (int) $first->format('t'); $day++):

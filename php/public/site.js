@@ -1,18 +1,3 @@
-document.documentElement.classList.add('enhanced');
-
-const menu = document.querySelector('#menu');
-const navigation = document.querySelector('#navigation');
-menu?.addEventListener('click', () => {
-    const open = menu.getAttribute('aria-expanded') === 'true';
-    menu.setAttribute('aria-expanded', String(!open));
-});
-navigation?.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-        menu.setAttribute('aria-expanded', 'false');
-        menu.focus();
-    }
-});
-
 const modules = document.querySelector('#modules');
 const narrow = matchMedia('(max-width: 920px)');
 function sizeMenu() {
@@ -24,16 +9,9 @@ modules?.addEventListener('keydown', (event) => {
         modules.querySelector('summary').focus();
     }
 });
-narrow.addEventListener('change', () => {
-    sizeMenu();
-    menu?.setAttribute('aria-expanded', 'false');
-});
+narrow.addEventListener('change', sizeMenu);
 document.addEventListener('click', (event) => {
-    if (!narrow.matches) return;
-    if (menu && !menu.contains(event.target) && navigation && !navigation.contains(event.target)) {
-        menu.setAttribute('aria-expanded', 'false');
-    }
-    if (modules?.open && !modules.contains(event.target)) modules.open = false;
+    if (narrow.matches && modules?.open && !modules.contains(event.target)) modules.open = false;
 });
 sizeMenu();
 
@@ -230,32 +208,6 @@ for (const form of document.querySelectorAll('[data-order-form]')) {
             form.querySelector('[data-order-status]').textContent = 'Posición ' + item.querySelector('input').value;
         });
     }
-}
-
-const theme = document.querySelector('[data-theme-toggle]');
-if (theme) {
-    try {
-        const preference = localStorage.getItem('colegio-theme');
-        if (preference === 'light' || preference === 'dark') document.documentElement.dataset.theme = preference;
-    } catch {
-        // The system theme remains available if browser storage is disabled.
-    }
-    const scheme = matchMedia('(prefers-color-scheme: dark)');
-    const root = document.documentElement;
-    const isDark = () => root.dataset.theme ? root.dataset.theme === 'dark' : scheme.matches;
-    function themeIndicator() {
-        const dark = isDark();
-        theme.setAttribute('aria-pressed', String(dark));
-        theme.querySelector('.icon').textContent = dark ? 'light_mode' : 'dark_mode';
-    }
-    themeIndicator();
-    theme.hidden = false;
-    scheme.addEventListener('change', themeIndicator);
-    theme.addEventListener('click', () => {
-        root.dataset.theme = isDark() ? 'light' : 'dark';
-        try { localStorage.setItem('colegio-theme', root.dataset.theme); } catch {}
-        themeIndicator();
-    });
 }
 
 for (const hero of document.querySelectorAll('.hero')) {
