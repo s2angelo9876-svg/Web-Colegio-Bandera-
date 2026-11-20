@@ -1,0 +1,14 @@
+**
+!php/bin/console.php
+!php/migrations/**
+!php/public/**
+!php/src/**
+!php/deploy/install-runtime.sh
+!php/deploy/railway/Caddyfile
+!php/deploy/railway/database-role.php
+!php/deploy/railway/entrypoint.sh
+!php/deploy/railway/php-fpm.conf
+!php/deploy/vps/database-grants.php
+!php/deploy/vps/php-fpm.conf
+!php/deploy/vps/php.ini
+!php/deploy/vps/worker.sh

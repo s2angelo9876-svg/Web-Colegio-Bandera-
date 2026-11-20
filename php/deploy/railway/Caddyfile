@@ -1,0 +1,67 @@
+{
+	admin off
+	auto_https off
+	log {
+		format filter {
+			wrap json
+			fields {
+				request>headers delete
+				request>uri delete
+			}
+		}
+	}
+}
+
+(php) {
+	rewrite * /index.php
+	request_body {
+		max_size 16777216
+	}
+	reverse_proxy 127.0.0.1:9000 {
+		transport fastcgi {
+			root /app/public
+			split .php
+			env HTTPS on
+		}
+	}
+}
+
+http://:{$PORT:8080} {
+	@probe {
+		host healthcheck.railway.app
+		path /health/ready /health/live
+		method GET HEAD
+	}
+	handle @probe {
+		import php
+	}
+
+	@portal host {$RAILWAY_PUBLIC_DOMAIN}
+	handle @portal {
+		@plain not header X-Forwarded-Proto https
+		redir @plain https://{$RAILWAY_PUBLIC_DOMAIN}{uri} 308
+		encode zstd gzip
+		header {
+			Strict-Transport-Security "max-age=31536000"
+			X-Content-Type-Options nosniff
+			X-Frame-Options DENY
+			Referrer-Policy strict-origin-when-cross-origin
+			Permissions-Policy "camera=(), microphone=(), geolocation=()"
+			-Server
+		}
+		root * /app/public
+		@static {
+			path /assets/* /images/* /site.css /navigation.css /site-start.js /site.js
+			file
+		}
+		handle @static {
+			file_server
+		}
+		handle {
+			import php
+		}
+	}
+	handle {
+		respond 404
+	}
+}

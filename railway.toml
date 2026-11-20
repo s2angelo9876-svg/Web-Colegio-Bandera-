@@ -1,0 +1,8 @@
+[build]
+builder = "DOCKERFILE"
+dockerfilePath = "Dockerfile.railway"
+
+[deploy]
+preDeployCommand = ["bash /app/deploy/railway/entrypoint.sh migrate"]
+healthcheckPath = "/health/ready"
+healthcheckTimeout = 120
