@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# From PowerShell, invoke this launcher through WSL.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 mode=${1:-start}

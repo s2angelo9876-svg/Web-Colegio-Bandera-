@@ -24,6 +24,12 @@ docker stop colegio-php-web colegio-php-pg
 
 Desde la raíz del repositorio, ejecuta `bash php/bin/dev demo` y abre `http://localhost:4172`. La vista usa otros contenedores y credenciales locales. Su base empieza con noticias, comunicados, agenda, galería, documentos PDF y directorios por área. El panel incluye un borrador y un comunicado programado. Las fotos de actividades son ilustrativas y la del frontis viene del repositorio.
 
+En Windows, con Docker Desktop activo e integrado con Ubuntu, ejecuta este comando desde PowerShell en la raíz del repositorio.
+
+```powershell
+wsl.exe -d Ubuntu --exec /bin/bash php/bin/dev demo
+```
+
 La carga se aplica a una base editorial vacía. Luego puedes editar los registros en el panel y conservar los cambios al reiniciar. Para detener la vista, usa `docker stop colegio-php-demo-web colegio-php-demo-pg`.
 
 ## Operación

@@ -1,0 +1,2 @@
+*.sh text eol=lf
+php/bin/dev text eol=lf

@@ -1,4 +1,5 @@
 #!/bin/sh
+# Install the extensions shared by the development, VPS, and Railway images.
 set -eu
 
 apt-get update
