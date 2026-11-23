@@ -256,6 +256,10 @@ expect 301 '/historia'
 grep -Fiq 'Location: /institucion/historia' "$headers"
 expect 200 '/institucion/historia'
 contains 'Historia para prueba'
+expect 200 /institucion
+contains '<details class="information-entry" name="informacion">'
+contains 'Historia para prueba'
+absent 'href="/institucion/historia"'
 save 201 institucion 0 0 'Guía de trámites de prueba' mesa-partes
 guide=$(id_saved)
 expect 200 /mesa-partes
@@ -281,8 +285,14 @@ other=$(sql "SELECT id FROM content WHERE module='docentes' AND slug='sintesis'"
 expect 422 /admin/docentes/reordenar --data-urlencode "_csrf=$csrf" --data "complete=1&version=$set_version&positions[$teacher_one]=1&positions[$teacher_two]=1&positions[$other]=3"
 expect 303 /admin/docentes/reordenar --data-urlencode "_csrf=$csrf" --data "complete=1&version=$set_version&positions[$teacher_one]=1&positions[$teacher_two]=2&positions[$other]=3"
 expect 200 /docentes
+contains '<details class="information-entry" name="informacion">'
 [[ $(grep -Fn 'Docente primera' "$response" | head -1 | cut -d: -f1) -lt $(grep -Fn 'Docente segunda' "$response" | head -1 | cut -d: -f1) ]]
 expect 409 /admin/docentes/reordenar --data-urlencode "_csrf=$csrf" --data "complete=1&version=$set_version&positions[$teacher_one]=2&positions[$teacher_two]=1&positions[$other]=3"
+
+save 201 administrativos 0 0 'Apoyo sin ficha' apoyo-sin-ficha --form-string 'summary=' --form-string 'body='
+mutate administrativos "$(id_saved)" publish 1
+expect 200 /administrativos
+contains '<p class="information-title">Apoyo sin ficha</p>'
 
 expect 303 /admin/etiquetas --data-urlencode "_csrf=$csrf" --data 'action=save&name=Cultura'
 expect 200 /admin/etiquetas

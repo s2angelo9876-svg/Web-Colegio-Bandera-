@@ -529,6 +529,8 @@ function publicRoute(string $path, array $session): void
                 if ($tag !== '') echo '<h2>Etiqueta ' . e($tag) . '</h2>';
                 if ($module === 'eventos' && $filters['mes'] !== '') {
                     eventCalendar($filters['mes'], array_slice($rows, 0, 24));
+                } elseif (in_array($module, ['institucion','directivos','docentes','administrativos'], true)) {
+                    informationList($module, array_slice($rows, 0, 24));
                 } else {
                     listCards(array_slice($rows, 0, 24), headingLevel: $tag === '' ? 2 : 3);
                 }

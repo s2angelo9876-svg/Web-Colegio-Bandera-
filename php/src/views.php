@@ -189,6 +189,71 @@ function listCards(array $rows, bool $showModule = false, int $headingLevel = 2)
     <?php endforeach ?></div><?php
 }
 
+function informationList(string $module, array $rows): void
+{
+    $overview = null;
+    $groups = [];
+    foreach ($rows as $row) {
+        $fields = json_decode($row['fields'], true) ?? [];
+        if ($module === 'institucion' && $row['slug'] === 'nosotros') {
+            $overview = [$row, $fields];
+            continue;
+        }
+        $section = $module === 'institucion' ? (trim($fields['seccion'] ?? '') ?: 'Información institucional') : '';
+        $groups[$section][] = [$row, $fields];
+    }
+    ?><div class="information-list">
+      <?php if ($overview): informationEntry($overview[0], $overview[1], overview: true); endif ?>
+      <?php if (!$rows): emptyState('search', 'No hay contenido publicado que coincida.'); endif ?>
+      <?php foreach ($groups as $section=>$entries): ?>
+        <div class="information-group">
+          <?php if ($section !== ''): ?><h2><?=e($section)?></h2><?php endif ?>
+          <div class="information-entries">
+            <?php foreach ($entries as [$row, $fields]): informationEntry($row, $fields); endforeach ?>
+          </div>
+        </div>
+      <?php endforeach ?>
+    </div><?php
+}
+
+function informationEntry(array $row, array $fields, bool $overview = false): void
+{
+    $labels = modules()[$row['module']][1];
+    unset($labels['seccion']);
+    $facts = array_filter(array_intersect_key($fields, $labels),
+        fn($value) => is_string($value) && trim($value) !== '' && $value !== $row['title']);
+    $body = bodyText($row['body']) !== '' ? $row['body'] : ($row['summary'] !== '' ? '<p>' . e($row['summary']) . '</p>' : '');
+
+    if ($overview) {
+        ?><article class="institution-overview"><?php informationBody($row, $body, $facts, $labels, $row['title']); ?></article><?php
+        return;
+    }
+    if ($body === '' && !$facts && !$row['media_id']) {
+        ?><p class="information-title"><?=e($row['title'])?></p><?php
+        return;
+    }
+    ?><details class="information-entry" name="informacion">
+      <summary><span><?=e($row['title'])?></span><?=uiIcon('expand_more')?></summary>
+      <?php informationBody($row, $body, $facts, $labels); ?>
+    </details><?php
+}
+
+function informationBody(array $row, string $body, array $facts, array $labels, string $heading = ''): void
+{
+    ?><div class="information-body">
+      <div class="information-copy">
+        <?php if ($heading !== ''): ?><h2><?=e($heading)?></h2><?php endif ?>
+        <?php if ($body !== ''): ?><div class="rich"><?= $body ?></div><?php endif ?>
+        <?php if ($facts): ?><dl class="information-facts">
+          <?php foreach ($facts as $key=>$value): ?>
+            <div><dt><?=e($labels[$key])?></dt><dd><?=e($value)?></dd></div>
+          <?php endforeach ?>
+        </dl><?php endif ?>
+      </div>
+      <?php if ($row['media_id']): showMedia($row); endif ?>
+    </div><?php
+}
+
 function detail(array $row, ?int $preview = null): void
 {
     $fields = json_decode($row['fields'] ?? '{}', true);
