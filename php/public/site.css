@@ -202,13 +202,29 @@ a.icon-button { flex-shrink: 0; }
 .enhanced .theme-toggle { display: inline-grid; }
 .theme-toggle .icon::before { content: var(--theme-icon); }
 #navigation, .nav-links, .nav-tools { display: flex; align-items: center; gap: .42rem; }
-#navigation { gap: clamp(.6rem, 2vw, 1.65rem); }
-.nav-links > a { display: inline-flex; align-items: center; gap: .3rem; padding: .56rem .65rem; border-radius: .55rem; color: var(--muted); font-weight: 750; font-size: .87rem; text-decoration: none; }
-.nav-links > a:hover { background: var(--surface); color: var(--ink); }
-.nav-links > a[aria-current] { background: var(--tint); color: var(--error-ink); text-decoration: underline; text-decoration-thickness: .1em; }
+#navigation { gap: clamp(.6rem, 1.5vw, 1.25rem); }
+.nav-links :is(a, summary) { display: flex; align-items: center; gap: .3rem; padding: .56rem .5rem; border-radius: .55rem; color: var(--muted); font-weight: 750; font-size: .87rem; text-decoration: none; }
+.nav-links :is(a, summary):hover { background: var(--surface); color: var(--ink); }
+.nav-links a[aria-current], .nav-group:has(a[aria-current]) > summary { background: var(--tint); color: var(--error-ink); text-decoration: underline; text-decoration-thickness: .1em; }
+.nav-group { position: relative; }
+.nav-group > summary { list-style: none; cursor: pointer; }
+.nav-group > summary::-webkit-details-marker { display: none; }
+.nav-group[open] > summary .icon { transform: rotate(180deg); }
+.nav-submenu {
+    position: absolute;
+    z-index: 5;
+    inset: calc(100% + .35rem) auto auto 0;
+    min-inline-size: max-content;
+    padding: .35rem;
+    border: 1px solid var(--border);
+    border-radius: .65rem;
+    background: var(--panel);
+    box-shadow: 0 10px 30px #14264024;
+}
+.nav-submenu a { padding-inline: .7rem; }
 .nav-tools { gap: .5rem; }
 .nav-tools form { margin: 0; }
-.access-link { padding-inline: .85rem; }
+.access-link { padding-inline: .85rem; white-space: nowrap; }
 .access-link .icon { color: var(--accent); }
 .admin-site .bar { max-inline-size: 94rem; }
 .shell { padding-block: clamp(1.3rem, 3vw, 2.5rem) 3.5rem; }
@@ -513,13 +529,12 @@ dt + dd { min-inline-size: 0; }
 
 @media (max-width: 1050px) {
     .access-link .icon { display: none; }
-    .nav-links > a { padding-inline: .46rem; }
     .workspace { grid-template-columns: 13rem minmax(0,1fr); }
     .editor-layout.with-inspector:has(.editor) { grid-template-columns: minmax(0,1fr); }
     .publication-panel { max-inline-size: 40rem; }
 }
 
-@media (max-width: 920px) {
+@media (max-width: 1200px) {
     .bar { flex-wrap: wrap; min-block-size: 4.35rem; padding-block: .55rem; gap: .35rem; }
     #navigation, .nav-links { flex-wrap: wrap; }
     .nav-links { max-inline-size: 100%; }
@@ -540,8 +555,22 @@ dt + dd { min-inline-size: 0; }
     }
     .enhanced #menu[aria-expanded="true"] + #navigation { display: grid; justify-items: stretch; }
     .enhanced .nav-links { display: grid; }
-    .enhanced .nav-links > a { min-block-size: 2.75rem; }
+    .nav-links :is(a, summary) { min-block-size: 2.75rem; }
+    .nav-group > summary { justify-content: space-between; }
+    .nav-submenu {
+        position: static;
+        min-inline-size: 0;
+        margin-inline-start: .7rem;
+        padding: .2rem .35rem;
+        border: 0;
+        border-inline-start: 2px solid var(--border);
+        border-radius: 0;
+        box-shadow: none;
+    }
     .enhanced .nav-tools { padding-top: .7rem; border-top: 1px solid var(--border); flex-wrap: wrap; }
+}
+
+@media (max-width: 920px) {
     .hero { grid-template-columns: minmax(0,1fr) minmax(0,1fr); min-block-size: unset; }
     .hero h1 { font-size: clamp(2.25rem,5.2vw,3.3rem); }
     .quick-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
@@ -573,7 +602,7 @@ dt + dd { min-inline-size: 0; }
         grid-template-columns: minmax(0,1fr);
     }
     .hero-visual { min-block-size: 0; aspect-ratio: 16 / 10; }
-    .nav-links a, .toolbar button, .records-panel .icon-button, .hero-slides button { min-block-size: 2.75rem; }
+    .toolbar button, .records-panel .icon-button, .hero-slides button { min-block-size: 2.75rem; }
     .toolbar button, .records-panel .icon-button { min-inline-size: 2.75rem; }
     .calendar { grid-template-columns: minmax(0,1fr); }
     .calendar-gap, .calendar section:not(:has(a)) { display: none; }

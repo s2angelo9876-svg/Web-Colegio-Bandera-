@@ -30,9 +30,16 @@ function layout(string $title, callable $render, ?array $admin = null, string $d
         <a href="/admin"<?=currentAttr($current === 'panel')?>>Panel</a>
         <a href="/"><?=uiIcon('open_in_new')?> Ver sitio</a>
       <?php else: ?>
-        <?php foreach (['inicio'=>'Inicio','institucion'=>'Institución','noticias'=>'Noticias','comunicados'=>'Comunicados','eventos'=>'Eventos'] as $key=>$name): ?>
-          <a href="<?= $key === 'inicio' ? '/' : '/'.$key ?>"<?=currentAttr($current === $key)?>><?=e($name)?></a>
+        <a href="/"<?=currentAttr($current === 'inicio')?>>Inicio</a>
+        <?php publicNavGroup('Institución', [
+            'institucion'=>'Conoce el colegio', 'directivos'=>'Equipo directivo',
+            'docentes'=>'Docentes', 'administrativos'=>'Administrativos',
+        ], $current); ?>
+        <?php foreach (['noticias'=>'Noticias','comunicados'=>'Comunicados','eventos'=>'Eventos'] as $key=>$name): ?>
+          <a href="/<?=e($key)?>"<?=currentAttr($current === $key)?>><?=e($name)?></a>
         <?php endforeach ?>
+        <?php publicNavGroup('Recursos', ['documentos'=>'Documentos institucionales','galeria'=>'Galería'], $current); ?>
+        <a href="/mesa-partes"<?=currentAttr($current === 'mesa-partes')?>>Mesa de Partes</a>
       <?php endif ?>
       </div>
       <div class="nav-tools">
@@ -118,10 +125,23 @@ function publicFooter(): void
         </nav>
         <nav aria-label="Recursos y novedades"><p>Recursos y novedades</p>
           <a href="/documentos">Documentos institucionales</a><a href="/noticias">Noticias</a><a href="/galeria">Galería</a><a href="/eventos">Calendario</a>
+          <a href="/mesa-partes">Mesa de Partes</a>
         </nav>
       </div>
       <div class="footer-base"><span>I.E. Bandera del Perú</span><a href="/admin/ingresar">Acceso del personal <?=uiIcon('arrow_outward')?></a></div>
     </footer><?php
+}
+
+function publicNavGroup(string $label, array $links, string $current): void
+{
+    ?><details class="nav-group" name="public-navigation">
+      <summary><?=e($label)?> <?=uiIcon('expand_more')?></summary>
+      <div class="nav-submenu">
+        <?php foreach ($links as $key=>$name): ?>
+          <a href="/<?=e($key)?>"<?=currentAttr($current === $key)?>><?=e($name)?></a>
+        <?php endforeach ?>
+      </div>
+    </details><?php
 }
 
 function currentAttr(bool $current): string
@@ -199,6 +219,35 @@ function detail(array $row, ?int $preview = null): void
         <?php else: ?><span class="tag"><?=e($tag['name'])?></span><?php endif ?>
       <?php endforeach ?>
     </p><?php endif ?>
+    </article><?php
+}
+
+function mesaPartes(?array $guide, array $contact): void
+{
+    ?><article class="article">
+      <p class="breadcrumb"><a href="/">Inicio</a><?=uiIcon('chevron_right')?> Mesa de Partes</p>
+      <h1>Mesa de Partes</h1>
+      <p class="lead"><?=e(($guide['summary'] ?? '') ?: 'Orientación para presentar documentos y consultar solicitudes al colegio.')?></p>
+      <?php if ($guide && $guide['media_id']): showMedia($guide); endif ?>
+      <div class="rich">
+      <?php if ($guide): ?>
+        <?= $guide['body'] ?>
+      <?php else: ?>
+        <h2>Presentar una solicitud</h2>
+        <ol>
+          <li>Consulta con Secretaría el canal de atención y los requisitos de tu trámite.</li>
+          <li>Prepara tu solicitud y los documentos que te indiquen para el trámite.</li>
+          <li>Presenta la solicitud por el canal indicado y guarda la constancia que recibas.</li>
+        </ol>
+        <h2>Consultar un trámite</h2>
+        <p>Comunícate con Secretaría y ten a la mano el número de expediente o la constancia de presentación.</p>
+      <?php endif ?>
+      </div>
+      <div class="links">
+        <a class="button secondary" href="/documentos"><?=uiIcon('description')?> Documentos institucionales</a>
+        <a class="button secondary" href="/administrativos"><?=uiIcon('groups')?> Directorio administrativo</a>
+      </div>
+      <?php institutionalContact($contact, 'Canales de atención'); ?>
     </article><?php
 }
 
@@ -367,8 +416,13 @@ function home(?array $settings, ?int $preview = null): void
         <p><strong><?=e($value)?></strong> <?=e($caption)?>
         <a href="<?=e($source)?>">Fuente <?=e($fields["metrica{$i}_fecha"] ?? '')?></a></p>
     <?php endfor; if ($hasMetrics) echo '</div>'; ?>
-    <?php if (array_filter(array_intersect_key($fields, array_flip(['direccion','correo','telefono','red_social'])))): ?>
-      <section class="home-section contact-section"><h2>Contacto</h2><address>
+    <?php institutionalContact($fields);
+}
+
+function institutionalContact(array $fields, string $title = 'Contacto'): void
+{
+    if (array_filter(array_intersect_key($fields, array_flip(['direccion','correo','telefono','red_social'])))): ?>
+      <section class="home-section contact-section"><h2><?=e($title)?></h2><address>
       <?php foreach (['direccion'=>'location_on','correo'=>'mail','telefono'=>'call'] as $key=>$icon): if (!empty($fields[$key])): ?>
         <span><?=uiIcon($icon)?> <?=e($fields[$key])?></span>
       <?php endif; endforeach ?>

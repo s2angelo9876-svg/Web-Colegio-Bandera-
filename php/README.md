@@ -32,6 +32,8 @@ wsl.exe -d Ubuntu --exec /bin/bash php/bin/dev demo
 
 La carga se aplica a una base editorial vacía. Luego puedes editar los registros en el panel y conservar los cambios al reiniciar. Para detener la vista, usa `docker stop colegio-php-demo-web colegio-php-demo-pg`.
 
+Para personalizar la guía pública de Mesa de Partes, publica una página del módulo Institución con el identificador `mesa-partes`. Los canales de atención se toman del contacto publicado en la configuración del inicio.
+
 ## Operación
 
 El despliegue preparado para un VPS Linux incluye Caddy, PHP-FPM y PostgreSQL por socket local. [Arranque, SSH y restauración](deploy/vps/README.md)

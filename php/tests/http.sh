@@ -48,6 +48,12 @@ grep -Fiq 'Location: /documentos' "$headers"
 expect 422 '/noticias?pagina=-1'
 expect 200 /sitemap.xml
 contains '<loc>https://colegio.example/</loc>'
+contains '<loc>https://colegio.example/mesa-partes</loc>'
+expect 200 /mesa-partes
+contains '<h1>Mesa de Partes</h1>'
+contains 'Presentar una solicitud'
+expect 301 /institucion/mesa-partes
+grep -Fiq 'Location: /mesa-partes' "$headers"
 expect 404 /no-existe
 expect 303 /admin
 expect 200 /admin/ingresar
@@ -250,6 +256,15 @@ expect 301 '/historia'
 grep -Fiq 'Location: /institucion/historia' "$headers"
 expect 200 '/institucion/historia'
 contains 'Historia para prueba'
+save 201 institucion 0 0 'Guía de trámites de prueba' mesa-partes
+guide=$(id_saved)
+expect 200 /mesa-partes
+absent 'Resumen Guía de trámites de prueba'
+mutate institucion "$guide" publish 1
+expect 200 /mesa-partes
+contains 'Resumen Guía de trámites de prueba'
+expect 200 /sitemap.xml
+absent '/institucion/mesa-partes</loc>'
 [[ $(sql "SELECT count(*) FROM editorial_events WHERE content_id=$news AND action='publish-due'") == 1 ]]
 checks=$((checks+1))
 # Two published records make the public order observable and verify the set version.

@@ -401,6 +401,15 @@ function publicRoute(string $path, array $session): void
             canonical: $origin ? $origin . '/' : '', current: 'inicio');
         return;
     }
+    if ($path === '/mesa-partes') {
+        $guide = homeSection(fn() => published('institucion', slug: 'mesa-partes')[0] ?? []);
+        $settings = homeSection(fn() => published('inicio', limit: 1)[0] ?? []);
+        $contact = json_decode($settings['fields'] ?? '{}', true);
+        layout('Mesa de Partes', fn() => mesaPartes($guide, $contact),
+            description: ($guide['summary'] ?? '') ?: 'Presenta documentos y consulta solicitudes por los canales de atención del colegio.',
+            canonical: $origin ? $origin . $path : '', current: 'mesa-partes');
+        return;
+    }
     if ($path === '/robots.txt') {
         header('Content-Type: text/plain; charset=utf-8');
         echo "User-agent: *\nDisallow: /admin/\n";
@@ -411,8 +420,10 @@ function publicRoute(string $path, array $session): void
         header('Content-Type: application/xml; charset=utf-8');
         echo '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
         echo '<url><loc>' . e($origin . '/') . '</loc></url>';
+        echo '<url><loc>' . e($origin . '/mesa-partes') . '</loc></url>';
         $urls = query("SELECT c.module,c.slug,r.created_at FROM content c JOIN revisions r ON r.id=(" . visibleRevision() . ")
-                       WHERE c.deleted_at IS NULL AND c.module NOT IN ('inicio','carrusel') ORDER BY c.id");
+                       WHERE c.deleted_at IS NULL AND c.module NOT IN ('inicio','carrusel')
+                         AND NOT (c.module='institucion' AND c.slug='mesa-partes') ORDER BY c.id");
         while ($entry = $urls->fetch(PDO::FETCH_ASSOC)) {
             $lastmod = (new DateTimeImmutable($entry['created_at']))->format(DateTimeInterface::ATOM);
             echo '<url><loc>' . e($origin . '/' . $entry['module'] . '/' . $entry['slug']) . '</loc><lastmod>' . e($lastmod) . '</lastmod></url>';
@@ -479,7 +490,7 @@ function publicRoute(string $path, array $session): void
     }
     $legacy = ['/documentos-institucionales'=>'/documentos','/transparencia'=>'/documentos',
         '/equipo-directivo'=>'/directivos','/directivo'=>'/directivos','/login'=>'/admin/ingresar',
-        '/nuestro-colegio'=>'/institucion/nosotros'];
+        '/nuestro-colegio'=>'/institucion/nosotros','/institucion/mesa-partes'=>'/mesa-partes'];
     foreach (['nosotros','historia','valores','mision','propuesta','talleres','organigrama','tic/aula','tic/recursos','tic/proyectos'] as $section) {
         $legacy['/' . $section] = '/institucion/' . str_replace('/', '-', $section);
     }

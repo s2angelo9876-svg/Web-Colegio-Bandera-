@@ -2,9 +2,11 @@
     const root = document.documentElement;
     const colorScheme = document.querySelector('meta[name="color-scheme"]');
     const systemScheme = matchMedia('(prefers-color-scheme: dark)');
-    const compact = matchMedia('(max-width: 920px)');
+    const compact = matchMedia('(max-width: 1200px)');
     const themeKey = 'colegio-theme';
     const menuButton = () => document.getElementById('menu');
+    const navigation = () => document.getElementById('navigation');
+    const openGroup = () => navigation()?.querySelector('.nav-group[open]');
     const systemTheme = () => systemScheme.matches ? 'dark' : 'light';
 
     function updateThemeButton() {
@@ -32,11 +34,21 @@
         }
     }
 
+    function closeNavigation() {
+        menuButton()?.setAttribute('aria-expanded', 'false');
+        openGroup()?.removeAttribute('open');
+    }
+
     function closeMenuOutside(event) {
+        const insideNavigation = navigation()?.contains(event.target);
+        const group = openGroup();
+        if (group && !group.contains(event.target) && (event.type === 'click' || !insideNavigation)) {
+            group.open = false;
+        }
         const menu = menuButton();
         if (menu?.getAttribute('aria-expanded') === 'true'
             && !menu.contains(event.target)
-            && !document.getElementById('navigation').contains(event.target)) {
+            && !insideNavigation) {
             menu.setAttribute('aria-expanded', 'false');
         }
     }
@@ -50,7 +62,7 @@
     window.addEventListener('pageshow', event => {
         if (!event.persisted) return;
         restoreTheme();
-        menuButton()?.setAttribute('aria-expanded', 'false');
+        closeNavigation();
     });
 
     document.addEventListener('click', event => {
@@ -65,6 +77,7 @@
         } else if (compact.matches && menuButton()?.contains(event.target)) {
             const menu = menuButton();
             menu.setAttribute('aria-expanded', String(menu.getAttribute('aria-expanded') !== 'true'));
+            openGroup()?.removeAttribute('open');
         } else {
             closeMenuOutside(event);
         }
@@ -72,12 +85,18 @@
     document.addEventListener('focusin', closeMenuOutside);
     document.addEventListener('keydown', event => {
         if (event.key !== 'Escape') return;
+        const group = openGroup();
+        if (group) {
+            group.open = false;
+            group.querySelector('summary').focus();
+            return;
+        }
         const menu = menuButton();
         if (menu?.getAttribute('aria-expanded') === 'true') {
             menu.setAttribute('aria-expanded', 'false');
             menu.focus();
         }
     });
-    compact.addEventListener('change', () => menuButton()?.setAttribute('aria-expanded', 'false'));
+    compact.addEventListener('change', closeNavigation);
     root.classList.add('enhanced');
 })();
