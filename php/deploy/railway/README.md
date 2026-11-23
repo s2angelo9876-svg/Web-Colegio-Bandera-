@@ -1,6 +1,6 @@
 # Vista temporal en Railway
 
-Usa un proyecto nuevo para la prueba. Railway gestiona el dominio HTTPS del portal y el servicio PostgreSQL queda en su red privada. La base comienza vacía y conserva los datos de la prueba en el volumen de Railway. [Crear proyecto](https://railway.com/new)
+Usa un proyecto nuevo para la prueba. Railway gestiona el dominio HTTPS del portal y el servicio PostgreSQL queda en su red privada. El primer despliegue carga el contenido de demostración en una base editorial vacía. Las ediciones del panel se guardan en el volumen de Railway. [Crear proyecto](https://railway.com/new)
 
 ## Crear los dos servicios
 
@@ -39,6 +39,8 @@ COLEGIO_DB_CA_B64=PEGA_EL_CERTIFICADO_BASE64
 ```
 
 Railway ejecuta las migraciones antes de iniciar el portal. La conexión a PostgreSQL verifica el certificado y el nombre del servidor con `sslmode=verify-full`. PHP-FPM y el proceso editorial utilizan el rol limitado `colegio_app`.
+
+Para iniciar una base nueva con contenido propio, configura `COLEGIO_DEMO_DATA=0` antes del primer despliegue. La carga de muestra comprueba que la base esté vacía antes de insertar registros.
 
 ## Verificar y abrir el panel
 

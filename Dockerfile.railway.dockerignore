@@ -1,5 +1,9 @@
 **
 !php/bin/console.php
+!php/demo/content.json
+!php/demo/import.php
+!php/demo/media/*.pdf
+!php/demo/media/*.webp
 !php/migrations/**
 !php/public/**
 !php/src/**

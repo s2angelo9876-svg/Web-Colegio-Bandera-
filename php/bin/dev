@@ -3,8 +3,8 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 mode=${1:-start}
 case "$mode" in
-  start|test) ;;
-  *) echo "Uso: bin/dev [start|test]" >&2; exit 2 ;;
+  start|demo|test) ;;
+  *) echo "Uso: bin/dev [start|demo|test]" >&2; exit 2 ;;
 esac
 
 umask 077
@@ -17,6 +17,12 @@ if [[ "$mode" == test ]]; then
   web="$database-web"
   port=4171
   trap 'docker rm -fv "$web" "$database" >/dev/null 2>&1 || true; rm -f -- "$state/credentials" "$state/cookies" "$state/response" "$state/headers" "$state/example.pdf" "$state/example-2.pdf"; rmdir -- "$state"' EXIT
+elif [[ "$mode" == demo ]]; then
+  state="$state/demo"
+  mkdir -p "$state"
+  database=colegio-php-demo-pg
+  web=colegio-php-demo-web
+  port=4172
 else
   database=colegio-php-pg
   web=colegio-php-web
@@ -59,6 +65,9 @@ fi
 php_run=(docker run --rm --network bridge --user "$(id -u):$(id -g)" -v "$PWD:/app:ro"
   -e COLEGIO_DSN -e COLEGIO_DB_USER -e COLEGIO_DB_PASSWORD -e COLEGIO_SECURE_COOKIE -e COLEGIO_PUBLIC_ORIGIN)
 "${php_run[@]}" colegio-php-dev php bin/console.php migrate
+if [[ "$mode" == demo ]]; then
+  "${php_run[@]}" colegio-php-dev php demo/import.php
+fi
 if [[ $(docker exec "$database" psql -U postgres -d colegio_php -Atc "SELECT count(*) FROM accounts WHERE username='admin'") == 0 ]]; then
   printf '%s\n' "$LOCAL_ADMIN_PASSWORD" | "${php_run[@]}" -i colegio-php-dev php bin/console.php account admin
 fi

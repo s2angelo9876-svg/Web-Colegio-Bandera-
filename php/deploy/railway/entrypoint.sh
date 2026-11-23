@@ -39,6 +39,9 @@ case ${1:-serve} in
         else
             php deploy/railway/database-role.php
             php bin/console.php migrate
+            if [[ ${COLEGIO_DEMO_DATA:-1} == 1 ]]; then
+                php demo/import.php
+            fi
             php deploy/vps/database-grants.php
         fi
         exit

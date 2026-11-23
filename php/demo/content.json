@@ -1,0 +1,579 @@
+[
+  {
+    "module": "inicio",
+    "slug": "portada",
+    "title": "Colegio Bandera del Perú",
+    "summary": "Institución educativa de Pisco, Ica. Información para estudiantes, familias y personal del colegio.",
+    "body": "<p>Encuentra las novedades del colegio, consulta la agenda de actividades y descarga las orientaciones para las familias.</p><p><strong>Vista de demostración.</strong> Las publicaciones, fechas y materiales de ejemplo permiten explorar el portal antes de cargar la información aprobada por el colegio.</p>",
+    "fields": {
+      "lema": "Disciplina, estudio y superación",
+      "hero_modo": "carrusel",
+      "direccion": "Av. San Martín S/N, Pisco, Ica",
+      "pilar1_titulo": "Aprendizaje",
+      "pilar1_desc": "Proyectos y experiencias de aula que conectan lo aprendido con la vida en Pisco.",
+      "pilar2_titulo": "Convivencia",
+      "pilar2_desc": "Acuerdos compartidos, escucha y acompañamiento para aprender en un entorno de respeto.",
+      "pilar3_titulo": "Participación",
+      "pilar3_desc": "Familias y estudiantes que toman parte en la agenda y en las actividades del colegio.",
+      "meta_descripcion": "Portal de demostración del Colegio Bandera del Perú en Pisco, Ica. Noticias, comunicados, agenda, galería y documentos."
+    }
+  },
+  {
+    "module": "carrusel",
+    "slug": "bienvenida-a-la-comunidad-bandera",
+    "title": "Bienvenidos a la comunidad Bandera",
+    "summary": "Conoce los espacios, la propuesta educativa y las actividades del colegio en Pisco.",
+    "media": "frontis_colegio.webp",
+    "fields": {"alt": "Frontis del Colegio Bandera del Perú en Pisco"}
+  },
+  {
+    "module": "carrusel",
+    "slug": "lectura-que-nos-encuentra",
+    "title": "Lectura que nos encuentra",
+    "summary": "Ideas y recomendaciones de la biblioteca para seguir leyendo en el aula y en casa.",
+    "media": "lectura.webp",
+    "fields": {"alt": "Libros y separadores de colores dispuestos para una jornada de lectura"}
+  },
+  {
+    "module": "carrusel",
+    "slug": "aprender-haciendo",
+    "title": "Aprender haciendo",
+    "summary": "La ciencia escolar empieza con una pregunta y se comparte con la comunidad.",
+    "media": "ciencia.webp",
+    "fields": {"alt": "Mesa con un filtro de agua artesanal y materiales de experimentación"}
+  },
+  {
+    "module": "noticias",
+    "slug": "ciencia-escolar-agua",
+    "title": "Proyectos de ciencia escolar exploran el cuidado del agua",
+    "summary": "Los equipos compararon materiales de filtración y explicaron cómo observar cambios en una muestra de agua.",
+    "days_ago": 1,
+    "media": "ciencia.webp",
+    "fields": {"autor": "Área de Ciencia y Tecnología", "alt": "Materiales para una práctica escolar de filtración de agua"},
+    "tags": ["Ciencia", "Aprendizaje", "Medio ambiente"],
+    "body": "<p>En una sesión de Ciencia y Tecnología, los equipos armaron un filtro sencillo con arena, grava y carbón. Cada grupo observó una muestra antes y después de la práctica y registró sus resultados en una tabla.</p><h2>De la observación a la explicación</h2><p>El reto fue explicar qué retenía cada capa y qué información faltaba para evaluar la calidad del agua. Los estudiantes compararon resultados, revisaron sus hipótesis y prepararon una breve presentación para la muestra escolar.</p>"
+  },
+  {
+    "module": "noticias",
+    "slug": "lectura-compartida-en-la-biblioteca",
+    "title": "La biblioteca reúne a las aulas en una jornada de lectura compartida",
+    "summary": "Los grupos recomendaron cuentos y prepararon separadores con sus pasajes favoritos.",
+    "days_ago": 3,
+    "media": "lectura.webp",
+    "fields": {"autor": "Biblioteca escolar", "alt": "Mesa de lectura con libros abiertos y separadores"},
+    "tags": ["Lectura", "Vida escolar"],
+    "body": "<p>Cada grupo eligió un relato para compartir y preparó una recomendación que explicaba qué le llamó la atención. La actividad reunió relatos breves, poesía y textos informativos para distintas edades.</p><p>Las recomendaciones quedaron en una mesa de consulta de la biblioteca. En la próxima visita, cada aula podrá elegir un título sugerido por otra sección y comentar la lectura en clase.</p>"
+  },
+  {
+    "module": "noticias",
+    "slug": "expresiones-del-aula-en-arte-y-cultura",
+    "title": "Arte y Cultura reúne trabajos inspirados en la vida de Pisco",
+    "summary": "La exposición de aula combinó modelado, dibujo y texturas para retratar escenas del entorno local.",
+    "days_ago": 6,
+    "media": "arte.webp",
+    "fields": {"autor": "Área de Arte y Cultura", "alt": "Piezas de arcilla y tejidos sobre una mesa de exposición"},
+    "tags": ["Arte y cultura", "Vida escolar"],
+    "body": "<p>Los estudiantes tomaron como punto de partida escenas cercanas, como los mercados, los espacios públicos y la costa. Eligieron materiales y técnicas según la historia que querían contar.</p><p>Junto a cada pieza colocaron una ficha con su proceso de trabajo. La muestra permitió conversar sobre el color, el uso de materiales y las distintas maneras de representar un mismo lugar.</p>"
+  },
+  {
+    "module": "noticias",
+    "slug": "deporte-y-acuerdos-de-equipo",
+    "title": "Educación Física trabaja acuerdos para jugar en equipo",
+    "summary": "Los encuentros de práctica incluyeron rotación de roles y una conversación sobre el juego limpio.",
+    "days_ago": 9,
+    "media": "deporte.webp",
+    "fields": {"autor": "Área de Educación Física", "alt": "Red y material de práctica en una cancha escolar"},
+    "tags": ["Deporte", "Convivencia"],
+    "body": "<p>Antes de los ejercicios con balón, los grupos acordaron turnos y formas de comunicarse durante el juego. Al cambiar de estación, los estudiantes rotaron entre organizar, arbitrar y participar.</p><p>La reflexión final recogió situaciones del entrenamiento para preparar una jornada deportiva con participación de todas las secciones.</p>"
+  },
+  {
+    "module": "noticias",
+    "slug": "recursos-digitales-para-investigar",
+    "title": "El aula de innovación practica cómo evaluar fuentes digitales",
+    "summary": "La actividad propuso comparar la autoría, la fecha y las evidencias de distintas fuentes.",
+    "days_ago": 13,
+    "fields": {"autor": "Coordinación de Innovación"},
+    "tags": ["Tecnología", "Aprendizaje"],
+    "body": "<p>Los equipos consultaron tres recursos sobre un mismo tema y registraron quién los había publicado, cuándo se actualizaron y en qué se apoyaban sus afirmaciones.</p><p>Con esa información elaboraron una ficha de fuente para sus proyectos. La ficha les ayudará a citar materiales y a explicar por qué eligieron una referencia al compartir su trabajo.</p>"
+  },
+  {
+    "module": "noticias",
+    "slug": "tutoria-acuerdos-de-aula",
+    "title": "Tutoría revisa los acuerdos de convivencia de cada aula",
+    "summary": "Las secciones eligieron prácticas concretas para mejorar la escucha, la participación y el cuidado de los espacios.",
+    "days_ago": 17,
+    "fields": {"autor": "Equipo de Tutoría"},
+    "tags": ["Convivencia", "Familias"],
+    "body": "<p>En cada aula se hizo una breve revisión de los acuerdos que ya se aplican durante las clases y los recreos. Los grupos conversaron sobre qué ayuda a cumplirlos y qué ajustes necesitan.</p><p>El siguiente paso es elegir un acuerdo para poner en práctica durante la semana y revisarlo con ejemplos al cierre de la hora de tutoría.</p>"
+  },
+  {
+    "module": "noticias",
+    "slug": "cuidado-de-espacios-compartidos",
+    "title": "Las aulas proponen una rutina para cuidar los espacios compartidos",
+    "summary": "La comunidad escolar puso el foco en el orden, la separación de residuos y el cuidado del mobiliario.",
+    "days_ago": 22,
+    "media": "frontis_colegio.webp",
+    "fields": {"autor": "Comunidad educativa", "alt": "Entrada principal del Colegio Bandera del Perú"},
+    "tags": ["Medio ambiente", "Vida escolar"],
+    "body": "<p>Los estudiantes observaron cómo se usan los patios y los ambientes comunes a lo largo de una jornada. Después propusieron una rutina breve para ordenar los materiales al cambiar de actividad.</p><p>Las propuestas se revisarán con las secciones durante tutoría. La ficha de observación recoge qué espacio requiere atención y qué tarea puede asumir el grupo durante esa semana.</p>"
+  },
+  {
+    "module": "noticias",
+    "slug": "recomendaciones-de-lectura-para-casa",
+    "title": "Estudiantes arman una selección de lecturas para casa",
+    "summary": "La lista combina relatos cortos, crónicas y lecturas sobre ciencia para compartir en familia.",
+    "days_ago": 29,
+    "media": "lectura.webp",
+    "fields": {"autor": "Área de Comunicación", "alt": "Selección de libros para lectura escolar"},
+    "tags": ["Lectura", "Familias"],
+    "body": "<p>Para construir la selección, cada sección propuso textos que se puedan leer en momentos breves y conversar en casa. A cada recomendación se añadió una pregunta de inicio.</p><p>La biblioteca orienta a quienes quieran elegir una lectura según sus intereses. Los estudiantes pueden llevar su recomendación a clase y comentar qué descubrieron al leerla en familia.</p>"
+  },
+  {
+    "module": "noticias",
+    "slug": "bitacora-de-proyectos-del-proximo-ciclo",
+    "title": "Preparación de la bitácora de proyectos del próximo ciclo",
+    "summary": "Borrador editorial para reunir aprendizajes y propuestas de las áreas.",
+    "state": "draft",
+    "fields": {"autor": "Equipo editorial"},
+    "tags": ["Aprendizaje"],
+    "body": "<p>Recoger de cada área una experiencia que pueda continuar el próximo ciclo. Completar la sección de materiales y revisar con coordinación antes de programar la publicación.</p>"
+  },
+  {
+    "module": "comunicados",
+    "slug": "encuentro-de-familias-de-fin-de-ciclo",
+    "title": "Encuentro de familias para el cierre del ciclo",
+    "summary": "Tutoría compartirá los avances del aula y orientará a las familias sobre el acompañamiento en casa.",
+    "days_ago": 1,
+    "fields": {"tipo": "academico"},
+    "media": "orientaciones-familias.pdf",
+    "body": "<p>Invitamos a las familias a revisar el encuentro de cierre en la agenda del portal. El equipo de tutoría presentará los acuerdos del aula y dará un espacio para preguntas sobre el acompañamiento del estudiante.</p><p>Antes de asistir, pueden revisar las orientaciones adjuntas y anotar las consultas que deseen tratar con el tutor de su sección.</p>"
+  },
+  {
+    "module": "comunicados",
+    "slug": "orientacion-para-consultas-y-constancias",
+    "title": "Orientación para consultas y constancias escolares",
+    "summary": "Esta guía explica a qué área acudir según el motivo de la consulta y cómo hacer seguimiento.",
+    "days_ago": 2,
+    "fields": {"tipo": "administrativo"},
+    "media": "directorio-atencion.pdf",
+    "body": "<p>Para consultas sobre constancias y trámites administrativos, acude a Secretaría. Indica el motivo de tu solicitud y consulta cómo se realizará el seguimiento.</p><p>Si tu consulta se refiere a una evaluación o al acompañamiento del estudiante, el tutor del aula o la coordinación académica te orientarán sobre el canal que corresponde.</p>"
+  },
+  {
+    "module": "comunicados",
+    "slug": "recepcion-de-proyectos-para-la-muestra",
+    "title": "Preparación de materiales para la muestra de proyectos",
+    "summary": "Cada equipo debe revisar su ficha de proyecto y acordar con su docente la entrega de los materiales.",
+    "days_ago": 4,
+    "fields": {"tipo": "academico"},
+    "body": "<p>Los grupos que participarán en la muestra de ciencia deben preparar una ficha con su pregunta de investigación, procedimiento y resultados. El docente del área revisará la ficha antes del montaje.</p><p>Trae los materiales en un recipiente identificado con el nombre del proyecto y la sección. Las demostraciones se realizarán con acompañamiento de los docentes.</p>"
+  },
+  {
+    "module": "comunicados",
+    "slug": "recomendaciones-para-la-jornada-deportiva",
+    "title": "Recomendaciones para la jornada deportiva",
+    "summary": "Consulta la agenda, trae agua y llega con la indumentaria que indique el docente de Educación Física.",
+    "days_ago": 7,
+    "fields": {"tipo": "aviso"},
+    "body": "<p>Los equipos se reunirán con su docente antes del inicio para revisar las estaciones y las reglas de participación. Cada estudiante debe traer agua y calzado apropiado para la actividad.</p><p>Si necesitas un ajuste para participar en alguna estación, coméntalo con el docente para acordar una alternativa dentro de la jornada.</p>"
+  },
+  {
+    "module": "comunicados",
+    "slug": "prestamos-y-devoluciones-en-biblioteca",
+    "title": "Préstamos y devoluciones en biblioteca",
+    "summary": "La biblioteca orienta a los estudiantes para elegir lecturas y mantener al día sus préstamos.",
+    "days_ago": 11,
+    "fields": {"tipo": "general"},
+    "body": "<p>Al devolver un libro, entrégalo al personal de biblioteca para que el préstamo quede registrado. Si necesitas más tiempo para terminarlo, consulta la disponibilidad antes de renovar.</p><p>Las secciones que visiten la biblioteca con un docente pueden consultar el catálogo de lecturas y seleccionar materiales para su próxima actividad de aula.</p>"
+  },
+  {
+    "module": "comunicados",
+    "slug": "orientaciones-de-convivencia-para-familias",
+    "title": "Orientaciones de convivencia para las familias",
+    "summary": "Compartimos una guía breve sobre acuerdos de aula, acompañamiento y canales de orientación.",
+    "days_ago": 16,
+    "media": "guia-convivencia.pdf",
+    "fields": {"tipo": "general"},
+    "body": "<p>El equipo de tutoría propone conversar en casa sobre los acuerdos que ayudan a convivir en el aula y sobre cómo pedir ayuda cuando surge una dificultad.</p><p>La guía adjunta reúne ejemplos de acciones que pueden comentar con sus hijos y pautas para solicitar orientación al colegio.</p>"
+  },
+  {
+    "module": "comunicados",
+    "slug": "recordatorio-de-montaje-de-la-muestra",
+    "title": "Recordatorio para los equipos de la muestra de ciencia",
+    "summary": "Revisen la ficha del proyecto y confirmen su mesa con el docente responsable.",
+    "state": "scheduled",
+    "fields": {"tipo": "aviso"},
+    "body": "<p>Antes de la muestra, cada equipo confirmará el lugar de montaje con su docente y revisará el estado de sus materiales. Lleven una copia de la ficha y preparen una presentación breve del proyecto.</p>"
+  },
+  {
+    "module": "eventos",
+    "slug": "encuentro-de-familias-y-tutoria",
+    "title": "Encuentro de familias y tutoría",
+    "summary": "Una reunión para conversar sobre el avance del aula y preparar el cierre del ciclo.",
+    "activity_offset": 3,
+    "fields": {"hora": "16:30", "lugar": "Sala de reuniones"},
+    "body": "<h2>Agenda de la reunión</h2><ol><li>Avances y acuerdos de convivencia del aula.</li><li>Orientaciones para acompañar el cierre del ciclo.</li><li>Espacio de preguntas y coordinación de entrevistas.</li></ol>"
+  },
+  {
+    "module": "eventos",
+    "slug": "muestra-de-ciencia-y-tecnologia",
+    "title": "Muestra de Ciencia y Tecnología",
+    "summary": "Recorrido por experimentos y soluciones diseñadas en las aulas.",
+    "activity_offset": 7,
+    "media": "ciencia.webp",
+    "fields": {"hora": "09:30", "lugar": "Patio de actividades", "alt": "Experimento de filtración de agua en una mesa de exhibición"},
+    "body": "<p>Los equipos presentarán sus preguntas, las pruebas que realizaron y los resultados obtenidos. Las familias podrán recorrer las mesas y conversar con los expositores sobre los materiales y el proceso.</p><p>La visita se organizará por grupos en el patio de actividades.</p>"
+  },
+  {
+    "module": "eventos",
+    "slug": "jornada-deportiva-de-integracion",
+    "title": "Jornada deportiva de integración",
+    "summary": "Estaciones de vóley, juegos cooperativos y actividades de calentamiento por grupos.",
+    "activity_offset": 10,
+    "media": "deporte.webp",
+    "fields": {"hora": "08:30", "lugar": "Losa deportiva", "alt": "Material de práctica junto a una red en la losa deportiva"},
+    "body": "<p>La jornada comenzará con una actividad de calentamiento y continuará con estaciones que rotarán por sección. El cierre incluirá un breve intercambio de los acuerdos que funcionaron durante el juego.</p>"
+  },
+  {
+    "module": "eventos",
+    "slug": "encuentro-de-arte-y-expresion",
+    "title": "Encuentro de Arte y Expresión",
+    "summary": "Exposición de trabajos de aula y muestras breves de los talleres artísticos.",
+    "activity_offset": 14,
+    "media": "arte.webp",
+    "fields": {"hora": "15:30", "lugar": "Sala multiuso", "alt": "Trabajos de cerámica y textiles preparados para una exposición"},
+    "body": "<p>Los visitantes podrán recorrer la mesa de trabajos y escuchar a los grupos explicar sus decisiones de diseño. Después del recorrido se dará paso a las intervenciones preparadas por los talleres.</p>"
+  },
+  {
+    "module": "eventos",
+    "slug": "feria-de-lectura-en-familia",
+    "title": "Feria de lectura en familia",
+    "summary": "Recomendaciones de libros, lectura en voz alta y separadores hechos por los estudiantes.",
+    "activity_offset": 17,
+    "media": "lectura.webp",
+    "fields": {"hora": "10:00", "lugar": "Biblioteca escolar", "alt": "Libros y separadores para una feria de lectura"},
+    "body": "<p>Las aulas compartirán una selección de lecturas y prepararán una recomendación para los visitantes. Las familias pueden elegir un texto breve para leer juntas y dejar una recomendación en la mesa de biblioteca.</p>"
+  },
+  {
+    "module": "eventos",
+    "slug": "taller-de-lectura-compartida",
+    "title": "Taller de lectura compartida",
+    "summary": "Las secciones leyeron relatos breves y compartieron sus recomendaciones.",
+    "activity_offset": -7,
+    "days_ago": 14,
+    "media": "lectura.webp",
+    "fields": {"hora": "10:15", "lugar": "Biblioteca escolar", "alt": "Materiales de lectura preparados para el taller"},
+    "body": "<p>Actividad realizada con el Área de Comunicación. Las recomendaciones quedaron organizadas por temática para las próximas visitas de aula a la biblioteca.</p>"
+  },
+  {
+    "module": "eventos",
+    "slug": "laboratorio-escolar-de-agua",
+    "title": "Laboratorio escolar sobre el agua",
+    "summary": "Una práctica guiada permitió observar muestras, comparar materiales y registrar resultados.",
+    "activity_offset": -13,
+    "days_ago": 20,
+    "media": "ciencia.webp",
+    "fields": {"hora": "09:00", "lugar": "Aula de Ciencia y Tecnología", "alt": "Mesa de práctica con recipientes y capas de filtración"},
+    "body": "<p>Los grupos ensayaron procedimientos de observación y revisaron cómo presentar los resultados obtenidos. La experiencia servirá como preparación para la muestra de proyectos.</p>"
+  },
+  {
+    "module": "galeria",
+    "slug": "estacion-de-ciencia",
+    "title": "Estación de Ciencia y Tecnología",
+    "summary": "Materiales de una estación de filtración para una muestra escolar.",
+    "activity_offset": -13,
+    "media": "ciencia.webp",
+    "fields": {"alt": "Filtro de agua de botella, recipientes de ensayo y cuaderno de trabajo"},
+    "body": "<p>La estación reúne materiales para observar, registrar y explicar cómo funciona la filtración. Imagen ilustrativa de la vista de demostración.</p>"
+  },
+  {
+    "module": "galeria",
+    "slug": "mesa-de-lectura",
+    "title": "Mesa de lectura compartida",
+    "summary": "Una selección de libros y separadores para compartir recomendaciones de aula.",
+    "activity_offset": -7,
+    "media": "lectura.webp",
+    "fields": {"alt": "Libros de distintas portadas y separadores sobre una mesa de madera"},
+    "body": "<p>La mesa propone que cada visitante deje una recomendación para otra sección. Imagen ilustrativa de la vista de demostración.</p>"
+  },
+  {
+    "module": "galeria",
+    "slug": "trabajos-de-arte-y-cultura",
+    "title": "Trabajos de Arte y Cultura",
+    "summary": "Piezas y materiales que ilustran distintas técnicas de trabajo manual.",
+    "activity_offset": -6,
+    "media": "arte.webp",
+    "fields": {"alt": "Cerámica, tejidos y pinceles dispuestos en una mesa"},
+    "body": "<p>Los materiales representan propuestas de exploración con textura y color. Imagen ilustrativa de la vista de demostración.</p>"
+  },
+  {
+    "module": "galeria",
+    "slug": "preparacion-de-la-losa-deportiva",
+    "title": "Preparación de la losa deportiva",
+    "summary": "Material de práctica dispuesto para una jornada de juegos cooperativos.",
+    "activity_offset": -9,
+    "media": "deporte.webp",
+    "fields": {"alt": "Losa con red y conos de práctica deportiva"},
+    "body": "<p>La organización por estaciones permite adaptar los juegos y la participación de los grupos. Imagen ilustrativa de la vista de demostración.</p>"
+  },
+  {
+    "module": "galeria",
+    "slug": "frontis-del-colegio",
+    "title": "Frontis del Colegio Bandera del Perú",
+    "summary": "Vista de la entrada principal del colegio en Pisco.",
+    "activity_offset": 0,
+    "media": "frontis_colegio.webp",
+    "fields": {"alt": "Fachada institucional del Colegio Bandera del Perú"},
+    "body": "<p>Fotografía institucional incluida en el repositorio del portal.</p>"
+  },
+  {
+    "module": "documentos",
+    "slug": "orientaciones-para-las-familias",
+    "title": "Orientaciones para las familias",
+    "summary": "Guía sobre reuniones de aula, seguimiento del aprendizaje y consultas al colegio.",
+    "days_ago": 1,
+    "media": "orientaciones-familias.pdf",
+    "fields": {"categoria": "Familias"},
+    "body": "<p>Material de demostración para revisar cómo se publica y descarga una guía para familias. Contiene recomendaciones para preparar una reunión y hacer seguimiento a los acuerdos.</p>"
+  },
+  {
+    "module": "documentos",
+    "slug": "guia-de-convivencia-escolar",
+    "title": "Guía de convivencia escolar",
+    "summary": "Pautas de aula para el respeto, la participación y la búsqueda de apoyo.",
+    "days_ago": 3,
+    "media": "guia-convivencia.pdf",
+    "fields": {"categoria": "Convivencia"},
+    "body": "<p>Material de demostración con ejemplos para conversar sobre los acuerdos del aula y el acompañamiento desde tutoría.</p>"
+  },
+  {
+    "module": "documentos",
+    "slug": "agenda-de-actividades-escolares",
+    "title": "Agenda de actividades escolares",
+    "summary": "Programa de referencia con actividades de lectura, ciencia, arte y deporte.",
+    "days_ago": 5,
+    "media": "agenda-escolar.pdf",
+    "fields": {"categoria": "Vida escolar"},
+    "body": "<p>Programa de ejemplo para descargar y compartir con las familias. En el portal, la sección Eventos muestra las fechas y el detalle de cada actividad de la muestra.</p>"
+  },
+  {
+    "module": "documentos",
+    "slug": "directorio-de-atencion-institucional",
+    "title": "Directorio de atención institucional",
+    "summary": "Guía para identificar el área que puede orientar una consulta académica o administrativa.",
+    "days_ago": 7,
+    "media": "directorio-atencion.pdf",
+    "fields": {"categoria": "Atención institucional"},
+    "body": "<p>Guía demostrativa que describe el alcance de Secretaría, Coordinación Académica, Tutoría y Biblioteca.</p>"
+  },
+  {
+    "module": "institucion",
+    "slug": "nosotros",
+    "title": "Quiénes somos",
+    "summary": "Somos la Institución Educativa Bandera del Perú de Pisco, Ica.",
+    "media": "frontis_colegio.webp",
+    "fields": {"seccion": "Identidad institucional", "alt": "Fachada del Colegio Bandera del Perú"},
+    "body": "<p>La comunidad educativa Bandera del Perú reúne a estudiantes, familias y personal del colegio alrededor de la formación integral. Nuestro lema es <strong>Disciplina, estudio y superación</strong>.</p><p>Informamos las actividades y acuerdos escolares a través del portal. Aquí las familias pueden encontrar comunicados, explorar la propuesta educativa y consultar los documentos institucionales.</p>"
+  },
+  {
+    "module": "institucion",
+    "slug": "historia",
+    "title": "Historia institucional",
+    "summary": "Una trayectoria educativa vinculada a la comunidad de Pisco.",
+    "fields": {"seccion": "Identidad institucional"},
+    "body": "<p>El Colegio Bandera del Perú forma parte de la vida educativa de Pisco. Las experiencias de sus estudiantes, docentes y familias han contribuido a construir la identidad que comparte la comunidad Bandera.</p><p>Las actividades cívicas, deportivas y culturales ofrecen espacios para conservar esa memoria y transmitirla a las nuevas generaciones.</p>"
+  },
+  {
+    "module": "institucion",
+    "slug": "mision",
+    "title": "Misión y visión",
+    "summary": "Una formación que integra aprendizaje, convivencia y participación ciudadana.",
+    "fields": {"seccion": "Identidad institucional"},
+    "body": "<h2>Misión</h2><p>Formar estudiantes críticos, creativos y solidarios, capaces de participar en su comunidad y afrontar los retos de su entorno.</p><h2>Visión</h2><p>Consolidar una comunidad educativa reconocida por su trabajo pedagógico, la formación ciudadana y el uso responsable de la tecnología.</p>"
+  },
+  {
+    "module": "institucion",
+    "slug": "valores",
+    "title": "Valores de la comunidad Bandera",
+    "summary": "Disciplina, estudio y superación se expresan en los acuerdos de convivencia de las aulas.",
+    "fields": {"seccion": "Identidad institucional"},
+    "body": "<ul><li><strong>Respeto.</strong> Escuchamos, cuidamos el trato y valoramos las diferencias.</li><li><strong>Responsabilidad.</strong> Cumplimos los acuerdos y asumimos las consecuencias de nuestras decisiones.</li><li><strong>Solidaridad.</strong> Nos organizamos para que todas las personas puedan participar.</li><li><strong>Esfuerzo.</strong> Revisamos nuestro trabajo, aprendemos de las dificultades y buscamos mejorar.</li></ul>"
+  },
+  {
+    "module": "institucion",
+    "slug": "propuesta",
+    "title": "Propuesta educativa",
+    "summary": "Aprendizajes que se aplican a proyectos y situaciones del entorno.",
+    "media": "ciencia.webp",
+    "fields": {"seccion": "Vida académica", "alt": "Experimento preparado para una muestra de proyectos"},
+    "body": "<p>Las áreas integran proyectos de lectura, ciencia, ciudadanía, arte y actividad física. Los estudiantes formulan preguntas, desarrollan una tarea, reciben retroalimentación y comparten qué aprendieron.</p><p>La tutoría acompaña el proceso de aprendizaje y facilita el diálogo entre el aula y la familia.</p>"
+  },
+  {
+    "module": "institucion",
+    "slug": "talleres",
+    "title": "Talleres y actividades extracurriculares",
+    "summary": "Espacios de participación en arte, música, deporte y tecnología.",
+    "media": "arte.webp",
+    "fields": {"seccion": "Vida académica", "alt": "Piezas y materiales para prácticas de arte y música"},
+    "body": "<p>Los talleres proponen aprender mediante la práctica. Las actividades de arte y cultura exploran distintos lenguajes de expresión, las jornadas deportivas trabajan la cooperación y el aula de innovación acompaña proyectos con herramientas digitales.</p><p>Los comunicados y la agenda reúnen las fechas y las orientaciones de participación de cada actividad.</p>"
+  },
+  {
+    "module": "institucion",
+    "slug": "organigrama",
+    "title": "Organización institucional",
+    "summary": "Áreas que coordinan la gestión pedagógica, la atención a las familias y los servicios del colegio.",
+    "fields": {"seccion": "Gestión institucional"},
+    "body": "<h2>Gestión institucional</h2><p>Dirección coordina el plan institucional y acompaña el trabajo de las subdirecciones.</p><h2>Gestión pedagógica</h2><p>Coordinación Académica articula las áreas docentes. Tutoría y Convivencia orientan el acompañamiento a los estudiantes y el trabajo con las familias.</p><h2>Atención y servicios de apoyo</h2><p>Secretaría, Biblioteca, Soporte Tecnológico y Servicios Generales atienden consultas y apoyan el funcionamiento diario del colegio.</p>"
+  },
+  {
+    "module": "institucion",
+    "slug": "tic-aula",
+    "title": "Aula de innovación",
+    "summary": "Un espacio para investigar y crear con herramientas digitales.",
+    "fields": {"seccion": "Tecnología educativa"},
+    "body": "<p>Los docentes programan sesiones del aula de innovación para desarrollar proyectos de clase. Las actividades incluyen búsqueda de fuentes, organización de información y elaboración de presentaciones.</p><p>Las pautas de trabajo incluyen citar materiales, cuidar las cuentas personales y compartir producciones por los canales acordados con la sección.</p>"
+  },
+  {
+    "module": "institucion",
+    "slug": "tic-recursos",
+    "title": "Recursos digitales",
+    "summary": "Orientaciones para encontrar referencias y materiales de estudio confiables.",
+    "fields": {"seccion": "Tecnología educativa"},
+    "body": "<p>Para una investigación de aula, empieza por las referencias que indique el docente. Revisa la fecha, la autoría y las fuentes antes de incorporar un recurso a tu trabajo.</p><p>En Documentos se incluyen guías que puedes descargar para consultar junto con tu familia.</p>"
+  },
+  {
+    "module": "institucion",
+    "slug": "tic-proyectos",
+    "title": "Proyectos tecnológicos",
+    "summary": "Experiencias de aula que combinan investigación, colaboración y comunicación digital.",
+    "fields": {"seccion": "Tecnología educativa"},
+    "body": "<p>El trabajo de un proyecto empieza con una pregunta y se documenta en una bitácora. Los estudiantes organizan las evidencias, explican qué decisiones tomaron y presentan el resultado a su sección.</p><p>La agenda y las noticias del portal permiten seguir las muestras y los proyectos de la comunidad educativa.</p>"
+  },
+  {
+    "module": "directivos",
+    "slug": "direccion-institucional",
+    "title": "Dirección institucional",
+    "summary": "Orienta la gestión del colegio y coordina el trabajo con la comunidad educativa.",
+    "fields": {"cargo": "Dirección", "frase": "Acompañamos el aprendizaje con participación de las familias."},
+    "body": "<p>Supervisa los acuerdos del plan institucional, coordina el trabajo de las áreas y orienta a las familias en consultas que requieren su intervención.</p>"
+  },
+  {
+    "module": "directivos",
+    "slug": "subdireccion-academica",
+    "title": "Subdirección Académica",
+    "summary": "Coordina la planificación pedagógica y el seguimiento del aprendizaje.",
+    "fields": {"cargo": "Subdirección Académica"},
+    "body": "<p>Trabaja con las áreas docentes para revisar la programación, las evaluaciones y los proyectos de aula. Atiende consultas académicas derivadas por los tutores o docentes.</p>"
+  },
+  {
+    "module": "directivos",
+    "slug": "subdireccion-administrativa",
+    "title": "Subdirección Administrativa",
+    "summary": "Organiza los recursos y los servicios de apoyo del colegio.",
+    "fields": {"cargo": "Subdirección Administrativa"},
+    "body": "<p>Coordina las necesidades de los ambientes, el uso de recursos y la atención administrativa de la comunidad educativa.</p>"
+  },
+  {
+    "module": "directivos",
+    "slug": "coordinacion-de-tutoria",
+    "title": "Coordinación de Tutoría y Convivencia",
+    "summary": "Acompaña a las secciones y facilita el diálogo entre tutores y familias.",
+    "fields": {"cargo": "Coordinación de Tutoría"},
+    "body": "<p>Apoya a los tutores en la revisión de acuerdos de aula y participa en la orientación de situaciones de convivencia que requieren seguimiento.</p>"
+  },
+  {
+    "module": "docentes",
+    "slug": "area-de-comunicacion",
+    "title": "Área de Comunicación",
+    "summary": "Lectura, escritura y expresión oral a través de actividades vinculadas a la vida escolar.",
+    "fields": {"cargo": "Equipo docente", "especialidad": "Comunicación"},
+    "body": "<p>El área propone recomendaciones de lectura, producción de textos y presentaciones en las que los estudiantes comparten sus ideas y revisan el trabajo con sus compañeros.</p>"
+  },
+  {
+    "module": "docentes",
+    "slug": "area-de-matematica",
+    "title": "Área de Matemática",
+    "summary": "Estrategias de resolución de problemas, representación de datos y razonamiento.",
+    "fields": {"cargo": "Equipo docente", "especialidad": "Matemática"},
+    "body": "<p>Los estudiantes prueban distintas estrategias para resolver situaciones cercanas, explican cómo llegaron a un resultado y comparan sus procedimientos.</p>"
+  },
+  {
+    "module": "docentes",
+    "slug": "area-de-ciencia-y-tecnologia",
+    "title": "Área de Ciencia y Tecnología",
+    "summary": "Experiencias de indagación y proyectos sobre el ambiente y el entorno local.",
+    "fields": {"cargo": "Equipo docente", "especialidad": "Ciencia y Tecnología"},
+    "body": "<p>El área acompaña la formulación de preguntas, la observación y el registro de evidencias. Los proyectos se comparten con el aula en demostraciones y muestras escolares.</p>"
+  },
+  {
+    "module": "docentes",
+    "slug": "area-de-ciencias-sociales",
+    "title": "Área de Ciencias Sociales",
+    "summary": "Análisis del entorno, memoria local y participación ciudadana.",
+    "fields": {"cargo": "Equipo docente", "especialidad": "Ciencias Sociales"},
+    "body": "<p>Las actividades integran lectura de fuentes, análisis de mapas y diálogo sobre la vida de Pisco. Los estudiantes relacionan su experiencia con procesos sociales y territoriales.</p>"
+  },
+  {
+    "module": "docentes",
+    "slug": "area-de-arte-y-cultura",
+    "title": "Área de Arte y Cultura",
+    "summary": "Proyectos de creación, apreciación y comunicación por medio de lenguajes artísticos.",
+    "fields": {"cargo": "Equipo docente", "especialidad": "Arte y Cultura"},
+    "body": "<p>El área motiva a observar el entorno y explorar técnicas con distintos materiales. Cada grupo documenta sus decisiones para compartir el proceso detrás de cada pieza.</p>"
+  },
+  {
+    "module": "docentes",
+    "slug": "area-de-educacion-fisica",
+    "title": "Área de Educación Física",
+    "summary": "Actividad física, juegos cooperativos y hábitos de cuidado personal.",
+    "fields": {"cargo": "Equipo docente", "especialidad": "Educación Física"},
+    "body": "<p>Los docentes organizan estaciones con roles distintos para practicar habilidades, trabajar en equipo y revisar los acuerdos de juego limpio.</p>"
+  },
+  {
+    "module": "docentes",
+    "slug": "area-de-ingles",
+    "title": "Área de Inglés",
+    "summary": "Situaciones de comunicación cotidiana para practicar el uso del idioma.",
+    "fields": {"cargo": "Equipo docente", "especialidad": "Inglés"},
+    "body": "<p>Las actividades combinan conversaciones breves, lectura y presentaciones. Los estudiantes practican en parejas y preparan producciones sobre temas de interés para el aula.</p>"
+  },
+  {
+    "module": "administrativos",
+    "slug": "secretaria",
+    "title": "Secretaría",
+    "summary": "Orientación para solicitudes, constancias y consultas administrativas.",
+    "fields": {"cargo": "Atención a la comunidad", "area": "Secretaría"},
+    "body": "<p>Recibe consultas sobre documentación escolar y orienta sobre el área responsable y las etapas del trámite. Consulta las pautas en el directorio de atención institucional.</p>"
+  },
+  {
+    "module": "administrativos",
+    "slug": "biblioteca-escolar",
+    "title": "Biblioteca escolar",
+    "summary": "Consulta de títulos, préstamos y orientación para encontrar lecturas.",
+    "fields": {"cargo": "Servicio de apoyo", "area": "Biblioteca"},
+    "body": "<p>Acompaña las visitas de aula y el préstamo de materiales. También organiza selecciones de lectura para las actividades de Comunicación y los proyectos de las áreas.</p>"
+  },
+  {
+    "module": "administrativos",
+    "slug": "soporte-tecnologico",
+    "title": "Soporte Tecnológico",
+    "summary": "Acompañamiento para el uso de equipos y recursos digitales en el colegio.",
+    "fields": {"cargo": "Servicio de apoyo", "area": "Tecnología"},
+    "body": "<p>Coordina con los docentes el uso de los equipos del aula de innovación y atiende incidencias que se reportan durante las actividades programadas.</p>"
+  },
+  {
+    "module": "administrativos",
+    "slug": "servicios-generales",
+    "title": "Servicios Generales",
+    "summary": "Cuidado de ambientes y preparación de espacios para las actividades escolares.",
+    "fields": {"cargo": "Operación del colegio", "area": "Servicios Generales"},
+    "body": "<p>Organiza el mantenimiento de los espacios compartidos y apoya la preparación de ambientes para reuniones, jornadas y muestras de la comunidad.</p>"
+  },
+  {
+    "module": "administrativos",
+    "slug": "apoyo-de-gestion-escolar",
+    "title": "Apoyo de Gestión Escolar",
+    "summary": "Organización de materiales y coordinación de recursos para la jornada escolar.",
+    "fields": {"cargo": "Apoyo administrativo", "area": "Gestión Escolar"},
+    "body": "<p>Apoya el registro de materiales y la coordinación con las áreas cuando se programan actividades en aulas, patios u otros espacios de uso común.</p>"
+  }
+]
