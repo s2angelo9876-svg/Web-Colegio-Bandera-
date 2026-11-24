@@ -1,0 +1,200 @@
+{
+  "version": 1,
+  "sources": [
+    {
+      "repository": "addyosmani/agent-skills",
+      "commit": "e997ac5b9a74eab332d5e9793bb38a38c8cfdd74",
+      "skills": {
+        "api-and-interface-design": "skills/api-and-interface-design",
+        "browser-testing-with-devtools": "skills/browser-testing-with-devtools",
+        "ci-cd-and-automation": "skills/ci-cd-and-automation",
+        "code-review-and-quality": "skills/code-review-and-quality",
+        "code-simplification": "skills/code-simplification",
+        "constraint-driven-development": "skills/constraint-driven-development",
+        "context-engineering": "skills/context-engineering",
+        "debugging-and-error-recovery": "skills/debugging-and-error-recovery",
+        "deprecation-and-migration": "skills/deprecation-and-migration",
+        "documentation-and-adrs": "skills/documentation-and-adrs",
+        "doubt-driven-development": "skills/doubt-driven-development",
+        "frontend-ui-engineering": "skills/frontend-ui-engineering",
+        "git-workflow-and-versioning": "skills/git-workflow-and-versioning",
+        "idea-refine": "skills/idea-refine",
+        "incremental-implementation": "skills/incremental-implementation",
+        "interview-me": "skills/interview-me",
+        "observability-and-instrumentation": "skills/observability-and-instrumentation",
+        "performance-optimization": "skills/performance-optimization",
+        "planning-and-task-breakdown": "skills/planning-and-task-breakdown",
+        "security-and-hardening": "skills/security-and-hardening",
+        "shipping-and-launch": "skills/shipping-and-launch",
+        "source-driven-development": "skills/source-driven-development",
+        "spec-driven-development": "skills/spec-driven-development",
+        "test-driven-development": "skills/test-driven-development",
+        "using-agent-skills": "skills/using-agent-skills"
+      },
+      "licenses": [
+        "LICENSE"
+      ]
+    },
+    {
+      "repository": "anthropics/skills",
+      "commit": "e4bb5d960d87126ff3b3a8af1a104b7db67560ba",
+      "skills": {
+        "canvas-design": "skills/canvas-design"
+      }
+    },
+    {
+      "repository": "coreyhaines31/marketingskills",
+      "commit": "8fd2fcade2fd6629026e9dfe6d133b55b36968b9",
+      "skills": {
+        "ai-seo": "skills/ai-seo",
+        "content-strategy": "skills/content-strategy",
+        "pricing": "skills/pricing",
+        "seo-audit": "skills/seo-audit"
+      },
+      "licenses": [
+        "LICENSE"
+      ]
+    },
+    {
+      "repository": "emilkowalski/skill",
+      "commit": "64eb3deb9a5fbfa041faf783e0bc3fd635872e9c",
+      "skills": {
+        "animate": "skills/animate",
+        "animate-expo": "skills/animate-expo",
+        "animation-performance": "skills/animation-performance",
+        "animation-vocabulary": "skills/animation-vocabulary",
+        "apple-design": "skills/apple-design",
+        "ask-emil": "skills/ask-emil",
+        "ask-sonner": "skills/ask-sonner",
+        "break-ui": "skills/break-ui",
+        "choreograph": "skills/choreograph",
+        "emil-design-eng": "skills/emil-design-eng",
+        "find-animation-opportunities": "skills/find-animation-opportunities",
+        "gestures": "skills/gestures",
+        "improve-animations": "skills/improve-animations",
+        "learn-taste": "skills/learn-taste",
+        "mobile-native": "skills/mobile-native",
+        "pick-ui-library": "skills/pick-ui-library",
+        "prototype": "skills/prototype",
+        "remove-animations": "skills/remove-animations",
+        "review-animations": "skills/review-animations",
+        "write-swift": "skills/write-swift"
+      },
+      "licenses": [
+        "LICENSE"
+      ]
+    },
+    {
+      "repository": "google/elephant-goldfish-model",
+      "commit": "63e239d8d4c3ddc6774faf533b4997405f78c549",
+      "skills": {
+        "egm-bootstrap": "skills/egm-bootstrap",
+        "egm-brainstorm": "skills/egm-brainstorm",
+        "egm-draft": "skills/egm-draft",
+        "egm-drift-report": "skills/egm-drift-report",
+        "egm-lite": "skills/egm-lite",
+        "egm-resolve": "skills/egm-resolve",
+        "egm-review": "skills/egm-review",
+        "egm-review-loop": "skills/egm-review-loop"
+      },
+      "licenses": [
+        "LICENSE"
+      ],
+      "support": [
+        "agents",
+        "docs",
+        "resources"
+      ]
+    },
+    {
+      "repository": "GoogleChrome/modern-web-guidance",
+      "commit": "64a6d708f5a43f2cd3fde5d4d7db3905ba1bdf65",
+      "skills": {
+        "modern-web-guidance": "skills/modern-web-guidance"
+      },
+      "licenses": [
+        "LICENSE"
+      ]
+    },
+    {
+      "repository": "JuliusBrussee/caveman",
+      "commit": "47c61be2d10a354f0c5cbe2b90959d24c06b16c6",
+      "skills": {
+        "caveman": "skills/caveman"
+      },
+      "licenses": [
+        "LICENSE",
+        "LICENSE-MIT",
+        "NOTICE"
+      ]
+    },
+    {
+      "repository": "Leonxlnx/taste-skill",
+      "commit": "6c0b5c78f5d31776e2210305abaa210cdc0030bf",
+      "skills": {
+        "design-taste-frontend": "skills/taste-skill"
+      },
+      "licenses": [
+        "LICENSE"
+      ]
+    },
+    {
+      "repository": "mattpocock/skills",
+      "commit": "d65391149dbb5fe76478e76fa8d5122b2aa5a70e",
+      "skills": {
+        "grill-me": "skills/productivity/grill-me"
+      },
+      "licenses": [
+        "LICENSE"
+      ]
+    },
+    {
+      "repository": "nextlevelbuilder/ui-ux-pro-max-skill",
+      "commit": "8db36338810d0942567b97ce439affd1619fcf31",
+      "skills": {
+        "ui-ux-pro-max": ".claude/skills/ui-ux-pro-max"
+      },
+      "licenses": [
+        "LICENSE"
+      ]
+    },
+    {
+      "repository": "pbakaus/impeccable",
+      "commit": "b49177d32788f2dc585c42831d845dacf1ebed2c",
+      "skills": {
+        "impeccable": ".agents/skills/impeccable"
+      },
+      "licenses": [
+        "LICENSE",
+        "NOTICE.md"
+      ]
+    },
+    {
+      "repository": "vercel-labs/agent-browser",
+      "commit": "0a923358ea989d7602f0d06507ad3447c62ffe9b",
+      "skills": {
+        "agent-browser": "skills/agent-browser"
+      },
+      "licenses": [
+        "LICENSE"
+      ]
+    },
+    {
+      "repository": "vercel-labs/agent-skills",
+      "commit": "5a37a6329fbad3666c3207392a6a7c0110e92efb",
+      "skills": {
+        "web-design-guidelines": "skills/web-design-guidelines"
+      }
+    },
+    {
+      "repository": "vercel-labs/skills",
+      "commit": "57217cf86ba38148a57af9e90d14a4c049558330",
+      "skills": {
+        "find-skills": "skills/find-skills"
+      },
+      "licenses": [
+        "LICENSE"
+      ]
+    }
+  ]
+}
