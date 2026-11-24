@@ -520,7 +520,9 @@ function publicRoute(string $path, array $session): void
             $search = field('q', 200, $_GET);
             $rows = published($module, $search, $tag, limit: 25, offset: ($page-1)*24, filters: $filters);
             layout($label, function () use ($label,$tag,$rows,$module,$page,$filters,$search): void {
-                ?><div class="page-heading public-heading">
+                $staff = in_array($module, ['directivos','docentes'], true);
+                $compact = $staff || $module === 'institucion';
+                ?><div class="page-heading public-heading<?= $compact ? ' compact-heading' : '' ?>">
                     <p class="breadcrumb"><a href="/">Inicio</a><?=uiIcon('chevron_right')?> <?=e($label)?></p>
                     <div class="heading-row"><h1><?=e($label)?></h1>
                     <?php if ($module === 'noticias'): ?><a class="button secondary" href="/tags"><?=uiIcon('label')?> Ver etiquetas</a><?php endif ?></div>
@@ -529,7 +531,9 @@ function publicRoute(string $path, array $session): void
                 if ($tag !== '') echo '<h2>Etiqueta ' . e($tag) . '</h2>';
                 if ($module === 'eventos' && $filters['mes'] !== '') {
                     eventCalendar($filters['mes'], array_slice($rows, 0, 24));
-                } elseif (in_array($module, ['institucion','directivos','docentes','administrativos'], true)) {
+                } elseif ($staff) {
+                    staffDirectory($module, array_slice($rows, 0, 24), $tag === '' ? 2 : 3);
+                } elseif (in_array($module, ['institucion','administrativos'], true)) {
                     informationList($module, array_slice($rows, 0, 24));
                 } else {
                     listCards(array_slice($rows, 0, 24), headingLevel: $tag === '' ? 2 : 3);

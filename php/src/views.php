@@ -189,6 +189,40 @@ function listCards(array $rows, bool $showModule = false, int $headingLevel = 2)
     <?php endforeach ?></div><?php
 }
 
+function staffDirectory(string $module, array $rows, int $headingLevel): void
+{
+    $teachers = $module === 'docentes';
+    ?><div class="staff-directory">
+    <?php if (!$rows): ?>
+      <?php emptyState(moduleIcon($module), $teachers ? 'No hay docentes publicados.' : 'No hay perfiles del equipo directivo publicados.'); ?>
+    <?php else: ?>
+      <?php if (array_any($rows, fn(array $row) => str_starts_with($row['media_filename'] ?? '', 'perfil-demo-'))): ?>
+        <p class="staff-directory-note">El directorio incluye nombres y retratos de demostración.</p>
+      <?php endif ?>
+      <div class="staff-grid">
+      <?php foreach ($rows as $row):
+          $fields = json_decode($row['fields'], true) ?? [];
+          $role = trim($fields['cargo'] ?? '');
+          $subject = trim($fields['especialidad'] ?? '');
+          $label = $teachers ? ($subject ?: $role) : ($role ?: $subject); ?>
+        <article class="card staff-card">
+          <div class="staff-portrait">
+            <?php if (str_starts_with($row['media_mime'] ?? '', 'image/')): ?>
+              <?php imageTag($row, $fields['alt'] ?? '', 'staff-photo', sizes: 'clamp(5.8rem, 15vw, 8.25rem)'); ?>
+            <?php else: ?>
+              <?=uiIcon('groups')?>
+            <?php endif ?>
+          </div>
+          <h<?=$headingLevel?>><?=e($row['title'])?></h<?=$headingLevel?>>
+          <?php if ($label !== $row['title'] && $label !== ''): ?><p class="staff-role"><?=e($label)?></p><?php endif ?>
+          <?php if (!$teachers && $subject !== '' && $subject !== $label): ?><p class="staff-subject"><?=e($subject)?></p><?php endif ?>
+        </article>
+      <?php endforeach ?>
+      </div>
+    <?php endif ?>
+    </div><?php
+}
+
 function informationList(string $module, array $rows): void
 {
     $overview = null;
@@ -205,6 +239,7 @@ function informationList(string $module, array $rows): void
     ?><div class="information-list">
       <?php if ($overview): informationEntry($overview[0], $overview[1], overview: true); endif ?>
       <?php if (!$rows): emptyState('search', 'No hay contenido publicado que coincida.'); endif ?>
+      <div<?= $module === 'institucion' ? ' class="institution-topics"' : '' ?>>
       <?php foreach ($groups as $section=>$entries): ?>
         <div class="information-group">
           <?php if ($section !== ''): ?><h2><?=e($section)?></h2><?php endif ?>
@@ -213,6 +248,7 @@ function informationList(string $module, array $rows): void
           </div>
         </div>
       <?php endforeach ?>
+      </div>
     </div><?php
 }
 
@@ -260,6 +296,7 @@ function detail(array $row, ?int $preview = null): void
     ?><article class="article">
     <?php if ($preview === null): ?><p class="breadcrumb"><a href="/">Inicio</a><?=uiIcon('chevron_right')?><a href="/<?=e($row['module'])?>"><?=e(modules()[$row['module']][0])?></a></p><?php endif ?>
     <h1><?=e($row['title'])?></h1>
+    <?php if (str_starts_with($row['media_filename'] ?? '', 'perfil-demo-')): ?><p class="staff-directory-note">Nombre y retrato de demostración.</p><?php endif ?>
     <?php if (!empty($row['publication_date']) && in_array($row['module'], ['noticias','comunicados','documentos'], true)): ?>
         <p class="article-date"><?=uiIcon('calendar_month')?> <time datetime="<?=e($row['publication_date'])?>"><?=e(publicationLabel($row['publication_date']))?></time></p>
     <?php endif ?>
@@ -347,18 +384,19 @@ function documentVersion(array $row, ?int $preview): int
                        )", [$id, $preview ?? $row['id']])->fetchColumn() ?: 1;
 }
 
-function imageTag(array $row, string $alt, string $class, ?int $preview = null, bool $hero = false): void
+function imageTag(array $row, string $alt, string $class, ?int $preview = null, bool $hero = false, ?string $sizes = null): void
 {
     $base = '/medio/' . $row['media_id'];
     $full = $base . ($preview ? '?revision=' . $preview : '');
     $mini = $full . ($preview ? '&' : '?') . 'tam=mini';
     $width = (int) ($row['width'] ?? 0);
     $height = (int) ($row['height'] ?? 0);
-    $smallWidth = min(640, $width);
+    $smallWidth = max(1, (int) round($width * 640 / max(640, $width, $height)));
+    $sizes ??= $hero ? '100vw' : '(max-width: 750px) 100vw, 640px';
     ?><img class="<?=e($class)?>" src="<?=e($full)?>" alt="<?=e($alt)?>"
         <?= $width && $height ? 'width="' . e($width) . '" height="' . e($height) . '"' : '' ?>
         <?= !empty($row['has_thumbnail']) && $smallWidth < $width
-             ? 'srcset="' . e("$mini {$smallWidth}w, $full {$width}w") . '" sizes="' . ($hero ? '100vw' : '(max-width: 750px) 100vw, 640px') . '"' : '' ?>
+             ? 'srcset="' . e("$mini {$smallWidth}w, $full {$width}w") . '" sizes="' . e($sizes) . '"' : '' ?>
         <?= $hero ? 'fetchpriority="high"' : 'loading="lazy"' ?>><?php
 }
 
@@ -504,6 +542,7 @@ function statusChip(string $label, string $tone = ''): void
 function editForm(string $module, int $id, array $row, array $user, ?HttpError $error = null): void
 {
     [$label,$labels,$kind] = modules()[$module];
+    $staff = in_array($module, ['directivos','docentes'], true);
     $base = '/admin/' . $module;
     $url = $base . '/' . $id;
     $fields = json_decode($row['fields'] ?? '{}', true);
@@ -543,7 +582,7 @@ function editForm(string $module, int $id, array $row, array $user, ?HttpError $
       <?=token($user)?><input type="hidden" name="version" value="<?=e($version)?>">
       <section class="form-card">
         <h2><?=uiIcon('edit_note')?> Contenido</h2>
-        <label>Título <input id="title" name="title" value="<?=e($row['title'] ?? '')?>" required maxlength="255"<?=invalidAttr($invalid,'title')?>></label>
+        <label><?= $staff ? 'Nombre completo' : 'Título' ?> <input id="title" name="title" value="<?=e($row['title'] ?? '')?>" required maxlength="255"<?=invalidAttr($invalid,'title')?>></label>
         <label>Resumen <textarea id="summary" name="summary" rows="2" maxlength="1000"<?=invalidAttr($invalid,'summary')?>><?=e($row['summary'] ?? '')?></textarea></label>
         <div class="editor-body">
           <label for="body">Contenido</label>
@@ -553,7 +592,7 @@ function editForm(string $module, int $id, array $row, array $user, ?HttpError $
       <section class="form-card">
         <h2><?=uiIcon('description')?> Datos de la publicación</h2>
         <div class="field-grid">
-          <label>Identificador de URL <input id="slug" name="slug" value="<?=e($row['slug'] ?? '')?>" pattern="[a-z0-9]+(-[a-z0-9]+)*" maxlength="120" <?= $id ? 'readonly' : 'placeholder="Se genera a partir del título"' ?><?=invalidAttr($invalid,'slug')?>></label>
+          <label>Identificador de URL <input id="slug" name="slug" value="<?=e($row['slug'] ?? '')?>" pattern="[a-z0-9]+(-[a-z0-9]+)*" maxlength="120" <?= $id ? 'readonly' : 'placeholder="Se genera a partir del ' . ($staff ? 'nombre' : 'título') . '"' ?><?=invalidAttr($invalid,'slug')?>></label>
           <?php foreach ($labels as $key => $fieldLabel):
               $options = match ($key) {'tipo'=>communicationTypes(),'hero_modo'=>['foto'=>'Foto fija','carrusel'=>'Carrusel'],default=>null};
               $type = isUrlField($key) ? 'url' : match (true) {
@@ -572,8 +611,12 @@ function editForm(string $module, int $id, array $row, array $user, ?HttpError $
       <section class="form-card">
         <h2><?=uiIcon('photo_library')?> Archivos</h2>
         <?php if ($module !== 'documentos'): ?><label>Descripción de la imagen <input id="alt" name="alt" maxlength="200" value="<?=e($fields['alt'] ?? '')?>"<?=invalidAttr($invalid,'alt')?>></label><?php endif ?>
-        <label class="file-field"><?= $module === 'documentos' ? 'PDF (hasta ' . PDF_MIB . ' MiB)' : 'Archivo (imagen hasta ' . PHOTO_MIB . ' MiB'
-                  . ($kind === 'document' ? ' o PDF hasta ' . PDF_MIB . ' MiB)' : ')') ?>
+        <label class="file-field"><?= match (true) {
+            $staff => 'Foto de perfil (hasta ' . PHOTO_MIB . ' MiB)',
+            $module === 'documentos' => 'PDF (hasta ' . PDF_MIB . ' MiB)',
+            $kind === 'document' => 'Archivo (imagen hasta ' . PHOTO_MIB . ' MiB o PDF hasta ' . PDF_MIB . ' MiB)',
+            default => 'Archivo (imagen hasta ' . PHOTO_MIB . ' MiB)',
+        } ?>
           <input id="media" type="file" name="media" accept="<?= $module === 'documentos' ? 'application/pdf' : 'image/jpeg,image/png,image/webp' . ($kind === 'document' ? ',application/pdf' : '') ?>"<?=invalidAttr($invalid,'media')?>></label>
         <?php if (!empty($row['media_id'])): ?><label class="check-field"><input type="checkbox" name="remove_media" value="1" <?= !empty($row['remove_media']) ? 'checked' : '' ?>> Quitar archivo actual</label><?php endif ?>
       </section>

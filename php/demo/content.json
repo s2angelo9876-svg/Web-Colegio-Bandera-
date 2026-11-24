@@ -451,89 +451,100 @@
   {
     "module": "directivos",
     "slug": "direccion-institucional",
-    "title": "Dirección institucional",
+    "title": "Mariana Valdivia Rojas",
     "summary": "Orienta la gestión del colegio y coordina el trabajo con la comunidad educativa.",
-    "fields": {"cargo": "Dirección", "frase": "Acompañamos el aprendizaje con participación de las familias."},
+    "media": "perfil-demo-direccion.webp",
+    "fields": {"cargo": "Dirección institucional", "frase": "Acompañamos el aprendizaje con participación de las familias.", "alt": "Retrato ilustrativo de Mariana Valdivia Rojas"},
     "body": "<p>Supervisa los acuerdos del plan institucional, coordina el trabajo de las áreas y orienta a las familias en consultas que requieren su intervención.</p>"
   },
   {
     "module": "directivos",
     "slug": "subdireccion-academica",
-    "title": "Subdirección Académica",
+    "title": "Álvaro Huamán Aguilar",
     "summary": "Coordina la planificación pedagógica y el seguimiento del aprendizaje.",
-    "fields": {"cargo": "Subdirección Académica"},
+    "media": "perfil-demo-subdireccion-academica.webp",
+    "fields": {"cargo": "Subdirección Académica", "especialidad": "Matemática", "alt": "Retrato ilustrativo de Álvaro Huamán Aguilar"},
     "body": "<p>Trabaja con las áreas docentes para revisar la programación, las evaluaciones y los proyectos de aula. Atiende consultas académicas derivadas por los tutores o docentes.</p>"
   },
   {
     "module": "directivos",
     "slug": "subdireccion-administrativa",
-    "title": "Subdirección Administrativa",
+    "title": "Lucía Barrientos Salas",
     "summary": "Organiza los recursos y los servicios de apoyo del colegio.",
-    "fields": {"cargo": "Subdirección Administrativa"},
+    "media": "perfil-demo-subdireccion-administrativa.webp",
+    "fields": {"cargo": "Subdirección Administrativa", "alt": "Retrato ilustrativo de Lucía Barrientos Salas"},
     "body": "<p>Coordina las necesidades de los ambientes, el uso de recursos y la atención administrativa de la comunidad educativa.</p>"
   },
   {
     "module": "directivos",
     "slug": "coordinacion-de-tutoria",
-    "title": "Coordinación de Tutoría y Convivencia",
+    "title": "Renato Cárdenas Ponce",
     "summary": "Acompaña a las secciones y facilita el diálogo entre tutores y familias.",
-    "fields": {"cargo": "Coordinación de Tutoría"},
+    "media": "perfil-demo-tutoria.webp",
+    "fields": {"cargo": "Coordinación de Tutoría y Convivencia", "alt": "Retrato ilustrativo de Renato Cárdenas Ponce"},
     "body": "<p>Apoya a los tutores en la revisión de acuerdos de aula y participa en la orientación de situaciones de convivencia que requieren seguimiento.</p>"
   },
   {
     "module": "docentes",
     "slug": "area-de-comunicacion",
-    "title": "Área de Comunicación",
+    "title": "Rosa Mejía Paredes",
     "summary": "Lectura, escritura y expresión oral a través de actividades vinculadas a la vida escolar.",
-    "fields": {"cargo": "Equipo docente", "especialidad": "Comunicación"},
+    "media": "perfil-demo-comunicacion.webp",
+    "fields": {"cargo": "Equipo docente", "especialidad": "Comunicación", "alt": "Retrato ilustrativo de Rosa Mejía Paredes"},
     "body": "<p>El área propone recomendaciones de lectura, producción de textos y presentaciones en las que los estudiantes comparten sus ideas y revisan el trabajo con sus compañeros.</p>"
   },
   {
     "module": "docentes",
     "slug": "area-de-matematica",
-    "title": "Área de Matemática",
+    "title": "Diego Huerta Palomino",
     "summary": "Estrategias de resolución de problemas, representación de datos y razonamiento.",
-    "fields": {"cargo": "Equipo docente", "especialidad": "Matemática"},
+    "media": "perfil-demo-matematica.webp",
+    "fields": {"cargo": "Equipo docente", "especialidad": "Matemática", "alt": "Retrato ilustrativo de Diego Huerta Palomino"},
     "body": "<p>Los estudiantes prueban distintas estrategias para resolver situaciones cercanas, explican cómo llegaron a un resultado y comparan sus procedimientos.</p>"
   },
   {
     "module": "docentes",
     "slug": "area-de-ciencia-y-tecnologia",
-    "title": "Área de Ciencia y Tecnología",
+    "title": "Paola Quispe Mendoza",
     "summary": "Experiencias de indagación y proyectos sobre el ambiente y el entorno local.",
-    "fields": {"cargo": "Equipo docente", "especialidad": "Ciencia y Tecnología"},
+    "media": "perfil-demo-ciencia.webp",
+    "fields": {"cargo": "Equipo docente", "especialidad": "Ciencia y Tecnología", "alt": "Retrato ilustrativo de Paola Quispe Mendoza"},
     "body": "<p>El área acompaña la formulación de preguntas, la observación y el registro de evidencias. Los proyectos se comparten con el aula en demostraciones y muestras escolares.</p>"
   },
   {
     "module": "docentes",
     "slug": "area-de-ciencias-sociales",
-    "title": "Área de Ciencias Sociales",
+    "title": "Héctor Rivera Bustamante",
     "summary": "Análisis del entorno, memoria local y participación ciudadana.",
-    "fields": {"cargo": "Equipo docente", "especialidad": "Ciencias Sociales"},
+    "media": "perfil-demo-sociales.webp",
+    "fields": {"cargo": "Equipo docente", "especialidad": "Ciencias Sociales", "alt": "Retrato ilustrativo de Héctor Rivera Bustamante"},
     "body": "<p>Las actividades integran lectura de fuentes, análisis de mapas y diálogo sobre la vida de Pisco. Los estudiantes relacionan su experiencia con procesos sociales y territoriales.</p>"
   },
   {
     "module": "docentes",
     "slug": "area-de-arte-y-cultura",
-    "title": "Área de Arte y Cultura",
+    "title": "Camila Torres Ayala",
     "summary": "Proyectos de creación, apreciación y comunicación por medio de lenguajes artísticos.",
-    "fields": {"cargo": "Equipo docente", "especialidad": "Arte y Cultura"},
+    "media": "perfil-demo-arte.webp",
+    "fields": {"cargo": "Equipo docente", "especialidad": "Arte y Cultura", "alt": "Retrato ilustrativo de Camila Torres Ayala"},
     "body": "<p>El área motiva a observar el entorno y explorar técnicas con distintos materiales. Cada grupo documenta sus decisiones para compartir el proceso detrás de cada pieza.</p>"
   },
   {
     "module": "docentes",
     "slug": "area-de-educacion-fisica",
-    "title": "Área de Educación Física",
+    "title": "Luis Navarro Benites",
     "summary": "Actividad física, juegos cooperativos y hábitos de cuidado personal.",
-    "fields": {"cargo": "Equipo docente", "especialidad": "Educación Física"},
+    "media": "perfil-demo-educacion-fisica.webp",
+    "fields": {"cargo": "Equipo docente", "especialidad": "Educación Física", "alt": "Retrato ilustrativo de Luis Navarro Benites"},
     "body": "<p>Los docentes organizan estaciones con roles distintos para practicar habilidades, trabajar en equipo y revisar los acuerdos de juego limpio.</p>"
   },
   {
     "module": "docentes",
     "slug": "area-de-ingles",
-    "title": "Área de Inglés",
+    "title": "Andrea Soto Cárdenas",
     "summary": "Situaciones de comunicación cotidiana para practicar el uso del idioma.",
-    "fields": {"cargo": "Equipo docente", "especialidad": "Inglés"},
+    "media": "perfil-demo-ingles.webp",
+    "fields": {"cargo": "Equipo docente", "especialidad": "Inglés", "alt": "Retrato ilustrativo de Andrea Soto Cárdenas"},
     "body": "<p>Las actividades combinan conversaciones breves, lectura y presentaciones. Los estudiantes practican en parejas y preparan producciones sobre temas de interés para el aula.</p>"
   },
   {

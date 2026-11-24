@@ -179,6 +179,7 @@ for module in comunicados eventos galeria documentos docentes administrativos di
     galeria) extra=(--form-string 'video=https://youtu.be/ABCDEFGHIJK' --form-string 'fecha_galeria=2025-03-02') ;;
     documentos) extra=(-F "media=@$state/example.pdf" --form-string 'categoria=Actas') ;;
     carrusel) extra=(-F 'media=@public/images/escudo.jpeg') ;;
+    directivos) extra=(--form-string 'cargo=Subdirección académica' --form-string 'especialidad=Matemática') ;;
     inicio) extra=(--form-string 'pilar1_titulo=Pilar de prueba' -F 'media=@public/images/escudo.jpeg'
       --form-string 'metrica4_valor=0' --form-string 'metrica4_etiqueta=Cifra sintética'
       --form-string 'metrica4_fecha=2026-01-02' --form-string 'metrica4_fuente=https://colegio.example/registro') ;;
@@ -208,6 +209,11 @@ for module in comunicados eventos galeria documentos docentes administrativos di
     contains 'Edición comunicados'
     expect 200 '/comunicados?aviso=general'
     absent 'Edición comunicados'
+  fi
+  if [[ "$module" == directivos ]]; then
+    expect 200 /directivos
+    contains '<p class="staff-role">Subdirección académica</p>'
+    contains '<p class="staff-subject">Matemática</p>'
   fi
   version=3
   if [[ "$module" == documentos ]]; then
@@ -249,7 +255,7 @@ for module in comunicados eventos galeria documentos docentes administrativos di
   mutate "$module" "$id" restore "$((version+1))"
   expect 404 "/$module/sintesis"
 done
-save 201 institucion 0 0 'Historia para prueba' historia
+save 201 institucion 0 0 'Historia para prueba' historia --form-string 'seccion=Identidad institucional'
 history=$(id_saved)
 mutate institucion "$history" publish 1
 expect 301 '/historia'
@@ -260,7 +266,7 @@ expect 200 /institucion
 contains '<details class="information-entry" name="informacion">'
 contains 'Historia para prueba'
 absent 'href="/institucion/historia"'
-save 201 institucion 0 0 'Guía de trámites de prueba' mesa-partes
+save 201 institucion 0 0 'Guía de trámites de prueba' mesa-partes --form-string 'seccion=Gestión institucional'
 guide=$(id_saved)
 expect 200 /mesa-partes
 absent 'Resumen Guía de trámites de prueba'
@@ -272,9 +278,10 @@ absent '/institucion/mesa-partes</loc>'
 [[ $(sql "SELECT count(*) FROM editorial_events WHERE content_id=$news AND action='publish-due'") == 1 ]]
 checks=$((checks+1))
 # Two published records make the public order observable and verify the set version.
-save 201 docentes 0 0 'Docente primera' docente-primera
+save 201 docentes 0 0 'Docente primera' docente-primera --form-string 'especialidad=Comunicación' \
+  --form-string 'alt=Foto de prueba' -F 'media=@public/images/escudo.jpeg'
 teacher_one=$(id_saved)
-save 201 docentes 0 0 'Docente segunda' docente-segunda
+save 201 docentes 0 0 'Docente segunda con un nombre completo de prueba' docente-segunda
 teacher_two=$(id_saved)
 mutate docentes "$teacher_one" publish 1
 mutate docentes "$teacher_two" publish 1
@@ -285,7 +292,10 @@ other=$(sql "SELECT id FROM content WHERE module='docentes' AND slug='sintesis'"
 expect 422 /admin/docentes/reordenar --data-urlencode "_csrf=$csrf" --data "complete=1&version=$set_version&positions[$teacher_one]=1&positions[$teacher_two]=1&positions[$other]=3"
 expect 303 /admin/docentes/reordenar --data-urlencode "_csrf=$csrf" --data "complete=1&version=$set_version&positions[$teacher_one]=1&positions[$teacher_two]=2&positions[$other]=3"
 expect 200 /docentes
-contains '<details class="information-entry" name="informacion">'
+contains '<article class="card staff-card">'
+contains '<p class="staff-role">Comunicación</p>'
+contains 'alt="Foto de prueba"'
+absent 'href="/docentes/docente-primera"'
 [[ $(grep -Fn 'Docente primera' "$response" | head -1 | cut -d: -f1) -lt $(grep -Fn 'Docente segunda' "$response" | head -1 | cut -d: -f1) ]]
 expect 409 /admin/docentes/reordenar --data-urlencode "_csrf=$csrf" --data "complete=1&version=$set_version&positions[$teacher_one]=2&positions[$teacher_two]=1&positions[$other]=3"
 

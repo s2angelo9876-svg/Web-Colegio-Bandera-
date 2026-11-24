@@ -372,14 +372,46 @@ a.icon-button { flex-shrink: 0; }
 .page-heading h1 { margin-block: .18rem .28rem; }
 .page-heading p:not(.breadcrumb) { color: var(--muted); margin: .45rem 0 0; }
 .public-heading { margin-block: 1rem 1.6rem; }
-.shell main:has(.information-list) { max-inline-size: 66rem; margin-inline: auto; }
+.compact-heading h1 { font-size: clamp(2rem, 5.5vw, 3.25rem); }
+.shell main:has(.information-list, .staff-directory) { max-inline-size: 66rem; margin-inline: auto; }
+.staff-directory-note { margin-block: 0 1rem; color: var(--muted); font-size: .88rem; }
+.staff-grid {
+    --portrait-size: clamp(5.8rem, 15vw, 8.25rem);
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--staff-column, 13rem)), 1fr));
+    grid-auto-rows: 1fr;
+    gap: clamp(.75rem, 1.8vw, 1.15rem);
+}
+.staff-card {
+    min-block-size: calc(var(--portrait-size) + 10.25rem);
+    padding: clamp(.9rem, 2.1vw, 1.4rem) clamp(.75rem, 1.4vw, 1.15rem);
+    text-align: center;
+}
+.staff-portrait {
+    display: grid;
+    place-items: center;
+    inline-size: var(--portrait-size);
+    aspect-ratio: 1;
+    margin: 0 auto .88rem;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    border-radius: .82rem;
+    background: var(--surface);
+    color: var(--muted);
+}
+.staff-photo { inline-size: 100%; block-size: 100%; object-fit: cover; object-position: center 38%; }
+.staff-portrait .icon { font-size: 1.9rem; }
+.staff-card :is(h2, h3) { font-size: clamp(.98rem, 1.8vw, 1.14rem); line-height: 1.3; letter-spacing: -.025em; text-wrap: balance; }
+.staff-card p { margin: .33rem 0 0; font-size: .9rem; line-height: 1.42; }
+.staff-role { color: var(--link); font-weight: 750; }
+.staff-subject { color: var(--muted); }
 .information-list { overflow-wrap: anywhere; }
-.institution-overview, .information-entries {
+.institution-overview, .information-entries, .institution-topics .information-group {
     background: var(--panel);
     border: 1px solid var(--border);
     border-radius: var(--radius);
 }
-.institution-overview { margin-block-end: clamp(1.5rem, 3.5vw, 2.6rem); }
+.institution-overview { margin-block-end: clamp(1rem, 2.7vw, 1.7rem); box-shadow: var(--shadow); }
 .institution-overview .information-body {
     display: grid;
     align-items: center;
@@ -390,8 +422,24 @@ a.icon-button { flex-shrink: 0; }
     grid-template-columns: minmax(0, 1fr) minmax(0, 36%);
 }
 .institution-overview h2 { margin-block-end: .55rem; font-size: clamp(1.5rem, 3vw, 2rem); }
-.information-group + .information-group { margin-block-start: clamp(1.4rem, 3vw, 2.15rem); }
-.information-group > h2 { font-size: clamp(1.16rem, 2vw, 1.5rem); margin-block-end: .65rem; }
+.institution-topics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+    align-items: start;
+    gap: clamp(.95rem, 2vw, 1.35rem);
+}
+.institution-topics .information-group { box-shadow: var(--shadow); }
+.institution-topics .information-group > h2 {
+    padding: .85rem clamp(1rem, 2vw, 1.4rem);
+    border-block-end: 1px solid var(--border);
+    border-radius: calc(var(--radius) - 1px) calc(var(--radius) - 1px) 0 0;
+    background: var(--surface);
+    font-size: 1.16rem;
+    line-height: 1.3;
+}
+.institution-topics .information-entries { border: 0; background: transparent; }
+.institution-topics .information-entry > summary { font-size: .94rem; }
+.institution-topics summary:focus-visible { outline-offset: -3px; }
 .information-entries > * + * { border-block-start: 1px solid var(--border); }
 .information-entry > summary, .information-title {
     padding: .85rem clamp(1rem, 2vw, 1.4rem);
@@ -672,6 +720,7 @@ dt + dd { min-inline-size: 0; }
 
 @media (max-width: 590px) {
     .shell { padding-top: .95rem; padding-bottom: 2rem; }
+    .staff-grid { --staff-column: 10rem; }
     .hero { grid-template-columns: minmax(0,1fr); }
     .hero-copy { padding: 1.45rem; }
     .hero-copy::before { margin-bottom: .9rem; }
@@ -699,6 +748,10 @@ dt + dd { min-inline-size: 0; }
     .record-icon { inline-size: 2rem; block-size: 2rem; }
     .record-state { grid-column: 2; }
     .records-panel .icon-button { grid-area: 1 / 3 / 3 / 4; }
+}
+
+@media (width < 364px) {
+    .staff-card { min-block-size: 13.25rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

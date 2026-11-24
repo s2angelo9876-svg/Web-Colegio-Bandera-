@@ -83,7 +83,7 @@ function published(?string $module, string $search = '', string $tag = '', ?stri
     if (in_array($module, ['noticias','comunicados','documentos'], true)) {
         $order = "$date DESC NULLS LAST,c.id DESC";
     }
-    return query('SELECT c.module,c.slug,r.*,rm.media_id,m.mime AS media_mime,m.width,m.height,
+    return query('SELECT c.module,c.slug,r.*,rm.media_id,m.mime AS media_mime,m.filename AS media_filename,m.width,m.height,
                     m.thumbnail IS NOT NULL AS has_thumbnail,octet_length(m.bytes) AS size_bytes,' . $date . ' AS publication_date
                   FROM content c JOIN revisions r ON r.id=(' . visibleRevision() . ')
                   LEFT JOIN revision_media rm ON rm.revision_id=r.id LEFT JOIN media m ON m.id=rm.media_id WHERE ' .
@@ -112,7 +112,8 @@ function saveRevision(string $module, int $id, array $session): array
     }
     $version = field('version', 12);
     if (preg_match('/^[\s\p{Z}\p{Cf}]*$/u', $title)) {
-        fail(422, 'Escribe un título.', 'title');
+        $message = in_array($module, ['directivos','docentes'], true) ? 'Escribe el nombre completo.' : 'Escribe un título.';
+        fail(422, $message, 'title');
     }
     if ($id === 0 && $slug === '') {
         $slug = rtrim(substr(editorialSlug($title), 0, 120), '-');
