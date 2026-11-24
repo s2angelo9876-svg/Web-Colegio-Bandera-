@@ -29,14 +29,14 @@ Use white on red. The pressed red is `#A31E2D`. Use `#FCEBEE` in light mode and 
 ## 3. Typography Rules
 
 - Use the self-hosted Manrope variable family for both surfaces. Use a system sans-serif fallback when the font is unavailable. Symbols use the self-hosted, subsetted Material Symbols Rounded family.
-- Set public display titles at 44–66 px, weight 800, line height 1.1 and letter spacing around −0.055 em. Give the title no more than 16 characters of line measure in the hero column.
+- Set public display titles on a responsive scale, with the home title at 40–74 px and section headings at 26–39 px. Use weight 800 and a tight line height for display titles. Limit the desktop home title to 37 rem and give paragraphs more line spacing than headings.
 - Set workspace titles at 32–51 px and group headings at 19 px, weight 800. Put metadata and breadcrumbs at 13–14 px. Keep general body text at 16 px, weight 500, with line height near 1.6. Limit long editorial prose to about 65 characters per line. Use tabular numerals for published dates and counts.
 - Use meaningful concise labels. Keep the school’s name intact and text-based for reading and search. Use an inline photo at type height in a campaign headline only when it illustrates that campaign. Move it into its own image region on mobile. The institutional homepage uses the campus in a dedicated image panel.
 
 ## 4. Component Stylings
 
 - **Buttons.** Give primary actions a red fill and white text. Use neutral outlines for preview, discard context and filter actions. Show a 1 px downward press on interaction. Use icons with labels on unclear actions and accessible labels on icon-only buttons.
-- **Cards.** Use 16 px corners and a quiet border. Give the feature image its own 16:9 container so a portrait or panorama never changes the grid height. Elevate the lead item and use compact text cards for supporting news. The CMS uses rows when people need to compare titles and states.
+- **Cards.** Use 16 px corners and a quiet border. Reserve image space so a portrait or panorama never changes the grid height as it loads. Render the lead news photo beside its title and summary on wider screens and stack them on phones. The CMS uses rows when people need to compare titles and states.
 - **Inputs.** Place labels above controls, in the same left alignment. Use 44 px minimum control height and a 10 px radius. Keep field validation attached to the relevant input and give the error summary a visible focus target.
 - **Editor.** Use separate surfaces for writing, metadata and files. At wide sizes the publication inspector sits to the right. Keep preview, save and publication status visible in the flow. Use a compact formatting toolbar with accessible names.
 - **Loading, empty and error states.** Use a layout-matched placeholder if data actually has to load. Show a small outlined symbol and a specific sentence when a list is empty. Provide an action if one is available. Use inline validation and a distinct retry message when data is unavailable.
@@ -44,7 +44,7 @@ Use white on red. The pressed red is `#A31E2D`. Use `#FCEBEE` in light mode and 
 
 ## 5. Layout Principles
 
-Use a content width of 1216 px with 16–48 px gutters. The hero has a 47/53 split, a navy copy area and a separate daylight photo. Align all copy to the left. The hero has one primary action. Follow it with shortcuts, recent news, and paired event and notice sections. Use the actual navigational landmarks and page hierarchy in subsequent screens.
+Use a content width of 1216 px with 16–48 px gutters. Run the campus photograph across the full desktop hero and place the left-aligned title, motto and primary action over a navy gradient. Stack the photo above a navy text panel on phones. Follow the hero with the shortcuts and place recent news beside the agenda and notices on wide screens. In Institución, pair the campus photo with the introduction and keep the grouped topics in native disclosures.
 
 Use CSS Grid for structural columns. Prefer a large lead story with smaller adjacent items to a row of identical feature cards. Leave structural gaps of 16–32 px and section gaps of 40–68 px. Use a navy sidebar around 240 px wide for the desktop CMS. Group administration modules by publication, institution and site configuration. Below 768 px, stack reading, shortcuts and editing sections into a single column. At widths up to 920 px, collapse the navigation into a labeled button and provide an accessible disclosure for CMS modules. Keep touch targets at least 44 px tall, and size empty or wide states without horizontal scrolling.
 

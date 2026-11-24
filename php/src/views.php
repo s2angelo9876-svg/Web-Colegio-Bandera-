@@ -161,13 +161,13 @@ function emptyState(string $icon = 'description', string $title = 'No hay public
     </div><?php
 }
 
-function listCards(array $rows, bool $showModule = false, int $headingLevel = 2): void
+function listCards(array $rows, bool $showModule = false, int $headingLevel = 2, string $gridClass = ''): void
 {
     if (!$rows) {
         emptyState('search', 'No hay contenido publicado que coincida.');
         return;
     }
-    ?><div class="cards"><?php foreach ($rows as $row): $fields = json_decode($row['fields'], true); ?>
+    ?><div class="cards<?= $gridClass === '' ? '' : ' ' . e($gridClass) ?>"><?php foreach ($rows as $row): $fields = json_decode($row['fields'], true); ?>
     <article class="card content-card">
         <?php if (str_starts_with($row['media_mime'] ?? '', 'image/')): ?>
           <div class="card-photo"><?php imageTag($row, $fields['alt'] ?? '', 'card-image'); ?></div>
@@ -180,9 +180,9 @@ function listCards(array $rows, bool $showModule = false, int $headingLevel = 2)
           <?php if (in_array($row['module'], ['noticias','comunicados','documentos'], true) && $row['publication_date']): ?>
             <time class="card-date" datetime="<?=e($row['publication_date'])?>"><?=e(publicationLabel($row['publication_date']))?></time>
           <?php endif ?>
+          <?php if (!empty($fields['fecha'])): ?><time class="card-date event-date" datetime="<?=e($fields['fecha'])?>"><?=uiIcon('calendar_month')?> <?=e(eventDateLabel($fields))?></time><?php endif ?>
+          <?php if (!empty($fields['fecha_galeria'])): ?><time class="card-date" datetime="<?=e($fields['fecha_galeria'])?>"><?=e(limaDisplay($fields['fecha_galeria']))?></time><?php endif ?>
           <h<?=$headingLevel?> class="card-title"><a href="/<?=e($row['module'])?>/<?=e($row['slug'])?>"><?=e($row['title'])?></a><?=uiIcon('arrow_outward')?></h<?=$headingLevel?>>
-          <?php if (!empty($fields['fecha'])): ?><p class="card-date"><?=uiIcon('calendar_month')?> <?=e(eventDateLabel($fields))?></p><?php endif ?>
-          <?php if (!empty($fields['fecha_galeria'])): ?><p class="card-date"><time datetime="<?=e($fields['fecha_galeria'])?>"><?=e(limaDisplay($fields['fecha_galeria']))?></time></p><?php endif ?>
           <?php if ($row['summary']): ?><p><?=e($row['summary'])?></p><?php endif ?>
         </div>
     </article>
@@ -227,6 +227,10 @@ function informationList(string $module, array $rows): void
 {
     $overview = null;
     $groups = [];
+    $sectionIcons = [
+        'Identidad institucional' => 'account_balance', 'Vida académica' => 'school',
+        'Gestión institucional' => 'account_tree', 'Tecnología educativa' => 'web',
+    ];
     foreach ($rows as $row) {
         $fields = json_decode($row['fields'], true) ?? [];
         if ($module === 'institucion' && $row['slug'] === 'nosotros') {
@@ -242,7 +246,7 @@ function informationList(string $module, array $rows): void
       <div<?= $module === 'institucion' ? ' class="institution-topics"' : '' ?>>
       <?php foreach ($groups as $section=>$entries): ?>
         <div class="information-group">
-          <?php if ($section !== ''): ?><h2><?=e($section)?></h2><?php endif ?>
+          <?php if ($section !== ''): ?><h2><?=uiIcon($sectionIcons[$section] ?? 'description')?> <?=e($section)?></h2><?php endif ?>
           <div class="information-entries">
             <?php foreach ($entries as [$row, $fields]): informationEntry($row, $fields); endforeach ?>
           </div>
@@ -419,8 +423,9 @@ function home(?array $settings, ?int $preview = null): void
     if (!empty($hero['media_id']) && !isset($hero['media_mime'])) {
         $hero += mediaInfo((int) $hero['media_id']);
     }
-    ?><section class="hero">
-      <div class="hero-copy">
+    ?><div class="home">
+    <section class="hero">
+      <div class="hero-copy home-inner">
         <h1><?=e($settings['title'] ?? 'Colegio Bandera del Perú')?></h1>
         <p><?=e(($fields['lema'] ?? '') ?: (($settings['summary'] ?? '') ?: 'Noticias, actividades y recursos para la comunidad educativa.'))?></p>
         <div class="hero-actions">
@@ -444,12 +449,12 @@ function home(?array $settings, ?int $preview = null): void
         $heroFields = json_decode($hero['fields'], true);
         imageTag($hero, ($heroFields['alt'] ?? '') ?: 'Imagen institucional', 'hero-image', $heroPreview, true);
       else: ?><img src="/images/frontis_colegio.webp"
-        srcset="/images/frontis_colegio-640.webp 640w, /images/frontis_colegio.webp 1360w" sizes="(min-width: 821px) 54vw, 100vw"
+        srcset="/images/frontis_colegio-640.webp 640w, /images/frontis_colegio.webp 1360w" sizes="100vw"
         alt="Fachada del colegio" width="1360" height="1020" fetchpriority="high"><?php endif ?>
       </div>
     </section>
-    <?php if ($settings === null): ?><p class="notice" role="status">La información de portada no está disponible temporalmente. <a href="/">Reintentar</a></p><?php endif ?>
-    <section class="home-section shortcut-section" aria-labelledby="accesos">
+    <?php if ($settings === null): ?><div class="home-inner"><p class="notice" role="status">La información de portada no está disponible temporalmente. <a href="/">Reintentar</a></p></div><?php endif ?>
+    <section class="shortcut-section" aria-labelledby="accesos"><div class="home-inner">
       <div class="section-head"><h2 id="accesos">Accesos rápidos</h2></div>
       <ul class="quick-grid">
       <?php foreach (['documentos','docentes','directivos','galeria'] as $key): ?>
@@ -458,40 +463,31 @@ function home(?array $settings, ?int $preview = null): void
       <?php if (!empty($fields['acceso_texto']) && !empty($fields['acceso_url'])): ?>
         <li><a href="<?=e($fields['acceso_url'])?>"><span class="quick-icon"><?=uiIcon('open_in_new')?></span><strong><?=e($fields['acceso_texto'])?></strong><?=uiIcon('arrow_outward')?></a></li>
       <?php endif ?></ul>
-    </section>
-    <?php if (!empty($settings['body'])): ?><div class="home-intro rich"><?= $settings['body'] ?></div><?php endif ?>
+    </div></section>
     <?php
     $news = homeSection(fn() => published('noticias', limit: 3));
     $notices = homeSection(fn() => published('comunicados', limit: 3));
     $events = homeSection(fn() => published('eventos', limit: 3));
-    $gallery = homeSection(fn() => published('galeria', limit: 3));
+    $gallery = homeSection(fn() => published('galeria', limit: 4));
     ?>
-    <section class="home-section home-news" aria-labelledby="novedades">
-      <div class="section-head"><h2 id="novedades">Noticias recientes</h2><a class="section-link" href="/noticias">Todas las noticias <?=uiIcon('arrow_forward')?></a></div>
-      <?php if ($news === null): ?><p class="notice" role="status">No fue posible cargar las noticias. <a href="/">Reintentar</a></p>
-      <?php elseif ($news): listCards($news, headingLevel: 3); else: emptyState('news', 'Todavía no hay noticias publicadas.'); endif ?>
-    </section>
-    <div class="overview-grid">
-      <?php foreach ([
-            ['comunicados','Comunicados','Ver avisos',$notices],
-            ['eventos','Próximos eventos','Ver calendario',$events]
-      ] as [$key,$title,$link,$rows]): ?>
-        <section class="overview-panel" aria-labelledby="inicio-<?=e($key)?>">
-          <div class="section-head"><h2 id="inicio-<?=e($key)?>"><?=e($title)?></h2></div>
-          <?php if ($rows === null): ?><p class="notice" role="status">Esta sección no está disponible. <a href="/">Reintentar</a></p>
-          <?php elseif ($rows): ?>
-            <ul class="overview-list"><?php foreach ($rows as $row): $data=json_decode($row['fields'], true); ?>
-                <li><span class="quick-icon"><?=uiIcon(moduleIcon($key))?></span><div>
-                  <a href="/<?=$key?>/<?=e($row['slug'])?>"><?=e($row['title'])?></a>
-                  <?php if ($key === 'eventos' && !empty($data['fecha'])): ?><small><?=e(eventDateLabel($data))?></small>
-                  <?php elseif ($row['publication_date']): ?><small><?=e(publicationLabel($row['publication_date']))?></small><?php endif ?>
-                </div></li>
-            <?php endforeach ?></ul>
-          <?php else: ?><p class="muted"><?= $key === 'eventos' ? 'Por ahora no hay actividades programadas.' : 'Por ahora no hay comunicados vigentes.' ?></p><?php endif ?>
-          <a class="section-link" href="/<?=$key?>"><?=e($link)?> <?=uiIcon('arrow_forward')?></a>
-        </section>
-      <?php endforeach ?>
+    <div class="home-inner home-newsroom">
+      <section class="home-news" aria-labelledby="novedades">
+        <div class="section-head"><h2 id="novedades">Noticias recientes</h2><a class="section-link" href="/noticias">Todas las noticias <?=uiIcon('arrow_forward')?></a></div>
+        <?php if ($news === null): ?><p class="notice" role="status">No fue posible cargar las noticias. <a href="/">Reintentar</a></p>
+        <?php elseif ($news): listCards($news, headingLevel: 3, gridClass: 'news-cards'); else: emptyState('news', 'Todavía no hay noticias publicadas.'); endif ?>
+      </section>
+      <div class="home-agenda">
+        <?php homeOverview('eventos', 'Próximos eventos', 'Ver calendario', $events); ?>
+        <?php homeOverview('comunicados', 'Comunicados', 'Ver avisos', $notices); ?>
+      </div>
     </div>
+    <?php homeFormation($settings['body'] ?? '', $fields, $gallery ?? []); ?>
+    <div class="home-inner home-bottom">
+    <?php if ($gallery): ?>
+      <section class="home-section home-gallery"><div class="section-head"><h2>Galería</h2><a class="section-link" href="/galeria">Ver galería <?=uiIcon('arrow_forward')?></a></div>
+        <?php listCards(array_slice($gallery, 0, 3), headingLevel: 3, gridClass: 'gallery-cards'); ?>
+      </section>
+    <?php elseif ($gallery === null): ?><p class="notice" role="status">No fue posible cargar la galería. <a href="/">Reintentar</a></p><?php endif ?>
     <?php if ($slides): ?>
     <section class="home-section" id="destacados"><div class="section-head"><h2>Destacados</h2></div><div class="slides" tabindex="0" aria-label="Tarjetas destacadas">
     <?php foreach ($slides as $slide): $data = json_decode($slide['fields'], true); ?>
@@ -503,13 +499,6 @@ function home(?array $settings, ?int $preview = null): void
     </article>
     <?php endforeach ?></div></section>
     <?php elseif ($slides === null): ?><p class="notice" role="status">No fue posible cargar los destacados. <a href="/">Reintentar</a></p><?php endif ?>
-    <?php if ($gallery): ?>
-      <section class="home-section"><div class="section-head"><h2>Galería</h2><a class="section-link" href="/galeria">Ver galería <?=uiIcon('arrow_forward')?></a></div><?php listCards($gallery, headingLevel: 3); ?></section>
-    <?php elseif ($gallery === null): ?><p class="notice" role="status">No fue posible cargar la galería. <a href="/">Reintentar</a></p><?php endif ?>
-    <?php $pillars = array_filter([1,2,3], fn(int $i) => !empty($fields["pilar{$i}_titulo"])); ?>
-    <?php if ($pillars): ?><section class="home-section"><div class="section-head"><h2>Formación</h2></div><div class="cards"><?php foreach ($pillars as $i): ?>
-      <article class="card card-body"><h3><?=e($fields["pilar{$i}_titulo"])?></h3><p><?=e($fields["pilar{$i}_desc"] ?? '')?></p></article>
-    <?php endforeach ?></div></section><?php endif ?>
     <?php $hasMetrics = false; for ($i=1; $i<=4; $i++):
         $value = $fields["metrica{$i}_valor"] ?? '';
         $caption = $fields["metrica{$i}_etiqueta"] ?? '';
@@ -519,18 +508,76 @@ function home(?array $settings, ?int $preview = null): void
         <p><strong><?=e($value)?></strong> <?=e($caption)?>
         <a href="<?=e($source)?>">Fuente <?=e($fields["metrica{$i}_fecha"] ?? '')?></a></p>
     <?php endfor; if ($hasMetrics) echo '</div>'; ?>
-    <?php institutionalContact($fields);
+    <?php institutionalContact($fields, showDesk: true); ?>
+    </div></div><?php
 }
 
-function institutionalContact(array $fields, string $title = 'Contacto'): void
+function homeOverview(string $module, string $title, string $link, ?array $rows): void
+{
+    $months = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    ?><section class="overview-panel" aria-labelledby="inicio-<?=e($module)?>">
+      <h2 id="inicio-<?=e($module)?>"><?=e($title)?></h2>
+      <?php if ($rows === null): ?><p class="notice" role="status">Esta sección no está disponible. <a href="/">Reintentar</a></p>
+      <?php elseif ($rows): ?>
+        <ul class="overview-list"><?php foreach ($rows as $row):
+            $data = json_decode($row['fields'], true);
+            $event = $module === 'eventos' && !empty($data['fecha']);
+            ?>
+            <li>
+              <?php if ($event):
+                  $date = new DateTimeImmutable($data['fecha'], new DateTimeZone('America/Lima')); ?>
+                <time class="overview-date" datetime="<?=e($date->format('Y-m-d'))?>" aria-hidden="true"><span><?=e($months[(int) $date->format('n') - 1])?></span><strong><?=e($date->format('d'))?></strong></time>
+              <?php else: ?><span class="quick-icon"><?=uiIcon(moduleIcon($module))?></span><?php endif ?>
+              <div>
+                <a href="/<?=e($module)?>/<?=e($row['slug'])?>"><?=e($row['title'])?></a>
+                <?php if ($event): ?><small><?=e(eventDateLabel($data))?></small>
+                <?php elseif ($row['publication_date']): ?><small><?=e(publicationLabel($row['publication_date']))?></small><?php endif ?>
+              </div>
+            </li>
+        <?php endforeach ?></ul>
+      <?php else: ?><p class="muted"><?= $module === 'eventos' ? 'Por ahora no hay actividades programadas.' : 'Por ahora no hay comunicados vigentes.' ?></p><?php endif ?>
+      <a class="section-link" href="/<?=e($module)?>"><?=e($link)?> <?=uiIcon('arrow_forward')?></a>
+    </section><?php
+}
+
+function homeFormation(string $intro, array $fields, array $gallery): void
+{
+    $pillars = array_filter([1,2,3], fn(int $i) => !empty($fields["pilar{$i}_titulo"]));
+    if ($intro === '' && !$pillars) {
+        return;
+    }
+    // Prefer the extra gallery item so its photo is not repeated in the three visible cards.
+    $image = array_find(array_reverse($gallery), fn(array $row) => str_starts_with($row['media_mime'] ?? '', 'image/'));
+    ?><section class="home-formation"><div class="home-inner">
+      <?php if ($image):
+          $data = json_decode($image['fields'], true);
+          imageTag($image, ($data['alt'] ?? '') ?: $image['title'], 'formation-image',
+              sizes: '(max-width: 675px) 100vw, (max-width: 1280px) 46vw, 570px');
+      endif ?>
+      <div class="formation-copy">
+        <?php if ($pillars): ?><h2>Formación</h2><?php endif ?>
+        <?php if ($intro !== ''): ?><div class="home-intro rich"><?= $intro ?></div><?php endif ?>
+        <?php if ($pillars): ?><div class="formation-pillars">
+          <?php foreach ($pillars as $i): ?><div>
+            <h3><?=e($fields["pilar{$i}_titulo"])?></h3>
+            <?php if (!empty($fields["pilar{$i}_desc"])): ?><p><?=e($fields["pilar{$i}_desc"])?></p><?php endif ?>
+          </div><?php endforeach ?>
+        </div><?php endif ?>
+      </div>
+    </div></section><?php
+}
+
+function institutionalContact(array $fields, string $title = 'Contacto', bool $showDesk = false): void
 {
     if (array_filter(array_intersect_key($fields, array_flip(['direccion','correo','telefono','red_social'])))): ?>
-      <section class="home-section contact-section"><h2><?=e($title)?></h2><address>
+      <section class="home-section contact-section"><div><h2><?=e($title)?></h2><address>
       <?php foreach (['direccion'=>'location_on','correo'=>'mail','telefono'=>'call'] as $key=>$icon): if (!empty($fields[$key])): ?>
         <span><?=uiIcon($icon)?> <?=e($fields[$key])?></span>
       <?php endif; endforeach ?>
       <?php if (!empty($fields['red_social'])): ?><a href="<?=e($fields['red_social'])?>">Red social institucional <?=uiIcon('arrow_outward')?></a><?php endif ?>
-      </address></section>
+      </address></div>
+      <?php if ($showDesk): ?><a class="button" href="/mesa-partes">Mesa de Partes <?=uiIcon('arrow_forward')?></a><?php endif ?>
+      </section>
     <?php endif;
 }
 

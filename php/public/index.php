@@ -521,14 +521,13 @@ function publicRoute(string $path, array $session): void
             $rows = published($module, $search, $tag, limit: 25, offset: ($page-1)*24, filters: $filters);
             layout($label, function () use ($label,$tag,$rows,$module,$page,$filters,$search): void {
                 $staff = in_array($module, ['directivos','docentes'], true);
-                $compact = $staff || $module === 'institucion';
-                ?><div class="page-heading public-heading<?= $compact ? ' compact-heading' : '' ?>">
+                ?><div class="page-heading public-heading<?= $staff ? ' compact-heading' : '' ?>">
                     <p class="breadcrumb"><a href="/">Inicio</a><?=uiIcon('chevron_right')?> <?=e($label)?></p>
                     <div class="heading-row"><h1><?=e($label)?></h1>
                     <?php if ($module === 'noticias'): ?><a class="button secondary" href="/tags"><?=uiIcon('label')?> Ver etiquetas</a><?php endif ?></div>
                 </div><?php
                 catalogFilters($module, $filters, $search, $tag);
-                if ($tag !== '') echo '<h2>Etiqueta ' . e($tag) . '</h2>';
+                if ($tag !== '') echo '<h2 class="catalog-heading">Etiqueta ' . e($tag) . '</h2>';
                 if ($module === 'eventos' && $filters['mes'] !== '') {
                     eventCalendar($filters['mes'], array_slice($rows, 0, 24));
                 } elseif ($staff) {
@@ -536,7 +535,13 @@ function publicRoute(string $path, array $session): void
                 } elseif (in_array($module, ['institucion','administrativos'], true)) {
                     informationList($module, array_slice($rows, 0, 24));
                 } else {
-                    listCards(array_slice($rows, 0, 24), headingLevel: $tag === '' ? 2 : 3);
+                    $gridClass = match ($module) {
+                        'noticias' => 'news-cards',
+                        'eventos' => 'event-cards',
+                        'galeria' => 'gallery-cards',
+                        default => '',
+                    };
+                    listCards(array_slice($rows, 0, 24), headingLevel: $tag === '' ? 2 : 3, gridClass: $gridClass);
                 }
                 paginate('/' . $module, array_filter($filters + ['etiqueta'=>$tag,'q'=>$search], fn($value)=>$value !== ''),
                     $page, count($rows)>24);

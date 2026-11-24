@@ -23,6 +23,15 @@ with sync_playwright() as playwright:
     for width in (390, 1201, 1440):
         page.set_viewport_size({"width": width, "height": 900})
         page.goto(origin)
+        hero = page.locator("main .hero")
+        assert hero.evaluate("element => element.offsetWidth === window.innerWidth")
+        photo = hero.locator(".hero-visual").bounding_box()
+        copy = hero.locator(".hero-copy").bounding_box()
+        assert photo and copy
+        if width == 390:
+            assert photo["y"] + photo["height"] <= copy["y"] + 1
+        else:
+            assert abs(photo["y"] - copy["y"]) < 1
         primary = page.get_by_role("navigation", name="Principal")
         if width == 390:
             page.get_by_role("button", name="Menú").press("Enter")
