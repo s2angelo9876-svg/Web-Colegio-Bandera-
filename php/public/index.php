@@ -6,7 +6,7 @@ $method = $_SERVER['REQUEST_METHOD'];
 if (PHP_SAPI === 'cli-server' && getenv('COLEGIO_ENV') !== 'production'
     && in_array($path, [
         '/site.css','/navigation.css','/site-start.js','/site.js','/assets/manrope.woff2','/assets/symbols.woff2',
-        '/images/escudo.jpeg','/images/frontis_colegio.webp','/images/frontis_colegio-640.webp',
+        '/images/escudo.jpeg','/images/escudo.webp','/images/frontis_colegio.webp','/images/frontis_colegio-640.webp',
         '/images/institucion/identidad.webp','/images/institucion/academica.webp',
         '/images/institucion/gestion.webp','/images/institucion/tecnologia.webp',
     ], true)
@@ -68,6 +68,7 @@ try {
     if ($path === '/tema.css') {
         requireMethod($read, true);
         portalThemeResponse($session);
+        if (!$protected) revalidatePublic(hash('sha256', ob_get_contents()));
     } elseif ($path === '/admin/ingresar') {
         header('X-Robots-Tag: noindex, nofollow');
         if (!$read) {
@@ -108,8 +109,11 @@ try {
     } else {
         requireMethod($read, true);
         publicRoute($path, $session);
+        if (!$protected && $path !== '/buscar' && !isset($_GET['q']) && http_response_code() === 200) {
+            revalidatePublic(hash('sha256', ob_get_contents()));
+        }
     }
-    if ($method === 'HEAD') {
+    if ($method === 'HEAD' || http_response_code() === 304) {
         ob_end_clean();
     } else {
         ob_end_flush();
@@ -230,6 +234,7 @@ function adminRoute(string $path, bool $read, array $user, bool $json): void
                 // The failed attempt still belongs to the submitted base revision.
                 $row['version'] = is_string($_POST['version'] ?? null) ? $_POST['version'] : '';
                 $row['remove_media'] = ($_POST['remove_media'] ?? '') === '1';
+                $row['unsaved'] = true;
                 http_response_code($error->getCode());
                 layout($label, fn() => editForm($module, $id, $row, $user, $error), $user, current: $module);
                 return;
@@ -261,7 +266,7 @@ function adminRoute(string $path, bool $read, array $user, bool $json): void
         $trash = ($_GET['papelera'] ?? '') === '1';
         $search = field('q', 200, $_GET);
         $state = field('estado', 12, $_GET);
-        if (!in_array($state, ['', 'borrador', 'publicado', 'programado'], true)) {
+        if (!in_array($state, ['', 'borrador', 'publicado', 'programado', 'pendiente'], true)) {
             fail(422, 'Estado editorial desconocido.');
         }
         $visible = '(' . visibleRevision() . ')';
@@ -271,10 +276,12 @@ function adminRoute(string $path, bool $read, array $user, bool $json): void
             $where[] = 'strpos(lower(r.title),lower(?))>0';
             $args[] = $search;
         }
+        $draft = "c.working IS DISTINCT FROM $visible AND c.working IS DISTINCT FROM c.scheduled";
         $stateFilter = match ($state) {
             'borrador' => "$visible IS NULL AND (c.publish_at IS NULL OR c.publish_at<=now())",
             'publicado' => "$visible IS NOT NULL",
             'programado' => 'c.publish_at>now()',
+            'pendiente' => "($visible IS NOT NULL OR c.publish_at>now()) AND $draft",
             default => '',
         };
         if (!$trash && $stateFilter !== '') {
@@ -282,7 +289,7 @@ function adminRoute(string $path, bool $read, array $user, bool $json): void
         }
         $from = ' FROM content c JOIN revisions r ON r.id=c.working WHERE ' . implode(' AND ', $where);
         $total = (int) query('SELECT count(*)' . $from, $args)->fetchColumn();
-        $rows = query("SELECT c.id,c.position,$visible AS visible,c.publish_at>now() AS future,r.title" . $from .
+        $rows = query("SELECT c.id,c.position,$visible AS visible,c.publish_at>now() AS future,$draft AS draft,r.title" . $from .
             ' ORDER BY c.position,c.id DESC LIMIT 20 OFFSET ?', [...$args, ($page-1)*20])->fetchAll(PDO::FETCH_ASSOC);
         layout($label, function () use ($base,$label,$rows,$trash,$module,$user,$total,$page,$search,$state): void {
             ?><div class="page-heading">
@@ -301,7 +308,7 @@ function adminRoute(string $path, bool $read, array $user, bool $json): void
                 <?php if ($trash): ?><input type="hidden" name="papelera" value="1"><?php endif ?>
                 <label class="search-field">Buscar por título <input name="q" type="search" maxlength="200" value="<?=e($search)?>"></label>
                 <?php if (!$trash): ?><label>Estado
-                  <?php selectOptions('estado', [''=>'Todos','borrador'=>'Borradores','publicado'=>'Publicados','programado'=>'Programados'], $state); ?>
+                  <?php selectOptions('estado', [''=>'Todos','borrador'=>'Borradores','publicado'=>'Publicados','programado'=>'Programados','pendiente'=>'Con borrador pendiente'], $state); ?>
                 </label><?php endif ?>
                 <button class="secondary"><?=uiIcon('filter_list')?> Filtrar</button>
             </form>
@@ -314,7 +321,8 @@ function adminRoute(string $path, bool $read, array $user, bool $json): void
                     <a class="record-title" href="<?=e($base . '/' . $row['id'])?>"><?=e($row['title'])?></a>
                     <div class="record-state"><?php statusChip($trash ? 'En papelera' : ($row['visible'] ? 'Publicado' : ($row['future'] ? 'Programado' : 'Borrador')),
                         $trash ? 'alert' : ($row['visible'] ? 'success' : ($row['future'] ? 'planned' : ''))); ?>
-                      <?php if ($row['future'] && !$trash && $row['visible']): ?><small>Con revisión programada</small><?php endif ?></div>
+                      <?php if ($row['future'] && !$trash && $row['visible']): ?><small>Con revisión programada</small><?php endif ?>
+                      <?php if ($row['draft'] && !$trash && ($row['visible'] || $row['future'])): ?><small>Borrador pendiente</small><?php endif ?></div>
                     <a class="icon-button" href="<?=e($base . '/' . $row['id'])?>" aria-label="Editar <?=e($row['title'])?>" title="Editar"><?=uiIcon('edit')?></a>
                   </li>
                 <?php endforeach ?></ul>
@@ -361,6 +369,13 @@ function adminRoute(string $path, bool $read, array $user, bool $json): void
                 redirect($base . '/' . $existing);
             }
             $row = ['slug'=>$key, 'title'=>$definition['name']];
+        } elseif ($item === 'nuevo' && $module === 'documentos' && ($_GET['fut'] ?? '') === '1') {
+            $existing = query("SELECT id FROM content WHERE module='documentos' AND slug=?", [FUT_DOCUMENT_SLUG])->fetchColumn();
+            if ($existing) {
+                redirect($base . '/' . $existing);
+            }
+            $row = ['slug'=>FUT_DOCUMENT_SLUG, 'title'=>portalText('pagina-mesa-partes','fut_titulo'),
+                'fields'=>json_encode(['categoria'=>'Formularios'], JSON_THROW_ON_ERROR)];
         } else {
             $row = $item === 'nuevo' ? [] : editorRow($module, $id);
         }
@@ -438,6 +453,16 @@ function publicRoute(string $path, array $session): void
     if ($path === '/mesa-partes/fut') {
         downloadFut();
     }
+    if ($path === '/privacidad') {
+        $presentation = portalPage('privacidad');
+        layout($presentation['titulo'], function () use ($presentation): void {
+            publicHeading($presentation['titulo'], custom: 'pagina-privacidad');
+            if ($presentation['vigencia_fecha'] !== ''): ?>
+              <p class="muted">Vigente desde <time datetime="<?=e($presentation['vigencia_fecha'])?>"><?=e(limaDisplay($presentation['vigencia_fecha']))?></time></p>
+            <?php endif;
+        }, description: $presentation['meta'], canonical: $origin ? $origin . $path : '', current: 'privacidad');
+        return;
+    }
     if ($path === '/robots.txt') {
         header('Content-Type: text/plain; charset=utf-8');
         echo "User-agent: *\nDisallow: /admin/\n";
@@ -447,8 +472,10 @@ function publicRoute(string $path, array $session): void
     if ($path === '/sitemap.xml' && $origin) {
         header('Content-Type: application/xml; charset=utf-8');
         echo '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
-        echo '<url><loc>' . e($origin . '/') . '</loc></url>';
-        echo '<url><loc>' . e($origin . '/mesa-partes') . '</loc></url>';
+        $listings = array_diff(array_keys(modules()), ['inicio','carrusel','portal']);
+        foreach (['/', '/mesa-partes', '/privacidad', '/tags', ...array_map(fn($module) => '/' . $module, $listings)] as $listing) {
+            echo '<url><loc>' . e($origin . $listing) . '</loc></url>';
+        }
         $urls = query("SELECT c.module,c.slug,r.created_at FROM content c JOIN revisions r ON r.id=(" . visibleRevision() . ")
                        WHERE c.deleted_at IS NULL AND c.module NOT IN ('inicio','carrusel','portal')
                          AND NOT (c.module='institucion' AND c.slug='mesa-partes') ORDER BY c.id");
@@ -493,6 +520,7 @@ function publicRoute(string $path, array $session): void
     }
     $page = pageNumber();
     if ($path === '/buscar') {
+        header('X-Robots-Tag: noindex, follow');
         $search = field('q', 200, $_GET);
         $presentation = portalPage('buscar');
         layout($presentation['titulo'], function () use ($search,$page,$presentation): void {
@@ -502,8 +530,17 @@ function publicRoute(string $path, array $session): void
             <button class="primary"><?=uiIcon('search')?> <?=e($presentation['boton'])?></button></form>
             <?php if ($search !== ''): ?><h2 class="catalog-heading"><?=e($presentation['resultados'])?></h2><?php
                 $limit = (int) $presentation['cantidad'];
-                $rows = published(null, $search, limit: $limit + 1, offset: ($page-1)*$limit);
-                listCards(array_slice($rows, 0, $limit), showModule: true, headingLevel: 3, emptyMessage: $presentation['vacio']);
+                $matchesFut = preg_match('/(?:^|-)(?:fut|formulario-unico-de-tramite|mesa-de-partes|mesa-partes)(?:-|$)/D', editorialSlug($search)) === 1;
+                $rows = published(null, $search, limit: $limit + 1, offset: ($page-1)*$limit, filters: ['fut_result'=>$matchesFut]);
+                $fut = $page === 1 && $matchesFut;
+                if ($fut) {
+                    futSearchResult($presentation);
+                }
+                if ($rows) {
+                    listCards(array_slice($rows, 0, $limit), showModule: true, headingLevel: 3);
+                } elseif (!$fut) {
+                    searchEmptyState($presentation);
+                }
                 paginate('/buscar', ['q'=>$search], $page, count($rows) > $limit);
             endif;
         }, description: $presentation['meta'], current: 'buscar');
@@ -562,7 +599,7 @@ function publicRoute(string $path, array $session): void
                 if ($tag !== '') echo '<h2 class="catalog-heading">' . e(portalText('textos','tema')) . ' ' . e($tag) . '</h2>';
                 $items = array_slice($rows, 0, $limit);
                 if ($module === 'eventos' && $filters['mes'] !== '') {
-                    eventCalendar($filters['mes'], $items);
+                    eventCalendar($filters['mes'], $items, $search, $tag);
                 } elseif ($staff) {
                     staffDirectory($module, $items, $tag === '' ? 2 : 3);
                 } elseif ($module === 'institucion') {
@@ -593,7 +630,7 @@ function publicFilters(string $module): array
     $keys = match ($module) {
         'galeria' => ['tipo'=>5,'anio'=>4],
         'documentos' => ['categoria'=>255,'anio'=>4],
-        'comunicados' => ['aviso'=>15],
+        'comunicados' => ['aviso'=>15,'vigencia'=>8],
         'eventos' => ['periodo'=>12,'mes'=>7],
         default => [],
     };
@@ -604,6 +641,7 @@ function publicFilters(string $module): array
     if (!in_array($filters['tipo'] ?? '', ['', 'foto', 'video'], true)
         || (!empty($filters['anio']) && !preg_match('/^[0-9]{4}$/D', $filters['anio']))
         || (!empty($filters['aviso']) && !isset(communicationTypes()[$filters['aviso']]))
+        || !in_array($filters['vigencia'] ?? '', ['', 'vigentes', 'vencidos'], true)
         || !in_array($filters['periodo'] ?? '', ['', 'proximos', 'anteriores'], true)
         || (!empty($filters['mes']) && !preg_match('/^(?!0000)[0-9]{4}-(?:0[1-9]|1[0-2])$/D', $filters['mes']))) {
         fail(422, 'Revisa los filtros del catálogo.');

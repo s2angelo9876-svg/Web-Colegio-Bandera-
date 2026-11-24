@@ -57,7 +57,7 @@ tr -d '\r' < "$state/headers" | grep -Fxi "Location: $origin/noticias?pagina=1" 
 "${secure[@]}" -f -D "$state/headers" -o /dev/null "$origin/"
 grep -qi '^strict-transport-security: max-age=31536000' "$state/headers"
 grep -qi '^content-security-policy:' "$state/headers"
-for asset in /site.css /navigation.css /site-start.js /assets/manrope.woff2 /images/escudo.jpeg; do
+for asset in /site.css /navigation.css /site-start.js /assets/manrope.woff2 /images/escudo.webp; do
     "${secure[@]}" -f -o /dev/null "$origin$asset"
 done
 "${stack[@]}" exec -T edge test ! -e /srv/public/index.php
@@ -70,11 +70,28 @@ for flag in secure httponly samesite=lax; do
 done
 csrf=$(sed -n 's/.*name="_csrf" value="\([a-f0-9]*\)".*/\1/p' "$state/login")
 [[ ${#csrf} == 64 ]]
+[[ $("${secure[@]}" -b "$state/cookies" -o /dev/null -w '%{http_code}' \
+    -H "Origin: $origin" --data-urlencode "_csrf=$csrf" --data-urlencode 'username=admin' \
+    --data-urlencode "password@$state/admin-password" "$origin/admin/ingresar") == 401 ]]
+"${stack[@]}" run --rm --no-deps -T migrate php > "$state/otp" <<'PHP'
+<?php
+require 'src/bootstrap.php';
+require 'src/security.php';
+$id = (int) query("SELECT id FROM accounts WHERE username='admin'")->fetchColumn();
+$secret = random_bytes(20);
+query('UPDATE accounts SET mfa_secret=?,mfa_last_step=0 WHERE id=?', [protectMfaSecret($secret, $id), $id]);
+echo mfaCode($secret, intdiv(time(), 30));
+PHP
 [[ $("${secure[@]}" -b "$state/cookies" -c "$state/cookies" -o /dev/null -w '%{http_code}' \
     -H "Origin: $origin" --data-urlencode "_csrf=$csrf" --data-urlencode 'username=admin' \
-    --data-urlencode "password@$state/admin-password" "$origin/admin/ingresar") == 303 ]]
+    --data-urlencode "password@$state/admin-password" --data-urlencode "otp@$state/otp" "$origin/admin/ingresar") == 303 ]]
 "${secure[@]}" -f -b "$state/cookies" -o "$state/panel" "$origin/admin"
 grep -Fq 'Panel de contenidos' "$state/panel"
+"${secure[@]}" -f -c "$state/replay" -o "$state/login" "$origin/admin/ingresar"
+replay_csrf=$(sed -n 's/.*name="_csrf" value="\([a-f0-9]*\)".*/\1/p' "$state/login")
+[[ $("${secure[@]}" -b "$state/replay" -o /dev/null -w '%{http_code}' \
+    -H "Origin: $origin" --data-urlencode "_csrf=$replay_csrf" --data-urlencode 'username=admin' \
+    --data-urlencode "password@$state/admin-password" --data-urlencode "otp@$state/otp" "$origin/admin/ingresar") == 401 ]]
 "${secure[@]}" -f -b "$state/cookies" -o "$state/editor" "$origin/admin/noticias/nuevo"
 csrf=$(sed -n 's/.*name="_csrf" value="\([a-f0-9]*\)".*/\1/p' "$state/editor" | head -1)
 [[ ${#csrf} == 64 ]]
@@ -111,6 +128,8 @@ $privileges = query("SELECT current_user='colegio_app'
     AND NOT has_table_privilege(current_user,'editorial_events','UPDATE,DELETE,TRUNCATE')
     AND NOT has_table_privilege(current_user,'schema_migrations','INSERT,UPDATE,DELETE')
     AND NOT has_column_privilege(current_user,'accounts','role','UPDATE')
+    AND NOT has_column_privilege(current_user,'accounts','mfa_secret','UPDATE')
+    AND has_column_privilege(current_user,'accounts','mfa_last_step','UPDATE')
     AND has_column_privilege(current_user,'accounts','password_hash','UPDATE')")->fetchColumn();
 exit($privileges ? 0 : 1);
 PHP

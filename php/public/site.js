@@ -15,8 +15,12 @@ document.addEventListener('click', (event) => {
 });
 sizeMenu();
 
-const textarea = document.querySelector('#body, textarea[data-rich]');
-if (textarea) {
+function editorLink(value) {
+    return typeof value === 'string' && (value.startsWith('https://') ||
+        /^(?:\/(?!\/)[^\s\\<>"]*|#[a-zA-Z0-9_-]+)$/.test(value));
+}
+
+for (const textarea of document.querySelectorAll('#body, textarea[data-rich]')) {
     const editor = document.createElement('div');
     editor.className = 'rich editable';
     editor.contentEditable = 'true';
@@ -43,7 +47,7 @@ if (textarea) {
         }
         const href = node.getAttribute('href');
         for (const attribute of [...node.attributes]) node.removeAttribute(attribute.name);
-        if (node.tagName === 'A' && href?.startsWith('https://')) node.setAttribute('href', href);
+        if (node.tagName === 'A' && editorLink(href)) node.setAttribute('href', href);
     }
     for (const obsolete of fragment.querySelectorAll('strike')) {
         const mark = document.createElement('s');
@@ -79,8 +83,8 @@ if (textarea) {
         glyph.textContent = symbol;
         button.append(glyph);
         button.addEventListener('click', () => {
-            const argument = command === 'createLink' ? prompt('Dirección HTTPS del enlace') : value;
-            if (command === 'createLink' && !argument?.startsWith('https://')) return;
+            const argument = command === 'createLink' ? prompt('Ruta del portal o dirección HTTPS') : value;
+            if (command === 'createLink' && !editorLink(argument)) return;
             editor.focus();
             if (selection && editor.contains(selection.startContainer)) {
                 getSelection().removeAllRanges();
@@ -110,14 +114,16 @@ if (textarea) {
         const status = document.querySelector('#save-status');
         let timer;
         let busy = false;
-        let pending = false;
+        let pending = form.hasAttribute('data-unsaved');
         let stopped = false;
         let navigating = false;
         const resume = form.querySelector('[data-resume]');
         const actions = [...document.querySelectorAll('.actions button')];
+        const revision = document.querySelector('[data-pending-revision]');
         function lock(value) {
             for (const button of actions) button.disabled = value;
         }
+        lock(pending);
         async function autosave() {
             if (!form.checkValidity() || busy || stopped) return;
             if (form.elements.media.files.length || form.elements.remove_media?.checked) {
@@ -138,6 +144,7 @@ if (textarea) {
                 }
                 form.elements.version.value = result.data.version;
                 for (const version of document.querySelectorAll('.actions [name=version]')) version.value = result.data.version;
+                if (revision) revision.hidden = false;
                 status.textContent = 'Borrador guardado.';
                 if (!pending) lock(false);
             } catch (error) {
@@ -160,6 +167,7 @@ if (textarea) {
             if (busy) {
                 event.preventDefault();
                 status.textContent = 'Espera a que termine el autoguardado.';
+                return;
             }
             clearTimeout(timer);
             navigating = true;
@@ -190,15 +198,50 @@ if (textarea) {
                 event.returnValue = '';
             }
         });
+        addEventListener('pageshow', () => { navigating = false; });
     }
 }
 
 document.querySelector('[data-form-error]')?.focus();
 
-document.querySelector('[data-portal-editor]')?.addEventListener('input', () => {
-    document.querySelector('#save-status').textContent = 'Cambios pendientes de guardar.';
-    for (const button of document.querySelectorAll('.publication-panel button')) button.disabled = true;
-});
+const manualEditor = document.querySelector('[data-manual-editor]');
+if (manualEditor) {
+    let dirty = false;
+    let submitting = false;
+    const markDirty = () => {
+        if (dirty) return;
+        dirty = true;
+        document.querySelector('#save-status').textContent = 'Cambios pendientes de guardar.';
+        for (const button of document.querySelectorAll('.publication-panel button')) button.disabled = true;
+    };
+    if (manualEditor.hasAttribute('data-unsaved')) markDirty();
+    manualEditor.addEventListener('input', markDirty);
+    manualEditor.addEventListener('change', markDirty);
+    manualEditor.addEventListener('submit', () => { submitting = true; });
+    addEventListener('pageshow', () => { submitting = false; });
+    addEventListener('beforeunload', (event) => {
+        if (dirty && !submitting) {
+            event.preventDefault();
+            event.returnValue = '';
+        }
+    });
+}
+
+if (document.querySelector('.institution-topic-option')) {
+    const selectTopic = () => {
+        const topic = document.getElementById(location.hash.slice(1));
+        if (!topic?.matches('.institution-topic-option')) return;
+        topic.checked = true;
+        topic.closest('.institution-feature').scrollIntoView({ block: 'start' });
+    };
+    selectTopic();
+    addEventListener('hashchange', selectTopic);
+    document.querySelector('.institution-information').addEventListener('change', (event) => {
+        if (event.target.matches('.institution-topic-option')) {
+            history.replaceState(history.state, '', '#' + event.target.id);
+        }
+    });
+}
 
 for (const editor of document.querySelectorAll('[data-link-editor]')) {
     const rows = editor.querySelector('[data-link-rows]');
@@ -294,7 +337,7 @@ for (const control of document.querySelectorAll('[data-video-id]')) {
         const player = document.createElement('iframe');
         player.className = 'video';
         player.src = 'https://www.youtube-nocookie.com/embed/' + control.dataset.videoId;
-        player.title = button.dataset.videoTitle;
+        player.title = control.dataset.videoTitle;
         player.referrerPolicy = 'strict-origin-when-cross-origin';
         player.allowFullscreen = true;
         control.replaceWith(player);

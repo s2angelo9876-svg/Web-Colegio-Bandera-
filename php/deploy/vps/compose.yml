@@ -12,6 +12,7 @@ x-app-environment: &app-environment
   COLEGIO_DSN: "pgsql:host=/var/run/postgresql;dbname=colegio_php;connect_timeout=3"
   COLEGIO_DB_USER: colegio_app
   COLEGIO_DB_PASSWORD_FILE: /run/secrets/db_app
+  COLEGIO_MFA_KEY_FILE: /run/secrets/mfa_key
 
 x-php: &php
   image: colegio-php-vps:local
@@ -59,7 +60,7 @@ services:
     <<: *php
     restart: unless-stopped
     networks: [application]
-    secrets: [db_app]
+    secrets: [db_app, mfa_key]
     depends_on:
       migrate:
         condition: service_completed_successfully
@@ -67,7 +68,7 @@ services:
   migrate:
     <<: *php
     network_mode: none
-    secrets: [db_migrator]
+    secrets: [db_migrator, mfa_key]
     environment:
       <<: *app-environment
       COLEGIO_DB_USER: colegio_migrator
@@ -131,3 +132,5 @@ secrets:
     file: "${COLEGIO_SECRETS_DIR:-./secrets}/db_migrator"
   db_app:
     file: "${COLEGIO_SECRETS_DIR:-./secrets}/db_app"
+  mfa_key:
+    file: "${COLEGIO_SECRETS_DIR:-./secrets}/mfa_key"

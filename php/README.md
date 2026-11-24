@@ -34,16 +34,16 @@ La carga se aplica a una base editorial vacía. Luego puedes editar los registro
 
 ## Editar el portal desde el CMS
 
-Con una cuenta de administrador, abre **Diseño y contenido del portal** en el panel (`/admin/portal`). Cada ajuste empieza con los valores que ya usa el sitio. Guarda el borrador, abre **Vista previa** y publica cuando esté listo. Puedes programar su publicación en hora de Lima. **Retirar publicación** vuelve a mostrar los valores predeterminados de ese ajuste.
+Con una cuenta de administrador, abre **Diseño y contenido del portal** en el panel (`/admin/portal`). Busca los ajustes por nombre o campo, o filtra por sección. Guarda el borrador, abre **Vista previa** y publica cuando esté listo. El panel indica cuándo hay una versión publicada y un borrador pendiente. Puedes programar su publicación en hora de Lima. **Retirar publicación** vuelve a mostrar los valores predeterminados de ese ajuste.
 
 - **Identidad y navegación.** Cambia el escudo, el icono de la pestaña, el nombre del portal, los colores, la tipografía y los espacios. Añade, agrupa, ordena o quita enlaces del menú y del pie.
 - **Página de inicio.** Edita los títulos, botones, fotos, visibilidad, orden y cantidad de contenido en los bloques. Usa **Configuración del inicio** para el título, el lema, la foto de portada, los pilares, las cifras y el contacto. Las diapositivas y sus enlaces se editan en **Carrusel**.
 - **Páginas públicas.** Edita las cabeceras, fotos, introducciones, enlaces, descripciones para buscadores y mensajes sin resultados. Cada ficha, publicación, foto o PDF se sigue editando en su módulo correspondiente.
 - **Textos y recursos.** Personaliza los paneles de Institución, el retrato de respaldo, las etiquetas de filtros y calendario, los botones comunes y los títulos de páginas de estado.
 
-**Mesa de Partes y FUT** controla el encabezado, la foto, la guía, los textos de descarga y los accesos rápidos. Puedes usar el texto de esa pantalla o editar la ficha de Institución con el identificador `mesa-partes`. Los canales de atención se toman del contacto publicado en la configuración del inicio.
+En **Mesa de Partes y FUT** puedes editar los requisitos, el horario, los canales de presentación y consulta, y los datos de contacto. Los campos de contacto vacíos usan los datos publicados en **Configuración del inicio** cuando están disponibles. Puedes usar la guía de esta pantalla o editar la ficha de Institución con el identificador `mesa-partes`.
 
-El botón **Descargar FUT** ofrece un modelo referencial editable en PDF. Para ofrecer el formulario del colegio, publica el PDF en Documentos institucionales con el identificador de URL `fut`. La descarga conserva la misma dirección cuando publicas una versión nueva.
+El botón **Descargar FUT** ofrece un modelo referencial rellenable y etiquetado. Usa **Cargar FUT oficial** en el panel para publicar el PDF del colegio bajo el identificador `fut`. La descarga conserva la misma dirección cuando publicas una versión nueva. Edita **Privacidad del portal** para publicar el texto que apruebe el colegio. En **Docentes**, usa **Área de enseñanza** para agrupar las tarjetas.
 
 ## Operación
 
@@ -53,7 +53,9 @@ Configura `COLEGIO_ENV=production`, `COLEGIO_DSN`, `COLEGIO_DB_USER`, `COLEGIO_D
 
 El despliegue de VPS lee la contraseña de la base desde `COLEGIO_DB_PASSWORD_FILE`. El servidor HTTPS marca `HTTPS=on` mediante FastCGI para que la aplicación acepte la solicitud en modo producción.
 
-Usa PHP 8.6 con PDO PostgreSQL, Argon2id, DOM, mbstring, GD con JPEG/PNG/WebP, EXIF y fileinfo. Instala qpdf, timeout y prlimit. Configura un límite de carga PHP de 15 MiB, límite de solicitud de 16 MiB y `display_errors=Off`. Antes de habilitar tráfico, ejecuta `php bin/console.php migrate` y comprueba `/health/ready`. Para crear o actualizar cuentas, usa `php bin/console.php account USUARIO ROL` y proporciona la clave por entrada estándar. `php bin/console.php disable USUARIO` desactiva la cuenta. Configura una tarea de sistema para ejecutar `php bin/console.php publish` y otra para `php bin/console.php cleanup`. Los horarios editoriales se ingresan en hora de Lima. La tarea de publicación materializa las revisiones vencidas y las lecturas muestran la revisión programada al alcanzar el horario, aunque la tarea todavía no se haya ejecutado.
+Usa PHP 8.6 con PDO PostgreSQL, Argon2id, Sodium, DOM, mbstring, GD con JPEG/PNG/WebP, EXIF y fileinfo. Instala qpdf, timeout y prlimit. Configura un límite de carga PHP de 15 MiB, límite de solicitud de 16 MiB y `display_errors=Off`. Antes de habilitar tráfico, ejecuta `php bin/console.php migrate` y comprueba `/health/ready`. Para crear o actualizar cuentas, usa `php bin/console.php account USUARIO ROL` y proporciona la clave por entrada estándar. `php bin/console.php disable USUARIO` desactiva la cuenta. Configura una tarea de sistema para ejecutar `php bin/console.php publish` y otra para `php bin/console.php cleanup`. Los horarios editoriales se ingresan en hora de Lima. La tarea de publicación materializa las revisiones vencidas y las lecturas muestran la revisión programada al alcanzar el horario, aunque la tarea todavía no se haya ejecutado.
+
+El rol `editor` guarda y previsualiza borradores en sus módulos. `publisher` también publica, programa, retira y reordena publicaciones en los módulos autorizados. En producción las cuentas `admin` requieren verificación TOTP. Configura una clave de 32 bytes en formato hexadecimal mediante `COLEGIO_MFA_KEY` o `COLEGIO_MFA_KEY_FILE` y activa la cuenta con `php bin/console.php mfa-enroll USUARIO`. Conserva la clave en el gestor de secretos del entorno.
 
 Consulta los [criterios de aceptación](DESIGN.md) y los [controles de seguridad](SECURITY.md). El [sistema visual para Stitch](design/DESIGN.md) documenta los estilos del portal y del CMS.
 

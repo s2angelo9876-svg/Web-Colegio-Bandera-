@@ -9,6 +9,7 @@ checks=0
 expect() {
   local expected=$1 path=$2 code
   shift 2
+  : > "$response"
   if ! code=$(curl -sS -b "$jar" -c "$jar" -D "$headers" -o "$response" -w '%{http_code}' "$@" "$url$path"); then
     printf 'Falló la solicitud %s.\n' "$path" >&2
     exit 1
@@ -43,6 +44,7 @@ sql() {
 expect 200 /
 contains 'Colegio Bandera del Perú'
 expect 200 /site.css
+expect 200 /images/escudo.webp
 expect 200 /images/frontis_colegio-640.webp
 expect 200 /health/live
 expect 200 /health/ready
@@ -53,15 +55,33 @@ expect 422 '/noticias?pagina=-1'
 expect 200 /sitemap.xml
 contains '<loc>https://colegio.example/</loc>'
 contains '<loc>https://colegio.example/mesa-partes</loc>'
+contains '<loc>https://colegio.example/docentes</loc>'
+contains '<loc>https://colegio.example/eventos</loc>'
+contains '<loc>https://colegio.example/privacidad</loc>'
+expect 200 /privacidad
+contains 'Solicitudes y datos personales'
+for term in 'FUT' 'Formulario+%C3%9Anico+de+Tr%C3%A1mite' 'Mesa+de+Partes'; do
+  expect 200 "/buscar?q=$term"
+  contains 'href="/mesa-partes/fut"'
+  contains 'Ir a Mesa de Partes'
+  grep -Fiq 'X-Robots-Tag: noindex, follow' "$headers"
+done
+expect 200 '/buscar?q=TerminoInexistente'
+contains 'Prueba con un término más breve'
+grep -Fiq 'Cache-Control: no-store' "$headers"
 expect 200 /mesa-partes
 contains '<h1>Mesa de Partes</h1>'
 contains 'Presentar una solicitud'
 contains 'href="/mesa-partes/fut"'
 contains 'Modelo referencial editable'
 expect 200 /mesa-partes/fut
+fut_tag=$(sed -n 's/^ETag: \(.*\)\r$/\1/p' "$headers")
+[[ $fut_tag == W/* ]]
 grep -Fiq 'Content-Type: application/pdf' "$headers"
 grep -Fiq 'Content-Disposition: attachment; filename="fut-solicitud-referencial.pdf"' "$headers"
 cmp public/forms/fut-referencial.pdf "$response"
+expect 304 /mesa-partes/fut -H "If-None-Match: $fut_tag"
+[[ ! -s "$response" ]]
 expect 301 /institucion/mesa-partes
 grep -Fiq 'Location: /mesa-partes' "$headers"
 expect 404 /no-existe
@@ -109,6 +129,7 @@ media=$(sql 'SELECT min(id) FROM media')
 expect 404 "/medio/$media"
 expect 200 "/admin/noticias/$news/vista"
 contains '<strong>enriquecido</strong>'
+grep -Fiq 'Cache-Control: no-store' "$headers"
 expect 404 /noticias/ejemplo
 expect 200 /tags
 absent Historia
@@ -121,6 +142,9 @@ absent 'Resumen Noticia inicial'
 mutate noticias "$news" publish 1
 expect 200 /noticias/ejemplo
 contains 'Noticia inicial'
+news_tag=$(sed -n 's/^ETag: \(.*\)\r$/\1/p' "$headers")
+[[ $news_tag == W/* ]]
+expect 304 /noticias/ejemplo -H "If-None-Match: $news_tag"
 expect 200 "/medio/$media"
 expect 200 "/medio/$media?tam=mini"
 grep -Fiq 'Content-Type: image/webp' "$headers"
@@ -148,6 +172,7 @@ contains 'Texto local'
 expect 200 /noticias/ejemplo
 contains 'Noticia inicial'
 absent 'Cambio de trabajo'
+expect 304 /noticias/ejemplo -H "If-None-Match: $news_tag"
 expect 200 '/noticias?etiqueta=Deportes'
 absent 'Cambio de trabajo'
 expect 200 "/admin/noticias/$news/vista"
@@ -160,16 +185,18 @@ mutate noticias "$news" schedule 5 --data-urlencode 'publish_at=2099-12-25T10:00
 expect 200 /noticias/ejemplo
 absent 'Cambio de trabajo'
 sql "UPDATE content SET publish_at=now()-interval '1 minute' WHERE id=$news" >/dev/null
-expect 200 /noticias/ejemplo
+expect 200 /noticias/ejemplo -H "If-None-Match: $news_tag"
 contains 'Cambio de trabajo'
-expect 200 /noticias/ejemplo
+published_tag=$(sed -n 's/^ETag: \(.*\)\r$/\1/p' "$headers")
+expect 304 /noticias/ejemplo -H "If-None-Match: $published_tag"
 [[ $(sql "SELECT version FROM content WHERE id=$news") == 6 ]]
 checks=$((checks+1))
 [[ $(docker exec "$web" php bin/console.php publish) == '1 publicaciones procesadas' ]]
 [[ $(docker exec "$web" php bin/console.php publish) == '0 publicaciones procesadas' ]]
 checks=$((checks+2))
 mutate noticias "$news" trash 7 --data-urlencode "reason=Limpieza de la prueba"
-expect 404 /noticias/ejemplo
+expect 404 /noticias/ejemplo -H "If-None-Match: $published_tag"
+grep -Fiq 'Cache-Control: no-store' "$headers"
 expect 404 "/medio/$media"
 mutate noticias "$news" restore 8
 expect 404 /noticias/ejemplo
@@ -211,7 +238,9 @@ for module in comunicados eventos galeria documentos docentes administrativos di
   if [[ "$module" == eventos ]]; then
     contains 'Horario por confirmar'
     expect 200 '/eventos?mes=2099-01'
-    contains 'Calendario 2099-01'
+    contains 'Enero de 2099'
+    contains '/eventos?mes=2098-12'
+    contains '/eventos?mes=2099-02'
     contains 'Edición eventos'
   fi
   if [[ "$module" == comunicados ]]; then
@@ -240,6 +269,8 @@ for module in comunicados eventos galeria documentos docentes administrativos di
     grep -Fiq 'Location: /documentos/sintesis/descargar' "$headers"
     expect 200 '/documentos?categoria=actas&q=Edici%C3%B3n'
     contains 'Edición documentos'
+    contains 'Descargar PDF'
+    contains 'KiB'
     checks=$((checks+3))
     version=5
   fi
@@ -273,7 +304,7 @@ grep -Fiq 'Location: /institucion/historia' "$headers"
 expect 200 '/institucion/historia'
 contains 'Historia para prueba'
 expect 200 /institucion
-contains '<section class="public-feature" aria-labelledby="seccion-historia">'
+contains '<section class="public-feature institution-feature" aria-labelledby="seccion-historia">'
 contains 'Historia para prueba'
 absent 'href="/institucion/historia"'
 expect 200 /images/institucion/identidad.webp
@@ -305,10 +336,10 @@ absent '/institucion/mesa-partes</loc>'
 [[ $(sql "SELECT count(*) FROM editorial_events WHERE content_id=$news AND action='publish-due'") == 1 ]]
 checks=$((checks+1))
 # Two published records make the public order observable and verify the set version.
-save 201 docentes 0 0 'Docente primera' docente-primera --form-string 'especialidad=Comunicación' \
+save 201 docentes 0 0 'Docente primera' docente-primera --form-string 'especialidad=Comunicación' --form-string 'area=Humanidades' \
   --form-string 'alt=Foto de prueba' -F 'media=@public/images/escudo.jpeg'
 teacher_one=$(id_saved)
-save 201 docentes 0 0 'Docente segunda con un nombre completo de prueba' docente-segunda
+save 201 docentes 0 0 'Docente segunda con un nombre completo de prueba' docente-segunda --form-string 'area=Humanidades'
 teacher_two=$(id_saved)
 mutate docentes "$teacher_one" publish 1
 mutate docentes "$teacher_two" publish 1
@@ -320,6 +351,7 @@ expect 422 /admin/docentes/reordenar --data-urlencode "_csrf=$csrf" --data "comp
 expect 303 /admin/docentes/reordenar --data-urlencode "_csrf=$csrf" --data "complete=1&version=$set_version&positions[$teacher_one]=1&positions[$teacher_two]=2&positions[$other]=3"
 expect 200 /docentes
 contains '<article class="card staff-card">'
+contains 'Humanidades'
 contains '<p class="staff-role">Comunicación</p>'
 contains 'alt="Foto de prueba"'
 absent 'href="/docentes/docente-primera"'
@@ -343,6 +375,9 @@ contains 'Arte'
 expect 200 /admin/portal
 contains 'Diseño y contenido del portal'
 contains 'Mesa de Partes y FUT'
+expect 200 '/admin/portal?q=horario'
+contains 'Mesa de Partes y FUT'
+absent '>Retrato de respaldo<'
 expect 404 '/admin/portal/nuevo?seccion=inexistente'
 save 422 portal 0 0 'Sección ajena' inexistente
 expect 200 '/admin/portal/nuevo?seccion=pagina-galeria'
@@ -381,6 +416,8 @@ save 200 portal "$gallery_custom" 2 '' pagina-galeria --form-string 'titulo=Gale
   --form-string 'cantidad=8' --form-string 'remove_media=1'
 expect 200 /galeria
 contains 'Archivo de la comunidad'
+expect 200 "/admin/portal/$gallery_custom"
+contains 'Borrador pendiente'
 expect 200 "/admin/portal/$gallery_custom/vista"
 contains 'Galería actualizada'
 absent 'Encabezado de la galería'
@@ -455,6 +492,10 @@ mutate portal "$theme_custom" unpublish 2 --data-urlencode 'reason=Restaurar col
 save 201 portal 0 0 '' pagina-mesa-partes --form-string 'titulo=Trámites escolares' \
   --form-string 'resumen=Información para las familias' --form-string 'guia_local=si' \
   --form-string 'contenido=<p>Atención de solicitudes por Secretaría.</p>' \
+  --form-string 'requisitos=<p>Adjunta los documentos que correspondan al trámite.</p>' \
+  --form-string 'horario=Lunes de 08:00 a 12:00' --form-string 'correo=tramites@example.org' \
+  --form-string 'telefono=+51 999 000 000' --form-string 'ruta_presentar=https://tramites.example.org/' \
+  --form-string 'ruta_consultar=https://tramites.example.org/consulta' \
   --form-string 'fut_titulo=Formato de solicitud' --form-string 'fut_accion=Obtener formato' \
   --form-string 'enlaces[0][label]=Ver otros documentos' --form-string 'enlaces[0][url]=/documentos'
 desk_custom=$(id_saved)
@@ -469,6 +510,11 @@ expect 200 /mesa-partes
 contains '<h1>Trámites escolares</h1>'
 contains 'Ver otros documentos'
 contains 'Atención de solicitudes por Secretaría.'
+contains 'Adjunta los documentos que correspondan'
+contains 'href="mailto:tramites@example.org"'
+contains 'href="tel:+51999000000"'
+contains 'href="https://tramites.example.org/consulta"'
+contains 'Lunes de 08:00 a 12:00'
 mutate portal "$desk_custom" unpublish 2 --data-urlencode 'reason=Restaurar la guía publicada'
 expect 200 /mesa-partes
 contains 'Resumen Guía de trámites de prueba'
@@ -509,6 +555,15 @@ expect 403 /admin/portal
 expect 403 "/admin/portal/$gallery_custom/vista"
 expect 404 "/tema.css?revision=$theme_revision"
 expect 200 /admin/noticias
+expect 403 "/admin/noticias/$news/publish" --data-urlencode "_csrf=$csrf" --data 'version=9'
+expect 403 "/admin/noticias/$news/schedule" --data-urlencode "_csrf=$csrf" --data 'version=9&publish_at=2099-12-25T10:00'
+expect 403 /admin/docentes/reordenar
+sql "UPDATE accounts SET role='publisher',generation=generation+1 WHERE username='admin'" >/dev/null
+expect 200 /admin/ingresar
+csrf=$(sed -n 's/.*name="_csrf" value="\([a-f0-9]*\)".*/\1/p' "$response")
+expect 303 /admin/ingresar --data-urlencode "_csrf=$csrf" --data-urlencode 'username=admin' --data-urlencode "password=$LOCAL_ADMIN_PASSWORD"
+expect 200 /admin
+csrf=$(sed -n 's/.*name="_csrf" value="\([a-f0-9]*\)".*/\1/p' "$response" | head -1)
 mutate noticias "$news" schedule 9 --data-urlencode 'publish_at=2099-12-25T10:00'
 mutate noticias "$news" cancel 10
 mutate noticias "$news" publish 11

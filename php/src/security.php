@@ -1,17 +1,19 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/mfa.php';
+
 const INACTIVITY_MINUTES = 30;
 const SESSION_HOURS = 8;
 const ARGON_OPTIONS = ['memory_cost'=>65536, 'time_cost'=>3, 'threads'=>1];
 
-function session(?array $user = null): string
+function session(?array $user = null, bool $mfaVerified = false): string
 {
     $token = bin2hex(random_bytes(32));
     $csrf = bin2hex(random_bytes(32));
-    query("INSERT INTO sessions (token_hash,csrf,user_id,generation,expires)
-           VALUES (?,?,?,?,now()+make_interval(hours=>?))",
-        [hash('sha256', $token), $csrf, $user['id'] ?? null, $user['generation'] ?? null, SESSION_HOURS]);
+    query("INSERT INTO sessions (token_hash,csrf,user_id,generation,expires,mfa_verified)
+           VALUES (?,?,?,?,now()+make_interval(hours=>?),?::boolean)",
+        [hash('sha256', $token), $csrf, $user['id'] ?? null, $user['generation'] ?? null, SESSION_HOURS, (int) $mfaVerified]);
     return $token;
 }
 
@@ -34,8 +36,9 @@ function currentSession(?string $token = null): array
                         s.last_seen < now()-interval '30 seconds' AS touch
                   FROM sessions s LEFT JOIN accounts a ON a.id=s.user_id
                   WHERE s.token_hash=? AND s.expires>now() AND s.last_seen>now()-make_interval(mins=>?)
-                  AND (s.user_id IS NULL OR (a.enabled AND s.generation=a.generation))",
-        [$hash, INACTIVITY_MINUTES])->fetch(PDO::FETCH_ASSOC);
+                  AND (s.user_id IS NULL OR (a.enabled AND s.generation=a.generation
+                     AND (s.mfa_verified OR (a.mfa_secret IS NULL AND (a.role<>'admin' OR NOT ?::boolean)))))",
+        [$hash, INACTIVITY_MINUTES, (int) (getenv('COLEGIO_ENV') === 'production')])->fetch(PDO::FETCH_ASSOC);
     if ($row && $row['touch']) {
         query('UPDATE sessions SET last_seen=now() WHERE token_hash=?', [$hash]);
     }
@@ -84,20 +87,22 @@ function csrf(array $session): void
 
 function allowed(array $user, string $module, string $action): bool
 {
-    if (($user['role'] ?? null) === 'admin') {
+    $role = $user['role'] ?? null;
+    if ($role === 'admin') {
         return true;
     }
-    if (!in_array($user['role'] ?? null, ['editor','publisher'], true)) {
+    if (!in_array($role, ['editor','publisher'], true)) {
         return false;
     }
     if ($module === 'etiquetas') {
-        return in_array($action, ['list','save'], true);
+        return $action === 'list' || ($role === 'publisher' && $action === 'save');
     }
     if (!in_array($module, ['noticias','comunicados','eventos','galeria','docentes','carrusel'], true)) {
         return false;
     }
-    return in_array($action, ['list','edit','preview','save','publish','schedule','unpublish','cancel'], true)
-        || ($action === 'order' && orderable($module));
+    return in_array($action, ['list','edit','preview','save'], true)
+        || ($role === 'publisher' && (in_array($action, ['publish','schedule','unpublish','cancel'], true)
+            || ($action === 'order' && orderable($module))));
 }
 
 function requireAccess(array $user, string $module, string $action): void
@@ -140,7 +145,7 @@ function loginFailure(string $key): void
     query("UPDATE rate_limits SET retry_at=now()+make_interval(secs=>CASE WHEN hits<2 THEN 0 ELSE power(2,least(5,hits-1)) END)
            WHERE key=? AND bucket=floor(extract(epoch FROM now())/900)::bigint", [$key]);
     logEvent('login_denied');
-    fail(401, 'Usuario o contraseña incorrectos.');
+    fail(401, 'Credenciales de acceso incorrectas.');
 }
 
 function validNewPassword(string $password): bool
@@ -171,19 +176,44 @@ function loginAccount(array $anonymous): never
     if (!$valid || !$account || !$account['enabled'] || (str_starts_with($hash, '$2y$') && strlen($password) > 72)) {
         loginFailure($key);
     }
+    $step = null;
+    if ($account['mfa_secret'] !== null) {
+        $code = $_POST['otp'] ?? '';
+        $step = is_string($code)
+            ? mfaMatchingStep(openMfaSecret($account['mfa_secret'], (int) $account['id']), $code, time())
+            : null;
+        if ($step === null || $step <= (int) $account['mfa_last_step']) {
+            loginFailure($key);
+        }
+    } elseif ($account['role'] === 'admin' && getenv('COLEGIO_ENV') === 'production') {
+        logEvent('mfa_enrollment_required', ['account_id'=>(int) $account['id']]);
+        loginFailure($key);
+    }
     $refresh = password_needs_rehash($hash, PASSWORD_ARGON2ID, ARGON_OPTIONS) ? newPasswordHash($password) : null;
-    $token = transaction(function () use ($anonymous, $account, $refresh, $key): string {
-        $current = query('SELECT id,generation FROM accounts WHERE id=? AND enabled AND generation=? FOR UPDATE',
+    $token = transaction(function () use ($anonymous, $account, $refresh, $key, $step): ?string {
+        $current = query('SELECT id,generation,mfa_last_step FROM accounts WHERE id=? AND enabled AND generation=? FOR UPDATE',
             [$account['id'],$account['generation']])->fetch(PDO::FETCH_ASSOC);
-        if (!$current || !query('DELETE FROM sessions WHERE token_hash=?', [$anonymous['token_hash']])->rowCount()) {
+        if (!$current) {
             fail(401, 'La sesión ya no está disponible. Vuelve a ingresar.');
+        }
+        if ($step !== null && $step <= (int) $current['mfa_last_step']) {
+            return null;
+        }
+        if (!query('DELETE FROM sessions WHERE token_hash=?', [$anonymous['token_hash']])->rowCount()) {
+            fail(401, 'La sesión ya no está disponible. Vuelve a ingresar.');
+        }
+        if ($step !== null) {
+            query('UPDATE accounts SET mfa_last_step=? WHERE id=?', [$step,$current['id']]);
         }
         if ($refresh !== null) {
             query('UPDATE accounts SET password_hash=? WHERE id=?', [$refresh,$account['id']]);
         }
         query('DELETE FROM rate_limits WHERE key=? AND bucket=floor(extract(epoch FROM now())/900)::bigint', [$key]);
-        return session($current);
+        return session($current, $step !== null);
     });
+    if ($token === null) {
+        loginFailure($key);
+    }
     sessionCookie($token, time() + SESSION_HOURS * 3600);
     logEvent('login_success', ['account_id' => (int) $account['id']]);
     redirect('/admin');
@@ -221,7 +251,7 @@ function sanitize(string $html): string
         if (in_array($tag, ['br','hr'], true)) {
             return "<$tag>";
         }
-        if ($tag === 'a' && httpsUrl($node->getAttribute('href') ?? '')) {
+        if ($tag === 'a' && portalLink($node->getAttribute('href') ?? '')) {
             return '<a rel="noopener noreferrer" href="' . e($node->getAttribute('href')) . '">' . $inner . '</a>';
         }
         if (in_array($tag, ['p','div','b','strong','i','em','u','s','h2','h3','ul','ol','li','blockquote','code','pre','sub','sup'], true)) {

@@ -31,10 +31,10 @@ export COLEGIO_ENV=production
 export COLEGIO_DSN="pgsql:host=$COLEGIO_DB_HOST;port=$COLEGIO_DB_PORT;dbname=$COLEGIO_DB_NAME;sslmode=verify-full;sslrootcert=$certificate;connect_timeout=3"
 
 case ${1:-serve} in
-    migrate|account)
+    migrate|account|mfa-enroll)
         export COLEGIO_DB_USER="${COLEGIO_MIGRATION_DB_USER:?Configura el usuario de migración.}"
         export COLEGIO_DB_PASSWORD="${COLEGIO_MIGRATION_DB_PASSWORD:?Configura la contraseña de migración.}"
-        if [[ $1 == account ]]; then
+        if [[ $1 != migrate ]]; then
             php bin/console.php "$@"
         else
             php deploy/railway/database-role.php
@@ -47,7 +47,7 @@ case ${1:-serve} in
         exit
         ;;
     serve) ;;
-    *) die 'Comandos disponibles: serve, migrate, account.' ;;
+    *) die 'Comandos disponibles: serve, migrate, account, mfa-enroll.' ;;
 esac
 
 [[ ${RAILWAY_PUBLIC_DOMAIN:-} =~ ^[a-zA-Z0-9][a-zA-Z0-9.-]*[a-zA-Z0-9]$ ]] \

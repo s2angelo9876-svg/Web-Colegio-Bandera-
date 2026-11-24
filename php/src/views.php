@@ -17,7 +17,7 @@ function layout(string $title, callable $render, ?array $admin = null, string $d
 <?php if ($description !== ''): ?><meta name="description" content="<?=e($description)?>"><meta property="og:description" content="<?=e($description)?>"><?php endif ?>
 <?php if ($canonical !== ''): ?><link rel="canonical" href="<?=e($canonical)?>"><meta property="og:url" content="<?=e($canonical)?>">
 <meta property="og:title" content="<?=e($title)?>"><?php endif ?>
-<link rel="icon" href="<?=e(empty($favicon['media_id']) ? '/images/escudo.jpeg' : portalMediaUrl($favicon))?>">
+<link rel="icon" href="<?=e(empty($favicon['media_id']) ? '/images/escudo.webp' : portalMediaUrl($favicon))?>">
 <link rel="stylesheet" href="/site.css">
 <?php if ($theme): ?><link rel="stylesheet" href="/tema.css<?= isset($theme['preview_revision']) ? '?revision=' . e($theme['preview_revision']) : '' ?>"><?php endif ?>
 <?php if ($area === 'public-site'): ?>
@@ -29,6 +29,9 @@ function layout(string $title, callable $render, ?array $admin = null, string $d
 <header class="site-header">
   <div class="bar">
     <?php brand($admin ? '/admin' : '/'); ?>
+    <?php if (!$admin && $menu['ruta_buscar'] !== '' && $menu['buscar'] !== ''): ?>
+      <a class="icon-button header-search" href="<?=e($menu['ruta_buscar'])?>" aria-label="<?=e($menu['buscar'])?>" title="<?=e($menu['buscar'])?>"<?=currentAttr(portalStartsAt($menu['ruta_buscar'],$current))?>><?=uiIcon('search')?></a>
+    <?php endif ?>
     <button type="button" id="menu" class="icon-button" aria-label="<?=e($menu['menu'])?>" aria-controls="navigation" aria-expanded="false"><?=uiIcon('menu')?></button>
     <nav id="navigation" aria-label="<?= $admin ? 'Administración' : e($menu['lista']) ?>">
       <div class="nav-links">
@@ -45,7 +48,6 @@ function layout(string $title, callable $render, ?array $admin = null, string $d
       <?php endif ?>
       </div>
       <div class="nav-tools">
-        <?php if (!$admin && $menu['ruta_buscar'] !== '' && $menu['buscar'] !== ''): ?><a class="icon-button" href="<?=e($menu['ruta_buscar'])?>" aria-label="<?=e($menu['buscar'])?>" title="<?=e($menu['buscar'])?>"<?=currentAttr(portalStartsAt($menu['ruta_buscar'],$current))?>><?=uiIcon('search')?></a><?php endif ?>
         <button type="button" class="icon-button theme-toggle" data-theme-toggle aria-label="<?=e($menu['tema'])?>" title="<?=e($menu['tema'])?>"><span class="icon" aria-hidden="true"></span></button>
         <?php if ($admin): ?>
           <form method="post" action="/admin/salir"><?=token($admin)?><button class="button secondary"><?=uiIcon('logout')?> Cerrar sesión</button></form>
@@ -135,6 +137,9 @@ function accessView(array $session): void
         <form method="post" action="/admin/ingresar" class="editor"><?= $session ? token($session) : '' ?>
           <label><?=e($settings['usuario'])?> <input name="username" autocomplete="username" required></label>
           <label><?=e($settings['clave'])?> <input name="password" type="password" autocomplete="current-password" required></label>
+          <label><?=e($settings['codigo'])?> <input name="otp" inputmode="numeric" autocomplete="one-time-code"
+              pattern="[0-9]{6}" maxlength="6" aria-describedby="otp-help"></label>
+          <p id="otp-help" class="otp-help"><?=e($settings['ayuda_codigo'])?></p>
           <button class="primary"><?=e($settings['boton'])?> <?=uiIcon('arrow_forward')?></button>
         </form>
         <?php if ($settings['volver'] !== '' && $settings['destino'] !== ''): ?><a class="section-link" href="<?=e($settings['destino'])?>"><?=uiIcon('arrow_back')?> <?=e($settings['volver'])?></a><?php endif ?>
@@ -178,7 +183,7 @@ function brand(string $href): void
 {
     $brand = portalValues('marca');
     ?><a class="brand" href="<?=e($href)?>">
-      <span class="brand-mark"><?php if (!portalImage('marca', 'brand-image')): ?><img src="/images/escudo.jpeg" alt="" width="34" height="46"><?php endif ?></span>
+      <span class="brand-mark"><?php if (!portalImage('marca', 'brand-image')): ?><img src="/images/escudo.webp" alt="" width="94" height="128"><?php endif ?></span>
       <span class="brand-name"><strong><?=e($brand['nombre'])?></strong><?php if ($brand['subtitulo'] !== ''): ?><small><?=e($brand['subtitulo'])?></small><?php endif ?></span>
     </a><?php
 }
@@ -232,7 +237,11 @@ function publicFooter(): void
         <?php endforeach ?>
       </div>
       <div class="footer-base"><span><?=e($footer['leyenda'])?></span>
-      <?php if ($footer['ruta_personal'] !== '' && $footer['personal'] !== ''): ?><a href="<?=e($footer['ruta_personal'])?>"><?=e($footer['personal'])?> <?=uiIcon('arrow_outward')?></a><?php endif ?></div>
+        <div class="links">
+          <a href="/privacidad"><?=e($footer['privacidad'] ?: 'Privacidad')?></a>
+          <?php if ($footer['ruta_personal'] !== '' && $footer['personal'] !== ''): ?><a href="<?=e($footer['ruta_personal'])?>"><?=e($footer['personal'])?> <?=uiIcon('arrow_outward')?></a><?php endif ?>
+        </div>
+      </div>
     </footer><?php
 }
 
@@ -265,29 +274,75 @@ function emptyState(string $icon = 'description', string $title = 'No hay public
     </div><?php
 }
 
+function futSearchResult(array $search): void
+{
+    $mesa = portalPage('mesa-partes'); ?>
+    <article class="card search-feature">
+      <div class="card-body">
+        <h3><?=e($mesa['fut_titulo'])?></h3>
+        <p><?=e($mesa['resumen'] ?: $mesa['resumen_respaldo'])?></p>
+        <div class="links">
+          <a class="button" href="/mesa-partes/fut"><?=uiIcon('download')?> <?=e($mesa['fut_accion'])?></a>
+          <a class="button secondary" href="/mesa-partes"><?=e($search['mesa_partes'])?> <?=uiIcon('arrow_forward')?></a>
+        </div>
+      </div>
+    </article><?php
+}
+
+function searchEmptyState(array $search): void
+{
+    emptyState('search', $search['vacio'], $search['sin_resultados']); ?>
+    <div class="links search-suggestions">
+      <a class="button secondary" href="/mesa-partes"><?=e(portalPage('mesa-partes')['titulo'])?></a>
+      <a class="button secondary" href="/documentos"><?=e(portalPage('documentos')['titulo'])?></a>
+    </div><?php
+}
+
+function noticeMetadata(array $fields): void
+{
+    $type = $fields['tipo'] ?? '';
+    $end = $fields['vigencia_fecha'] ?? '';
+    $expired = $end !== '' && $end < limaNow()->format('Y-m-d'); ?>
+    <div class="notice-metadata">
+      <?php statusChip(portalNoticeLabel($type), $type === 'urgente' ? 'alert' : ''); ?>
+      <?php if ($expired): statusChip(portalText('textos','vencido')); endif ?>
+      <?php if (!empty($fields['destinatarios'])): ?><span><?=e($fields['destinatarios'])?></span><?php endif ?>
+      <?php if ($end !== ''): ?><span><?=e(portalText('textos', $expired ? 'vigencia_concluida' : 'vigente'))?>
+        <time datetime="<?=e($end)?>"><?=e(limaDisplay($end))?></time></span><?php endif ?>
+    </div><?php
+}
+
 function listCards(array $rows, bool $showModule = false, int $headingLevel = 2, string $gridClass = '', ?string $emptyMessage = null): void
 {
     if (!$rows) {
         emptyState('search', $emptyMessage ?? portalText('textos','vacio'));
         return;
     }
-    ?><div class="cards<?= $gridClass === '' ? '' : ' ' . e($gridClass) ?>"><?php foreach ($rows as $row): $fields = json_decode($row['fields'], true); ?>
+    ?><div class="cards<?= $gridClass === '' ? '' : ' ' . e($gridClass) ?>"><?php foreach ($rows as $row):
+        $fields = json_decode($row['fields'], true) ?? [];
+        $module = $row['module'];
+        $href = $module === 'institucion' && $row['slug'] === 'mesa-partes' ? '/mesa-partes' : '/' . $module . '/' . $row['slug'];
+        $document = $module === 'documentos' && $row['media_mime'] === 'application/pdf';
+        $summary = $row['summary'] ?: ($module === 'galeria' ? ($fields['alt'] ?? '') : ''); ?>
     <article class="card content-card">
         <?php if (str_starts_with($row['media_mime'] ?? '', 'image/')): ?>
           <div class="card-photo"><?php imageTag($row, $fields['alt'] ?? '', 'card-image'); ?></div>
         <?php endif ?>
         <div class="card-body">
           <?php if ($showModule): ?><span class="card-section"><?=uiIcon(moduleIcon($row['module']))?> <?=e(portalPage($row['module'])['titulo'])?></span><?php endif ?>
-          <?php if ($row['module'] === 'comunicados'): ?>
-            <span class="status-chip<?= ($fields['tipo'] ?? '') === 'urgente' ? ' chip-alert' : '' ?>"><?=e(portalNoticeLabel($fields['tipo'] ?? ''))?></span>
-          <?php endif ?>
-          <?php if (in_array($row['module'], ['noticias','comunicados','documentos'], true) && $row['publication_date']): ?>
+          <?php if ($module === 'comunicados'): noticeMetadata($fields); endif ?>
+          <?php if ($module === 'galeria'): statusChip(portalText('textos', empty($fields['video']) ? 'foto' : 'video')); endif ?>
+          <?php if ($document): ?><p class="card-meta"><?=e($fields['categoria'] ?? '')?>
+            <span>PDF · <?=e(pdfSize($row))?></span></p><?php endif ?>
+          <?php if (in_array($module, ['noticias','comunicados','documentos'], true) && $row['publication_date']): ?>
             <time class="card-date" datetime="<?=e($row['publication_date'])?>"><?=e(publicationLabel($row['publication_date']))?></time>
           <?php endif ?>
           <?php if (!empty($fields['fecha'])): ?><time class="card-date event-date" datetime="<?=e($fields['fecha'])?>"><?=uiIcon('calendar_month')?> <?=e(eventDateLabel($fields))?></time><?php endif ?>
+          <?php if ($module === 'eventos' && !empty($fields['lugar'])): ?><span class="card-date"><?=uiIcon('location_on')?> <?=e($fields['lugar'])?></span><?php endif ?>
           <?php if (!empty($fields['fecha_galeria'])): ?><time class="card-date" datetime="<?=e($fields['fecha_galeria'])?>"><?=e(limaDisplay($fields['fecha_galeria']))?></time><?php endif ?>
-          <h<?=$headingLevel?> class="card-title"><a href="/<?=e($row['module'])?>/<?=e($row['slug'])?>"><?=e($row['title'])?></a><?=uiIcon('arrow_outward')?></h<?=$headingLevel?>>
-          <?php if ($row['summary']): ?><p><?=e($row['summary'])?></p><?php endif ?>
+          <h<?=$headingLevel?> class="card-title"><a href="<?=e($href)?>"><?=e($row['title'])?></a><?=$document ? '' : uiIcon('arrow_outward')?></h<?=$headingLevel?>>
+          <?php if ($summary): ?><p><?=e($summary)?></p><?php endif ?>
+          <?php if ($document): ?><a class="button document-download" href="<?=e($href)?>/descargar" aria-label="<?=e(portalText('textos','descargar') . ' — ' . $row['title'])?>"><?=uiIcon('download')?> <?=e(portalText('textos','descargar'))?></a><?php endif ?>
         </div>
     </article>
     <?php endforeach ?></div><?php
@@ -296,6 +351,18 @@ function listCards(array $rows, bool $showModule = false, int $headingLevel = 2,
 function staffDirectory(string $module, array $rows, int $headingLevel): void
 {
     $teachers = $module === 'docentes';
+    $groups = [];
+    foreach ($rows as $row) {
+        $fields = json_decode($row['fields'], true) ?? [];
+        $area = $teachers ? trim($fields['area'] ?? '') : '';
+        $groups[$area][] = [$row, $fields];
+    }
+    if ($teachers) {
+        $legacy = $groups[''] ?? [];
+        unset($groups['']);
+        ksort($groups, SORT_NATURAL | SORT_FLAG_CASE);
+        if ($legacy) $groups[''] = $legacy;
+    }
     ?><div class="staff-directory">
     <?php if (!$rows): ?>
       <?php emptyState(moduleIcon($module), portalPage($module)['vacio']); ?>
@@ -303,26 +370,31 @@ function staffDirectory(string $module, array $rows, int $headingLevel): void
       <?php if (array_any($rows, fn(array $row) => str_starts_with($row['media_filename'] ?? '', 'perfil-demo-'))): ?>
         <p class="staff-directory-note"><?=e(portalText('textos','perfiles_demo'))?></p>
       <?php endif ?>
+      <?php foreach ($groups as $area=>$people):
+          $grouped = $teachers && ($area !== '' || count($groups) > 1);
+          $level = $headingLevel + (int) $grouped; ?>
+      <?php if ($grouped): ?><section class="staff-group"><h<?=$headingLevel?>><?=e($area !== '' ? $area : portalText('textos','sin_area'))?></h<?=$headingLevel?>><?php endif ?>
       <div class="staff-grid">
-      <?php foreach ($rows as $row):
-          $fields = json_decode($row['fields'], true) ?? [];
+      <?php foreach ($people as [$row, $fields]):
           $role = trim($fields['cargo'] ?? '');
           $subject = trim($fields['especialidad'] ?? '');
           $label = $teachers ? ($subject ?: $role) : ($role ?: $subject); ?>
         <article class="card staff-card">
           <div class="staff-portrait">
             <?php if (str_starts_with($row['media_mime'] ?? '', 'image/')): ?>
-              <?php imageTag($row, $fields['alt'] ?? '', 'staff-photo', sizes: 'clamp(5.8rem, 15vw, 8.25rem)'); ?>
-            <?php elseif (!portalImage('fotos-perfiles', 'staff-photo', sizes: 'clamp(5.8rem, 15vw, 8.25rem)')): ?>
+              <?php imageTag($row, $fields['alt'] ?? '', 'staff-photo', sizes: 'clamp(5.5rem, 14vw, 7rem)'); ?>
+            <?php elseif (!portalImage('fotos-perfiles', 'staff-photo', sizes: 'clamp(5.5rem, 14vw, 7rem)')): ?>
               <?=uiIcon('groups')?>
             <?php endif ?>
           </div>
-          <h<?=$headingLevel?>><?=e($row['title'])?></h<?=$headingLevel?>>
+          <h<?=$level?>><?=e($row['title'])?></h<?=$level?>>
           <?php if ($label !== $row['title'] && $label !== ''): ?><p class="staff-role"><?=e($label)?></p><?php endif ?>
           <?php if (!$teachers && $subject !== '' && $subject !== $label): ?><p class="staff-subject"><?=e($subject)?></p><?php endif ?>
         </article>
       <?php endforeach ?>
       </div>
+      <?php if ($grouped): ?></section><?php endif ?>
+      <?php endforeach ?>
     <?php endif ?>
     </div><?php
 }
@@ -367,7 +439,7 @@ function institutionFeature(string $heading, array $entries, bool $illustrate = 
         ? array_find($entries, fn(array $entry) => str_starts_with($entry[0]['media_mime'] ?? '', 'image/'))
         : null;
     $imageId = (int) ($image[0]['media_id'] ?? 0);
-    ?><section class="public-feature" aria-labelledby="<?=e($headingId)?>">
+    ?><section class="public-feature institution-feature" aria-labelledby="<?=e($headingId)?>">
       <div class="feature-panel">
         <h2 id="<?=e($headingId)?>"><?=e($heading)?></h2>
         <?php if (count($entries) > 1): ?>
@@ -458,7 +530,11 @@ function detail(array $row, ?int $preview = null): void
     $module = $row['module'];
     $person = in_array($row['module'], ['docentes','directivos','administrativos'], true);
     $cover = $public && !$person && str_starts_with($row['media_mime'] ?? '', 'image/');
-    $metadata = array_filter(array_diff_key($fields, array_flip(['alt','fecha','hora'])), fn($value) => $value !== '');
+    $omit = ['alt','fecha','hora'];
+    if ($module === 'comunicados') {
+        $omit = [...$omit, 'tipo', 'destinatarios', 'vigencia_fecha'];
+    }
+    $metadata = array_filter(array_diff_key($fields, array_flip($omit)), fn($value) => $value !== '');
     $portrait = $public && $person && !$row['media_id'] && !empty(portalRecord('fotos-perfiles')['media_id']);
     $copy = portalValues('textos');
     $tags = query('SELECT t.name,t.slug FROM revision_tags rt JOIN tags t ON t.name=rt.tag
@@ -471,12 +547,15 @@ function detail(array $row, ?int $preview = null): void
         <header class="public-feature story-feature"><div class="feature-panel">
     <?php endif ?>
     <h1><?=e($row['title'])?></h1>
+    <?php if ($module === 'comunicados'): noticeMetadata($fields); endif ?>
+    <?php if ($module === 'galeria'): statusChip($copy[empty($fields['video']) ? 'foto' : 'video']); endif ?>
     <?php if (str_starts_with($row['media_filename'] ?? '', 'perfil-demo-')): ?><p class="staff-directory-note"><?=e($copy['perfil_demo'])?></p><?php endif ?>
     <?php if (!empty($row['publication_date']) && in_array($row['module'], ['noticias','comunicados','documentos'], true)): ?>
         <p class="article-date"><?=uiIcon('calendar_month')?> <time datetime="<?=e($row['publication_date'])?>"><?=e(publicationLabel($row['publication_date']))?></time></p>
     <?php endif ?>
     <?php if (!empty($fields['fecha'])): ?><p><?=e(eventDateLabel($fields))?></p><?php endif ?>
-    <?php if ($row['summary']): ?><p class="lead"><?=e($row['summary'])?></p><?php endif ?>
+    <?php $summary = $row['summary'] ?: ($module === 'galeria' ? ($fields['alt'] ?? '') : ''); ?>
+    <?php if ($summary !== ''): ?><p class="lead"><?=e($summary)?></p><?php endif ?>
     <?php if ($public): ?></div>
       <?php if ($cover): featurePhoto($row, $fields); endif ?>
       </header>
@@ -492,7 +571,7 @@ function detail(array $row, ?int $preview = null): void
     <?php if ($key === 'video' && ($id = youtubeId($value)) !== null): ?>
       <button type="button" data-video-id="<?=e($id)?>" data-video-title="<?=e($copy['titulo_video'])?>" hidden><?=e($copy['reproductor'])?></button>
     <?php endif ?>
-    <?php else: ?><?=e(match ($key) {'fecha_galeria'=>limaDisplay($value),'tipo'=>portalNoticeLabel($value),default=>$value})?><?php endif ?></dd>
+    <?php else: ?><?=e($key === 'fecha_galeria' ? limaDisplay($value) : $value)?><?php endif ?></dd>
     <?php endforeach ?></dl><?php endif ?>
     <?php if ($tags): ?><p><?=e($copy['etiquetas'])?>
       <?php foreach ($tags as $tag): ?>
@@ -510,9 +589,21 @@ function mesaPartes(?array $guide, array $contact, bool $futPublished): void
     $presentation = portalPage('mesa-partes');
     $cover = str_starts_with($guide['media_mime'] ?? '', 'image/');
     $instructions = $presentation['guia_local'] === 'si' ? $presentation['contenido'] : ($guide['body'] ?? $presentation['contenido']);
+    foreach (['correo','telefono','direccion','horario','mapa'] as $key) {
+        if ($presentation[$key] !== '') {
+            $contact[$key] = $presentation[$key];
+        }
+    }
+    if (!empty($contact['mapa']) && empty($contact['direccion'])) {
+        $contact['direccion'] = $presentation['ver_mapa'];
+    }
+    $services = [
+        [$presentation['presentar'], $presentation['ruta_presentar'], 'send'],
+        [$presentation['consultar'], $presentation['ruta_consultar'], 'search'],
+    ];
     ?><article class="public-story">
       <?php publicBreadcrumb(['/'=>'Inicio'], $presentation['titulo']); ?>
-      <header class="public-feature story-feature">
+      <header class="public-feature story-feature mesa-feature">
         <div class="feature-panel">
           <h1><?=e($presentation['titulo'])?></h1>
           <p class="lead"><?=e($presentation['resumen'] ?: (($guide['summary'] ?? '') ?: $presentation['resumen_respaldo']))?></p>
@@ -528,13 +619,21 @@ function mesaPartes(?array $guide, array $contact, bool $futPublished): void
       </header>
       <div class="article story-body">
       <?php if (!empty($guide['media_id']) && !$cover): showMedia($guide); endif ?>
+      <?php if ($presentation['requisitos'] !== ''): ?>
+        <section><h2><?=e($presentation['tramite'])?></h2><div class="rich"><?= $presentation['requisitos'] ?></div></section>
+      <?php endif ?>
       <?php if ($instructions !== ''): ?><div class="rich"><?= $instructions ?></div><?php endif ?>
+      <?php if (array_any($services, fn(array $entry) => $entry[0] !== '' && $entry[1] !== '')): ?><div class="links mesa-services">
+        <?php foreach ($services as [$label,$url,$icon]): if ($label !== '' && $url !== ''): ?>
+          <a class="button" href="<?=e($url)?>"><?=uiIcon($icon)?> <?=e($label)?></a>
+        <?php endif; endforeach ?>
+      </div><?php endif ?>
+      <?php institutionalContact($contact, $presentation['canales']); ?>
       <?php if ($presentation['enlaces']): ?><div class="links">
         <?php foreach ($presentation['enlaces'] as $link): ?>
           <a class="button secondary" href="<?=e($link['url'])?>"><?=uiIcon($link['icon'] ?: 'open_in_new')?> <?=e($link['label'])?></a>
         <?php endforeach ?>
       </div><?php endif ?>
-      <?php institutionalContact($contact, $presentation['canales']); ?>
       </div>
     </article><?php
 }
@@ -550,11 +649,15 @@ function showMedia(array $row, ?int $preview = null): void
         $url = $preview === null && $row['module'] === 'documentos'
             ? '/documentos/' . $row['slug'] . '/descargar'
             : '/medio/' . $row['media_id'] . ($preview ? '?revision=' . $preview : '');
-        $size = number_format((int) $row['size_bytes'] / 1024, 1, ',', '.');
-        ?><p class="download-card"><a class="button secondary" href="<?=e($url)?>"><?=uiIcon('download')?> <?=e(portalText('textos','descargar'))?></a> <span>(<?=e($size)?> KiB<?= $row['module'] === 'documentos' ? ', ' . e(portalText('textos','version_documento')) . ' ' . e(documentVersion($row, $preview)) : '' ?>)</span></p><?php
+        ?><p class="download-card"><a class="button secondary" href="<?=e($url)?>"><?=uiIcon('download')?> <?=e(portalText('textos','descargar'))?></a> <span>(<?=e(pdfSize($row))?><?= $row['module'] === 'documentos' ? ', ' . e(portalText('textos','version_documento')) . ' ' . e(documentVersion($row, $preview)) : '' ?>)</span></p><?php
     } else {
         imageTag($row, ($fields['alt'] ?? '') ?: $row['title'], 'media', $preview);
     }
+}
+
+function pdfSize(array $row): string
+{
+    return number_format((int) $row['size_bytes'] / 1024, 1, ',', '.') . ' KiB';
 }
 
 function documentVersion(array $row, ?int $preview): int
@@ -592,6 +695,7 @@ function homeSection(callable $load): ?array
         return $load();
     } catch (Throwable $error) {
         logEvent('home_section_unavailable', ['kind'=>get_class($error)]);
+        header('Cache-Control: private, no-store');
         return null;
     }
 }
@@ -671,6 +775,9 @@ function homeCover(?array $settings, array $fields, array $slides, ?int $preview
 function homeShortcuts(array $options, array $fields): void
 {
     $links = $options['enlaces'];
+    if ($options['fut'] !== '' && !array_any($links, fn(array $link) => $link['url'] === '/mesa-partes/fut')) {
+        array_unshift($links, ['label'=>$options['fut'], 'url'=>'/mesa-partes/fut', 'icon'=>'download']);
+    }
     if (!empty($fields['acceso_texto']) && !empty($fields['acceso_url'])) {
         $links[] = ['label'=>$fields['acceso_texto'],'url'=>$fields['acceso_url'],'icon'=>'open_in_new'];
     }
@@ -713,7 +820,8 @@ function homeAgenda(array $agenda): void
 {
     ?><div class="home-agenda"><?php foreach ($agenda as $key=>$options):
         $module = substr($key, strlen('bloque-'));
-        $rows = homeSection(fn() => published($module, limit: (int) $options['cantidad']));
+        $filters = $module === 'comunicados' ? ['vigencia'=>'vigentes'] : [];
+        $rows = homeSection(fn() => published($module, limit: (int) $options['cantidad'], filters: $filters));
         homeOverview($module, $options, $rows);
     endforeach ?></div><?php
 }
@@ -804,8 +912,9 @@ function homeOverview(string $module, array $options, ?array $rows): void
               <?php else: ?><span class="quick-icon"><?=uiIcon(moduleIcon($module))?></span><?php endif ?>
               <div>
                 <a href="/<?=e($module)?>/<?=e($row['slug'])?>"><?=e($row['title'])?></a>
-                <?php if ($event): ?><small><?=e(eventDateLabel($data))?></small>
-                <?php elseif ($row['publication_date']): ?><small><?=e(publicationLabel($row['publication_date']))?></small><?php endif ?>
+                <?php if ($event): ?><small><?=e(eventDateLabel($data))?><?=empty($data['lugar']) ? '' : ' · ' . e($data['lugar'])?></small>
+                <?php elseif ($module === 'comunicados'): noticeMetadata($data);
+                elseif ($row['publication_date']): ?><small><?=e(publicationLabel($row['publication_date']))?></small><?php endif ?>
               </div>
             </li>
         <?php endforeach ?></ul>
@@ -844,12 +953,21 @@ function institutionalContact(array $fields, string $title, array $action = []):
 {
     $home = $action !== [];
     $hasAction = $home && $action['accion'] !== '' && $action['destino'] !== '';
-    if ($hasAction || array_filter(array_intersect_key($fields, array_flip(['direccion','correo','telefono','red_social'])))): ?>
+    if ($hasAction || array_filter(array_intersect_key($fields, array_flip(['direccion','correo','telefono','red_social','mapa','horario'])))): ?>
       <?php if ($home): ?><div class="home-inner"><?php endif ?>
       <section class="home-section contact-section"><div><h2><?=e($title)?></h2><address>
-      <?php foreach (['direccion'=>'location_on','correo'=>'mail','telefono'=>'call'] as $key=>$icon): if (!empty($fields[$key])): ?>
-        <span><?=uiIcon($icon)?> <?=e($fields[$key])?></span>
-      <?php endif; endforeach ?>
+      <?php foreach (['direccion'=>'location_on','horario'=>'schedule','correo'=>'mail','telefono'=>'call'] as $key=>$icon):
+          if (empty($fields[$key])) continue;
+          $value = $fields[$key];
+          $href = match ($key) {
+              'direccion' => $fields['mapa'] ?? '',
+              'correo' => filter_var($value, FILTER_VALIDATE_EMAIL) ? 'mailto:' . str_replace('%40', '@', rawurlencode($value)) : '',
+              'telefono' => validInstitutionPhone($value) ? 'tel:' . preg_replace('/[^+0-9]/','',$value) : '',
+              default => '',
+          }; ?>
+        <?php if ($href !== ''): ?><a href="<?=e($href)?>"><?=uiIcon($icon)?> <?=e($value)?></a>
+        <?php else: ?><span><?=uiIcon($icon)?> <?=e($value)?></span><?php endif ?>
+      <?php endforeach ?>
       <?php if (!empty($fields['red_social'])): ?><a href="<?=e($fields['red_social'])?>"><?=e(portalText('textos','red_social'))?> <?=uiIcon('arrow_outward')?></a><?php endif ?>
       </address></div>
       <?php if ($hasAction): ?><a class="button" href="<?=e($action['destino'])?>"><?=e($action['accion'])?> <?=uiIcon('arrow_forward')?></a><?php endif ?>
@@ -880,15 +998,18 @@ function editForm(string $module, int $id, array $row, array $user, ?HttpError $
     $deleted = !empty($row['deleted_at']);
     $visible = !empty($row['effective_published']);
     $future = !empty($row['future']);
+    $pending = $id && !$deleted && ($visible || $future)
+        && $row['working'] !== $row['effective_published'] && (!$future || $row['working'] !== $row['scheduled']);
     $showPublication = $id && !$conflict && allowed($user,$module,$deleted ? 'restore' : 'publish');
     ?><div class="page-heading editor-heading">
         <p class="breadcrumb"><a href="<?=e($base)?>"><?=uiIcon('arrow_back')?> <?=e($label)?></a><?=uiIcon('chevron_right')?> <?= $id ? 'Editar' : 'Nuevo' ?></p>
         <div class="heading-row"><h1><?= $portal ? e($portal['name']) : ($id ? e(($row['title'] ?? '') ?: 'Editar contenido') : 'Nuevo contenido') ?></h1>
-        <?php if ($id): ?><a class="button secondary preview-link" href="<?=e($url)?>/vista"><?=uiIcon('visibility')?> Vista previa</a><?php endif ?></div>
+        <?php if ($id && $deleted): ?><a class="button secondary preview-link" href="<?=e($url)?>/vista"><?=uiIcon('visibility')?> Vista previa</a><?php endif ?></div>
         <?php if ($id): ?>
           <div class="editor-status">
             <?php statusChip($deleted ? 'En papelera' : ($visible ? 'Publicado' : ($future ? 'Programado' : 'Borrador')),
                 $deleted ? 'alert' : ($visible ? 'success' : ($future ? 'planned' : ''))); ?>
+            <?php if (!$deleted && ($visible || $future)): ?><span data-pending-revision<?= $pending ? '' : ' hidden' ?>><?php statusChip('Borrador pendiente'); ?></span><?php endif ?>
             <?php if ($future): ?><span>Programado para <?=e((new DateTimeImmutable($row['publish_at']))->setTimezone(new DateTimeZone('America/Lima'))->format('d/m/Y H:i'))?> (Lima)</span><?php endif ?>
           </div>
         <?php endif ?>
@@ -903,8 +1024,17 @@ function editForm(string $module, int $id, array $row, array $user, ?HttpError $
     <?php if (isset($_GET['guardado'])): ?><p role="status" class="notice success-notice"><?=uiIcon('check_circle')?> Borrador guardado.</p><?php endif ?>
     <div class="editor-layout<?= $showPublication ? ' with-inspector' : '' ?>">
     <?php if (!$deleted): ?>
-    <form class="editor" method="post" action="<?=e($url)?>/guardar" enctype="multipart/form-data" <?= $portal ? 'data-portal-editor' : ($id ? 'data-autosave' : '') ?>>
+    <form class="editor" method="post" action="<?=e($url)?>/guardar" enctype="multipart/form-data"
+      <?= $portal || !$id ? 'data-manual-editor' : 'data-autosave' ?><?= empty($row['unsaved']) ? '' : ' data-unsaved' ?>>
       <?=token($user)?><input type="hidden" name="version" value="<?=e($version)?>">
+      <div class="editor-save">
+        <button class="primary"><?=uiIcon('save')?> Guardar borrador</button>
+        <?php if ($id): ?><a class="button secondary preview-link" href="<?=e($url)?>/vista"><?=uiIcon('visibility')?> Vista previa</a><?php endif ?>
+        <?php if ($showPublication): ?><a class="button secondary" href="#publicacion"><?=uiIcon('fact_check')?> Publicación</a><?php endif ?>
+        <span id="save-status" role="status" aria-live="polite"></span>
+      </div>
+      <div class="notice" data-resume hidden><a href="/admin/ingresar" target="_blank" rel="noopener">Ingresar en otra pestaña</a>
+        <button type="button" data-resume-action>Reanudar guardado</button></div>
       <?php if ($portal): portalEditorFields($portal, $row, $invalid);
       else: ?>
       <section class="form-card">
@@ -948,9 +1078,6 @@ function editForm(string $module, int $id, array $row, array $user, ?HttpError $
         <?php if (!empty($row['media_id'])): ?><label class="check-field"><input type="checkbox" name="remove_media" value="1" <?= !empty($row['remove_media']) ? 'checked' : '' ?>> Quitar archivo actual</label><?php endif ?>
       </section>
       <?php endif ?>
-      <div class="editor-save"><button class="primary"><?=uiIcon('save')?> Guardar borrador</button> <span id="save-status" role="status" aria-live="polite"></span></div>
-      <div class="notice" data-resume hidden><a href="/admin/ingresar" target="_blank" rel="noopener">Ingresar en otra pestaña</a>
-        <button type="button" data-resume-action>Reanudar guardado</button></div>
     </form>
     <?php endif ?>
     <?php if ($showPublication): ?>
@@ -1042,9 +1169,15 @@ function publicationLabel(string $instant): string
 function eventDateLabel(array $fields): string
 {
     if (strlen($fields['fecha']) > 10) {
-        return limaDisplay($fields['fecha']);
+        $date = new DateTimeImmutable($fields['fecha'], limaNow()->getTimezone());
+        return $date->setTimezone(limaNow()->getTimezone())->format('d/m/Y · H:i');
     }
     return limaDisplay($fields['fecha']) . ' · ' . (($fields['hora'] ?? '') ?: portalText('textos','sin_hora'));
+}
+
+function limaNow(): DateTimeImmutable
+{
+    return new DateTimeImmutable('now', new DateTimeZone('America/Lima'));
 }
 
 function catalogFilters(string $module, array $filters, string $search, string $tag): void
@@ -1053,7 +1186,18 @@ function catalogFilters(string $module, array $filters, string $search, string $
         return;
     }
     $labels = portalValues('filtros');
-    ?><form method="get" class="catalog-filters">
+    $month = $filters['mes'] ?? '';
+    $reset = '/' . $module . ($month !== '' ? '?mes=' . $month : '');
+    $active = $search !== '' || $tag !== '' || array_filter(array_diff_key($filters, ['mes'=>true]));
+    if ($module === 'eventos'):
+        $calMonth = $month ?: limaNow()->format('Y-m'); ?>
+      <nav class="event-views" aria-label="<?=e($labels['vistas'])?>">
+        <a class="button secondary" href="/eventos"<?=currentAttr($month === '')?>><?=uiIcon('list')?> <?=e($labels['agenda'])?></a>
+        <a class="button secondary" href="/eventos?mes=<?=e($calMonth)?>"<?=currentAttr($month !== '')?>
+          title="<?=e($month === '' ? $labels['calendario_mes'] : $labels['calendario'])?>"><?=uiIcon('calendar_month')?> <?=e($labels['calendario'])?></a>
+      </nav>
+    <?php endif ?>
+    <form method="get" class="catalog-filters">
       <label class="search-field"><?=e($labels['buscar'])?> <input name="q" type="search" maxlength="200" value="<?=e($search)?>"></label>
       <?php if ($tag !== ''): ?><input type="hidden" name="etiqueta" value="<?=e($tag)?>"><?php endif ?>
       <?php if ($module === 'galeria'): ?>
@@ -1062,18 +1206,20 @@ function catalogFilters(string $module, array $filters, string $search, string $
       <?php if (isset($filters['anio'])): ?><label><?=e($labels['anio'])?> <input name="anio" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" value="<?=e($filters['anio'])?>"></label><?php endif ?>
       <?php if ($module === 'comunicados'): ?>
         <label><?=e($labels['comunicado'])?> <?php selectOptions('aviso', [''=>$labels['todos']] + portalValues('avisos'), $filters['aviso']); ?></label>
+        <label><?=e($labels['vigencia'])?> <?php selectOptions('vigencia', [''=>$labels['todos'],'vigentes'=>$labels['vigentes'],'vencidos'=>$labels['vencidos']], $filters['vigencia']); ?></label>
       <?php endif ?>
       <?php if ($module === 'documentos'): ?>
         <label><?=e($labels['categoria'])?> <input name="categoria" list="document-categories" maxlength="255" value="<?=e($filters['categoria'])?>"></label>
         <datalist id="document-categories"><?php foreach (documentCategories() as $category): ?><option value="<?=e($category)?>"><?php endforeach ?></datalist>
       <?php endif ?>
-      <?php if ($module === 'eventos'): ?>
+      <?php if ($module === 'eventos' && $month === ''): ?>
         <label><?=e($labels['periodo'])?> <?php selectOptions('periodo', [''=>$labels['proximos'],'anteriores'=>$labels['anteriores']], $filters['periodo']); ?></label>
+      <?php elseif ($module === 'eventos'): ?>
         <label><?=e($labels['mes'])?> <input type="month" name="mes" value="<?=e($filters['mes'])?>"></label>
       <?php endif ?>
       <button class="secondary"><?=uiIcon('filter_list')?> <?=e($labels[$module === 'galeria' ? 'filtrar_galeria' : 'filtrar'])?></button>
-      <?php if ($module === 'eventos' && $filters['mes'] === ''): ?>
-        <a class="section-link" href="?mes=<?=e((new DateTimeImmutable('now', new DateTimeZone('America/Lima')))->format('Y-m'))?>"><?=e($labels['calendario_mes'])?></a>
+      <?php if ($active): ?>
+        <a class="button secondary" href="<?=e($reset)?>"><?=uiIcon('close')?> <?=e($labels['limpiar'])?></a>
       <?php endif ?>
     </form><?php
 }
@@ -1085,32 +1231,45 @@ function documentCategories(): array
                  GROUP BY editorial_slug(r.fields->>'categoria') ORDER BY 1")->fetchAll(PDO::FETCH_COLUMN);
 }
 
-function eventCalendar(string $month, array $rows): void
+function eventCalendar(string $month, array $rows, string $search, string $tag): void
 {
     $labels = portalValues('filtros');
-    if (!$rows) {
-        emptyState('calendar_month', $labels['vacio']);
-        return;
-    }
-    $first = new DateTimeImmutable($month . '-01', new DateTimeZone('America/Lima'));
+    $months = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+    $first = new DateTimeImmutable($month . '-01', limaNow()->getTimezone());
+    $params = array_filter(['q'=>$search,'etiqueta'=>$tag], fn($value) => $value !== '');
     $byDay = [];
     foreach ($rows as $row) {
-        $fields = json_decode($row['fields'], true);
-        $byDay[substr($fields['fecha'],0,10)][] = $row;
+        $fields = json_decode($row['fields'], true) ?? [];
+        $byDay[substr($fields['fecha'],0,10)][] = [$row, $fields];
     }
     ?><section aria-labelledby="calendar-title">
-      <h2 id="calendar-title" class="calendar-title"><?=e($labels['calendario'])?> <?=e($month)?></h2>
+      <div class="calendar-toolbar">
+        <h2 id="calendar-title" class="calendar-title"><?=e($months[(int) $first->format('n')-1] . ' de ' . $first->format('Y'))?></h2>
+        <nav class="links" aria-label="<?=e($labels['calendario'])?>">
+          <?php foreach (['previous'=>['-1 month','mes_anterior','chevron_left'], 'next'=>['+1 month','mes_siguiente','chevron_right']] as [$offset,$label,$icon]):
+              $target = $first->modify($offset)->format('Y-m');
+              if (!preg_match('/^(?!0000)[0-9]{4}-[0-9]{2}$/D', $target)) continue; ?>
+            <a class="button secondary" href="/eventos?<?=e(http_build_query(['mes'=>$target] + $params))?>"><?=uiIcon($icon)?> <?=e($labels[$label])?></a>
+          <?php endforeach ?>
+        </nav>
+      </div>
+      <?php if (!$rows): emptyState('calendar_month', $labels['vacio']); else: ?>
       <div class="calendar">
+        <?php foreach (['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'] as $weekday): ?>
+          <span class="calendar-weekday" aria-hidden="true"><?=e($weekday)?></span>
+        <?php endforeach ?>
         <?php for ($slot=1; $slot < (int) $first->format('N'); $slot++): ?><span class="calendar-gap" aria-hidden="true"></span><?php endfor ?>
         <?php for ($day=1; $day <= (int) $first->format('t'); $day++):
             $date = $month . '-' . str_pad((string) $day, 2, '0', STR_PAD_LEFT); ?>
         <section aria-label="<?=e($labels['dia'])?> <?=$day?>"><h3><time datetime="<?=e($date)?>"><?=$day?></time></h3>
-          <?php if (isset($byDay[$date])): ?><ul><?php foreach ($byDay[$date] as $row): ?>
-            <li><a href="/eventos/<?=e($row['slug'])?>"><?=e($row['title'])?></a></li>
+          <?php if (isset($byDay[$date])): ?><ul><?php foreach ($byDay[$date] as [$row,$fields]): ?>
+            <li><a href="/eventos/<?=e($row['slug'])?>"><?=e($row['title'])?></a>
+              <small><?=e(eventDateLabel($fields))?><?=empty($fields['lugar']) ? '' : ' · ' . e($fields['lugar'])?></small></li>
           <?php endforeach ?></ul><?php endif ?>
         </section>
         <?php endfor ?>
       </div>
+      <?php endif ?>
     </section><?php
 }
 

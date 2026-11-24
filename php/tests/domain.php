@@ -14,14 +14,27 @@ foreach (array_keys(modules()) as $module) {
             'docentes' => 'list edit preview save order',
             'carrusel' => 'list edit preview save order',
         ][$module] ?? '';
-        $editor = $grant !== '' && in_array($action, explode(' ', $grant . ' publish schedule unpublish cancel'), true);
-        $matrix = ['admin'=>true, 'publisher'=>$editor, 'editor'=>$editor, ''=>false];
+        $editor = $grant !== '' && $action !== 'order' && in_array($action, explode(' ', $grant), true);
+        $publisher = $grant !== '' && in_array($action, explode(' ', $grant . ' publish schedule unpublish cancel'), true);
+        $matrix = ['admin'=>true, 'publisher'=>$publisher, 'editor'=>$editor, ''=>false];
         foreach ($matrix as $role => $expected) {
             if (allowed(['role'=>$role],$module,$action) !== $expected) {
                 throw new RuntimeException("Permiso inesperado para $role / $module / $action");
             }
         }
     }
+}
+foreach (['list'=>true, 'save'=>false, 'archive'=>false] as $action=>$expected) {
+    if (allowed(['role'=>'editor'], 'etiquetas', $action) !== $expected) {
+        throw new RuntimeException("Permiso inesperado para editor / etiquetas / $action");
+    }
+}
+$totpSecret = '12345678901234567890';
+if (mfaBase32($totpSecret) !== 'GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ'
+    || mfaCode($totpSecret, 1) !== '287082' || mfaCode($totpSecret, 37037036) !== '081804'
+    || mfaMatchingStep($totpSecret, '287082', 60) !== 1
+    || mfaMatchingStep($totpSecret, '287082', 90) !== null) {
+    throw new RuntimeException('El código TOTP no coincide con el vector de referencia.');
 }
 $html = sanitize('<h2>Hola</h2><p><strong>Mundo</strong> <a href="https://example.org">Enlace</a></p>');
 if ($html !== '<h2>Hola</h2><p><strong>Mundo</strong> <a rel="noopener noreferrer" href="https://example.org">Enlace</a></p>') {

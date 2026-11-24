@@ -25,7 +25,7 @@ openssl x509 -in /var/lib/postgresql/data/certs/root.crt -outform PEM | base64 -
 printf '\n'
 ```
 
-En tu terminal local, genera la contraseña del rol de aplicación con `openssl rand -hex 32`. En **Variables → Raw Editor** del servicio `portal`, pega el bloque y reemplaza los dos valores indicados. Aplica los cambios desde Railway.
+En tu terminal local, ejecuta `openssl rand -hex 32` por separado para generar la contraseña del rol de aplicación y la clave de cifrado de la verificación en dos pasos. En **Variables → Raw Editor** del servicio `portal`, pega el bloque y completa los valores. Guarda la clave de cifrado en el gestor de secretos del colegio.
 
 ```dotenv
 PORT=8080
@@ -35,6 +35,7 @@ COLEGIO_DB_NAME=${{Postgres.PGDATABASE}}
 COLEGIO_MIGRATION_DB_USER=${{Postgres.PGUSER}}
 COLEGIO_MIGRATION_DB_PASSWORD=${{Postgres.PGPASSWORD}}
 COLEGIO_APP_PASSWORD=PEGA_LA_CONTRASENA_GENERADA
+COLEGIO_MFA_KEY=PEGA_LA_CLAVE_DE_CIFRADO_GENERADA
 COLEGIO_DB_CA_B64=PEGA_EL_CERTIFICADO_BASE64
 ```
 
@@ -51,6 +52,7 @@ read -r -s -p 'Contraseña del CMS (al menos 16 caracteres) ' clave
 printf '\n'
 printf '%s\n' "$clave" | bash /app/deploy/railway/entrypoint.sh account admin admin
 unset clave
+bash /app/deploy/railway/entrypoint.sh mfa-enroll admin
 ```
 
-Entra a `/admin/ingresar` con el usuario `admin` y esa contraseña. Cuando termine la prueba, guarda los datos que quieras conservar antes de eliminar el proyecto temporal para detener su consumo.
+Agrega la clave que muestra la terminal a tu app de autenticación y confirma con el código actual. Entra a `/admin/ingresar` con el usuario `admin`, la contraseña y un código nuevo. Para recuperar el acceso, repite el enrolamiento desde una sesión autorizada. Cuando termine la prueba, guarda los datos que quieras conservar antes de eliminar el proyecto temporal para detener su consumo.

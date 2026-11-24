@@ -14,7 +14,7 @@ fi
 # private directory protects these readable files on the VPS itself.
 temporary=
 trap 'if [ -n "$temporary" ]; then rm -f -- "$temporary"; fi' EXIT
-for secret in db_owner db_migrator db_app; do
+for secret in db_owner db_migrator db_app mfa_key; do
     destination=$secrets_dir/$secret
     if [ ! -e "$destination" ] && [ ! -L "$destination" ]; then
         temporary=$(mktemp "$secrets_dir/.secret.XXXXXXXX")
@@ -33,4 +33,4 @@ for secret in db_owner db_migrator db_app; do
         exit 1
     fi
 done
-printf 'Credenciales de PostgreSQL preparadas en %s.\n' "$secrets_dir"
+printf 'Credenciales de PostgreSQL y clave de verificación preparadas en %s.\n' "$secrets_dir"

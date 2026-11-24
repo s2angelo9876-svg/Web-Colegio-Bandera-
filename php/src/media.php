@@ -140,7 +140,8 @@ function serveMedia(int $id, ?int $revision, array $session, bool $thumbnail): n
     }
     $constraint = $revision === null ? '(' . visibleRevision() . ')=rm.revision_id AND c.deleted_at IS NULL' : 'rm.revision_id=?';
     $payload = $thumbnail ? 'coalesce(m.thumbnail,m.bytes)' : 'm.bytes';
-    $media = query("SELECT m.mime,m.filename,$payload AS payload FROM media m WHERE m.id=? AND EXISTS (
+    $etag = $revision === null ? ",encode(sha256($payload),'hex') AS etag" : '';
+    $media = query("SELECT m.mime,m.filename,$payload AS payload$etag FROM media m WHERE m.id=? AND EXISTS (
                     SELECT 1 FROM revision_media rm JOIN revisions r ON r.id=rm.revision_id
                     JOIN content c ON c.id=r.content_id WHERE rm.media_id=m.id AND $constraint)",
         $revision === null ? [$id] : [$id,$revision])->fetch(PDO::FETCH_ASSOC);
@@ -163,7 +164,7 @@ function serveMedia(int $id, ?int $revision, array $session, bool $thumbnail): n
 
 function publishedDocumentMedia(string $slug): ?array
 {
-    $sql = "SELECT m.mime,m.filename,m.bytes AS payload FROM content c
+    $sql = "SELECT m.mime,m.filename,m.bytes AS payload,encode(sha256(m.bytes),'hex') AS etag FROM content c
             JOIN revision_media rm ON rm.revision_id=(" . visibleRevision() . ")
             JOIN media m ON rm.media_id=m.id
             WHERE c.module='documentos' AND c.deleted_at IS NULL AND m.mime='application/pdf'";
@@ -193,7 +194,7 @@ function downloadFut(): never
     if (!is_readable($path) || !($stream = fopen($path, 'rb'))) {
         fail(503, 'El formulario no está disponible temporalmente.');
     }
-    sendMedia(['mime'=>'application/pdf', 'payload'=>$stream], 'fut-solicitud-referencial.pdf');
+    sendMedia(['mime'=>'application/pdf', 'payload'=>$stream, 'etag'=>hash_file('sha256', $path) ?: null], 'fut-solicitud-referencial.pdf');
 }
 
 function sendMedia(array $media, string $pdfFilename = 'archivo.pdf'): never
@@ -201,6 +202,9 @@ function sendMedia(array $media, string $pdfFilename = 'archivo.pdf'): never
     header('Content-Type: ' . $media['mime']);
     if ($media['mime'] === 'application/pdf') {
         header('Content-Disposition: attachment; filename="' . $pdfFilename . '"');
+    }
+    if (isset($media['etag']) && revalidatePublic(hash('sha256', $media['etag'] . '|' . $media['mime'] . '|' . $pdfFilename))) {
+        exit;
     }
     if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'HEAD') {
         if (is_resource($media['payload'])) {

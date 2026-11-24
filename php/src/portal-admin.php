@@ -4,16 +4,31 @@ declare(strict_types=1);
 function portalAdmin(): void
 {
     $visible = '(' . visibleRevision() . ')';
-    $rows = query("SELECT c.id,c.slug,c.deleted_at,$visible IS NOT NULL AS visible,c.publish_at>now() AS future
+    $rows = query("SELECT c.id,c.slug,c.deleted_at,$visible IS NOT NULL AS visible,c.publish_at>now() AS future,
+                   c.working IS DISTINCT FROM $visible AND c.working IS DISTINCT FROM c.scheduled AS draft
                    FROM content c WHERE c.module='portal'")->fetchAll(PDO::FETCH_ASSOC);
     $records = array_column($rows, null, 'slug');
     $resources = query("SELECT module,id FROM content WHERE (module='institucion' AND slug='mesa-partes')
                         OR (module='documentos' AND slug=?)", [FUT_DOCUMENT_SLUG])->fetchAll(PDO::FETCH_KEY_PAIR);
     $guide = isset($resources['institucion']) ? '/admin/institucion/' . $resources['institucion'] : '/admin/institucion';
-    $fut = isset($resources['documentos']) ? '/admin/documentos/' . $resources['documentos'] : '/admin/documentos';
+    $fut = isset($resources['documentos']) ? '/admin/documentos/' . $resources['documentos'] : '/admin/documentos/nuevo?fut=1';
     $groups = [];
-    foreach (portalCatalog() as $key=>$definition) {
-        $groups[$definition['group']][$key] = $definition['name'];
+    $catalog = portalCatalog();
+    $search = field('q', 200, $_GET);
+    $group = field('grupo', 80, $_GET);
+    $normalize = static fn(string $value): string => strtr(mb_strtolower($value, 'UTF-8'),
+        ['á'=>'a','é'=>'e','í'=>'i','ó'=>'o','ú'=>'u','ü'=>'u','ñ'=>'n']);
+    $searchKey = $normalize($search);
+    $options = [''=>'Todas las secciones'];
+    foreach ($catalog as $key=>$definition) {
+        $name = $definition['group'];
+        $groupKey = str_replace(' ', '-', $normalize($name));
+        $options[$groupKey] = $name;
+        $captions = array_column($definition['fields'], 0);
+        $keywords = $normalize(implode(' ', [$definition['name'], $name, $definition['route'], $key, ...$captions]));
+        if (($group === '' || $group === $groupKey) && str_contains($keywords, $searchKey)) {
+            $groups[$name][$key] = $definition['name'];
+        }
     }
     ?><div class="page-heading">
       <p class="breadcrumb"><a href="/admin">Panel</a><?=uiIcon('chevron_right')?> Sitio web</p>
@@ -23,8 +38,15 @@ function portalAdmin(): void
     <div class="links portal-admin-shortcuts">
       <a class="button secondary" href="/admin/inicio"><?=uiIcon('web')?> Textos, portada y contacto de Inicio</a>
       <a class="button secondary" href="<?=e($guide)?>"><?=uiIcon('edit_note')?> Guía de Mesa de Partes</a>
-      <a class="button secondary" href="<?=e($fut)?>"><?=uiIcon('download')?> Formulario Único de Trámite</a>
+      <a class="button" href="<?=e($fut)?>"><?=uiIcon('download')?> <?=isset($resources['documentos']) ? 'Editar FUT oficial' : 'Cargar FUT oficial'?></a>
     </div>
+    <form method="get" class="catalog-filters">
+      <label class="search-field">Buscar ajustes <input name="q" type="search" maxlength="200" value="<?=e($search)?>" placeholder="Ej. horario o Mesa de Partes"></label>
+      <label>Sección <?php selectOptions('grupo', $options, $group); ?></label>
+      <button class="secondary"><?=uiIcon('filter_list')?> Filtrar ajustes</button>
+      <?php if ($search !== '' || $group !== ''): ?><a class="button secondary" href="/admin/portal">Limpiar filtros</a><?php endif ?>
+    </form>
+    <?php if (!$groups): emptyState('search', 'No hay ajustes que coincidan.', 'Prueba con el nombre de una sección o limpia los filtros.'); endif ?>
     <div class="portal-admin-grid">
       <?php foreach ($groups as $heading=>$entries): ?>
         <section class="form-card">
@@ -40,7 +62,13 @@ function portalAdmin(): void
                     (bool) $record['future'] => ['Programado','planned'],
                     default => ['Borrador',''],
                 }; ?>
-              <li><a href="<?=e($href)?>"><?=e($label)?> <?=uiIcon('chevron_right')?></a><?php statusChip($status, $tone); ?></li>
+              <li>
+                <a href="<?=e($href)?>"><?=e($label)?> <?=uiIcon('chevron_right')?></a>
+                <span class="record-state"><?php statusChip($status, $tone);
+                    if ($record && !$record['deleted_at'] && $record['draft'] && ($record['visible'] || $record['future'])):
+                        ?><small>Borrador pendiente</small><?php
+                    endif ?></span>
+              </li>
             <?php endforeach ?>
           </ul>
         </section>
@@ -73,14 +101,15 @@ function portalEditorFields(array $definition, array $row, ?string $invalid): vo
                 continue;
             }
             $choices = portalChoices($type);
-            $inputType = match ($type) {'color'=>'color', 'order','count'=>'number', default=>'text'};
+            $inputType = match ($type) {'color','date','email','tel'=>$type, 'order','count'=>'number', default=>'text'};
+            $maximum = match ($type) {'url'=>500,'email'=>254,'tel'=>24,default=>255};
             $wide = in_array($type, ['paragraph','url'], true);
             ?><label<?= $wide ? ' class="portal-field-wide"' : '' ?>><?=e($label)?>
               <?php if ($choices): selectOptions($key, $choices, $value, $invalid, $inputId);
               elseif ($type === 'paragraph'): ?>
                 <textarea id="<?=e($inputId)?>" name="<?=e($key)?>" rows="3" maxlength="1000"<?=invalidAttr($invalid,$key)?>><?=e($value)?></textarea>
               <?php else: ?><input id="<?=e($inputId)?>" name="<?=e($key)?>" type="<?=e($inputType)?>"
-                  <?= $type === 'order' ? 'min="0" max="999" required' : ($type === 'count' ? 'min="1" max="48" required' : 'maxlength="' . ($type === 'url' ? 500 : 255) . '"') ?>
+                  <?= $type === 'order' ? 'min="0" max="999" required' : ($type === 'count' ? 'min="1" max="48" required' : 'maxlength="' . $maximum . '"') ?>
                   value="<?=e($value)?>"<?=invalidAttr($invalid,$key)?>><?php endif ?>
             </label><?php
         endforeach ?>

@@ -65,12 +65,13 @@ function portalCatalog(): array
             'leyenda'=>['Texto al pie','text','I.E. Bandera del Perú'],
             'personal'=>['Texto del enlace inferior','text','Acceso del personal'],
             'ruta_personal'=>['Destino del enlace inferior','url','/admin/ingresar'],
+            'privacidad'=>['Texto del enlace de privacidad','text','Privacidad'],
             'enlaces'=>['Grupos y enlaces del pie','links',[
                 $link('Institución','/institucion','El colegio'), $link('Docentes','/docentes','El colegio'),
                 $link('Equipo directivo','/directivos','El colegio'), $link('Administrativos','/administrativos','El colegio'),
                 $link('Documentos institucionales','/documentos','Recursos y novedades'),
                 $link('Noticias','/noticias','Recursos y novedades'), $link('Galería','/galeria','Recursos y novedades'),
-                $link('Calendario','/eventos','Recursos y novedades'), $link('Mesa de Partes','/mesa-partes','Recursos y novedades'),
+                $link('Agenda','/eventos','Recursos y novedades'), $link('Mesa de Partes','/mesa-partes','Recursos y novedades'),
             ]],
         ]),
         'portada'=>$definition($home, 'Acción y recursos de portada', '/', [
@@ -87,8 +88,9 @@ function portalCatalog(): array
             'error'=>['Mensaje de portada temporalmente indisponible','paragraph','La información de portada no está disponible temporalmente.'],
         ], 'Imagen de respaldo de portada'),
         'bloque-accesos'=>$definition($home, 'Accesos rápidos', '/', $block('Accesos rápidos', 10, [
+            'fut'=>['Texto del acceso directo al FUT','text','Descargar FUT'],
             'enlaces'=>['Enlaces e iconos','links',[
-                $link('Documentos institucionales','/documentos',icon:'description'),
+                $link('Documentos','/documentos',icon:'description'),
                 $link('Docentes','/docentes',icon:'school'), $link('Equipo directivo','/directivos',icon:'account_tree'),
                 $link('Galería','/galeria',icon:'photo_library'),
             ]],
@@ -97,17 +99,17 @@ function portalCatalog(): array
             'visible'=>['Mostrar noticias, agenda y comunicados','toggle','si'],
             'orden'=>['Orden en Inicio','order','20'],
         ]),
-        'bloque-noticias'=>$definition($home, 'Noticias de inicio', '/', $block('Noticias recientes', 10, [
+        'bloque-noticias'=>$definition($home, 'Noticias de inicio', '/', $block('Noticias recientes', 30, [
             ...$action('Todas las noticias','/noticias'),
             'cantidad'=>['Cantidad de publicaciones','count','3'],
             'vacio'=>['Mensaje sin noticias','paragraph','Todavía no hay noticias publicadas.'],
             'error'=>['Mensaje de indisponibilidad','paragraph','No fue posible cargar las noticias.'],
         ])),
         'bloque-eventos'=>$definition($home, 'Agenda de inicio', '/', $block('Próximos eventos', 20, [
-            ...$action('Ver calendario','/eventos'), 'cantidad'=>['Cantidad de eventos','count','3'],
+            ...$action('Ver agenda','/eventos'), 'cantidad'=>['Cantidad de eventos','count','3'],
             'vacio'=>['Mensaje sin eventos','paragraph','Por ahora no hay actividades programadas.'],
         ])),
-        'bloque-comunicados'=>$definition($home, 'Comunicados de inicio', '/', $block('Comunicados', 30, [
+        'bloque-comunicados'=>$definition($home, 'Comunicados de inicio', '/', $block('Comunicados vigentes', 15, [
             ...$action('Ver avisos','/comunicados'), 'cantidad'=>['Cantidad de avisos','count','3'],
             'vacio'=>['Mensaje sin comunicados','paragraph','Por ahora no hay comunicados vigentes.'],
         ])),
@@ -147,6 +149,19 @@ function portalCatalog(): array
         }
     }
     unset($catalog['pagina-inicio']['fields']['cantidad']);
+    foreach ([
+        'institucion'=>'Conoce la historia, la propuesta educativa y la organización de la I.E. Bandera del Perú de Pisco, Ica.',
+        'noticias'=>'Lee las noticias y novedades de la comunidad educativa de la I.E. Bandera del Perú.',
+        'comunicados'=>'Consulta avisos del colegio, sus destinatarios y las fechas de vigencia.',
+        'eventos'=>'Consulta la agenda y el calendario de actividades escolares de la I.E. Bandera del Perú.',
+        'galeria'=>'Explora fotos y videos de actividades de la comunidad educativa.',
+        'documentos'=>'Consulta y descarga formularios y documentos institucionales del Colegio Bandera del Perú.',
+        'directivos'=>'Conoce al equipo directivo y las áreas de gestión del Colegio Bandera del Perú.',
+        'docentes'=>'Consulta el directorio docente por materia y área de enseñanza.',
+        'administrativos'=>'Conoce las áreas administrativas y los servicios de atención del colegio.',
+    ] as $module=>$description) {
+        $catalog['pagina-' . $module]['fields']['meta'][2] = $description;
+    }
     $catalog['pagina-noticias']['fields']['etiquetas'] = ['Texto del botón de etiquetas','text','Ver etiquetas'];
     $catalog['pagina-noticias']['fields']['relacionadas'] = ['Título de las noticias relacionadas','text','Noticias relacionadas'];
     $catalog['pagina-directivos']['fields']['vacio'][2] = 'No hay perfiles del equipo directivo publicados.';
@@ -175,7 +190,19 @@ function portalCatalog(): array
         'fut_accion'=>['Texto del botón de descarga','text','Descargar FUT'],
         'fut_modelo'=>['Texto junto al modelo referencial','paragraph','Modelo referencial editable. Puedes completarlo en tu lector de PDF.'],
         'fut_publicado'=>['Texto junto al formulario del colegio','paragraph','Completa el formulario y preséntalo por el canal de atención indicado.'],
+        'tramite'=>['Título de los pasos y requisitos','text','Antes de presentar una solicitud'],
+        'requisitos'=>['Requisitos y documentos que debe preparar una familia','html',''],
+        'presentar'=>['Texto del enlace oficial para presentar solicitudes','text','Presentar solicitud'],
+        'ruta_presentar'=>['Enlace oficial para presentar solicitudes','url',''],
+        'consultar'=>['Texto del enlace oficial para consultar expedientes','text','Consultar expediente'],
+        'ruta_consultar'=>['Enlace oficial para consultar expedientes','url',''],
         'canales'=>['Título de los canales de atención','text','Canales de atención'],
+        'horario'=>['Horario de atención de Mesa de Partes','paragraph',''],
+        'correo'=>['Correo oficial de Mesa de Partes','email',''],
+        'telefono'=>['Teléfono oficial de Mesa de Partes','tel',''],
+        'direccion'=>['Dirección de atención presencial','text',''],
+        'mapa'=>['Enlace a la ubicación de atención','url',''],
+        'ver_mapa'=>['Texto del enlace a la ubicación','text','Ver ubicación'],
         'enlaces'=>['Accesos de Mesa de Partes','links',[
             $link('Documentos institucionales','/documentos',icon:'description'),
             $link('Directorio administrativo','/administrativos',icon:'groups'),
@@ -188,7 +215,17 @@ function portalCatalog(): array
         'ejemplo'=>['Ejemplo del cuadro de búsqueda','text','Noticias, eventos o documentos'],
         'boton'=>['Texto del botón','text','Buscar'],
         'resultados'=>['Título de los resultados','text','Resultados'],
+        'mesa_partes'=>['Texto del resultado de Mesa de Partes','text','Ir a Mesa de Partes'],
+        'sin_resultados'=>['Siguiente paso cuando no hay resultados','paragraph','Prueba con un término más breve o consulta estas secciones.'],
     ], 'Imagen del buscador');
+    $catalog['pagina-privacidad'] = $definition($pages, 'Privacidad del portal', '/privacidad', [
+        'titulo'=>['Título visible','text','Privacidad del portal'],
+        'resumen'=>['Introducción visible','paragraph','Información sobre el uso del portal y el envío de solicitudes.'],
+        'meta'=>['Descripción para buscadores','paragraph','Información de privacidad del portal institucional y de los trámites escolares.'],
+        'contenido'=>['Política y datos del responsable','html',
+            '<h2>Uso del portal</h2><p>La consulta de contenido público y la descarga de documentos no requieren una cuenta. El acceso al panel del personal usa una cookie de sesión.</p><h2>Solicitudes y datos personales</h2><p>Si descargas el FUT, el formulario se completa en tu dispositivo. Usa los canales indicados en <a href="/mesa-partes">Mesa de Partes</a> para enviarlo o consultar cómo ejercer tus derechos sobre tus datos personales.</p>'],
+        'vigencia_fecha'=>['Fecha de la política aprobada','date',''],
+    ]);
     $catalog['pagina-etiquetas'] = $definition($pages, 'Etiquetas públicas', '/tags', [
         ...$page('Etiquetas de noticias'),
         'vacio'=>['Mensaje sin etiquetas','paragraph','Todavía no hay etiquetas publicadas.'],
@@ -200,6 +237,8 @@ function portalCatalog(): array
         'intro'=>['Introducción opcional','paragraph',''],
         'usuario'=>['Etiqueta de usuario','text','Usuario'],
         'clave'=>['Etiqueta de contraseña','text','Contraseña'],
+        'codigo'=>['Etiqueta del código de la aplicación de autenticación','text','Código de verificación'],
+        'ayuda_codigo'=>['Ayuda para el segundo factor','text','Introduce el código de tu app si tu cuenta usa verificación en dos pasos.'],
         'boton'=>['Texto del botón','text','Ingresar'],
         'volver'=>['Texto del enlace de regreso','text','Volver al portal'],
         'destino'=>['Destino del enlace de regreso','url','/'],
@@ -228,12 +267,20 @@ function portalCatalog(): array
         'siguiente'=>['Texto de página siguiente','text','Siguiente'],
         'sin_hora'=>['Texto de eventos sin hora','text','Horario por confirmar'],
         'tema'=>['Prefijo para el filtro por etiqueta','text','Etiqueta'],
+        'foto'=>['Tipo de publicación con foto','text','Foto'],
+        'video'=>['Tipo de publicación con video','text','Video'],
+        'sin_area'=>['Título del grupo de docentes con área pendiente','text','Sin área asignada'],
+        'vencido'=>['Estado de un comunicado con vigencia concluida','text','Vencido'],
+        'vigente'=>['Estado de un comunicado con vigencia futura','text','Vigente hasta'],
+        'vigencia_concluida'=>['Fecha final de un comunicado vencido','text','Venció el'],
     ]);
     $catalog['filtros'] = $definition($details, 'Filtros y calendario', '/eventos', [
         'buscar'=>['Etiqueta de búsqueda','text','Buscar'], 'tipo'=>['Etiqueta de tipo','text','Tipo'],
         'todos'=>['Opción sin filtro','text','Todos'], 'foto'=>['Opción de fotos','text','Fotos'],
         'video'=>['Opción de videos','text','Videos'], 'anio'=>['Etiqueta de año','text','Año'],
         'comunicado'=>['Etiqueta de tipo de comunicado','text','Tipo de comunicado'],
+        'vigencia'=>['Filtro por vigencia de comunicados','text','Vigencia'],
+        'vigentes'=>['Opción de avisos vigentes','text','Vigentes'], 'vencidos'=>['Opción de avisos vencidos','text','Vencidos'],
         'categoria'=>['Etiqueta de categoría','text','Categoría'], 'periodo'=>['Etiqueta de periodo','text','Periodo'],
         'proximos'=>['Opción de eventos próximos','text','Próximos'], 'anteriores'=>['Opción de eventos anteriores','text','Anteriores'],
         'mes'=>['Etiqueta del mes','text','Mes del calendario'],
@@ -241,6 +288,11 @@ function portalCatalog(): array
         'filtrar_galeria'=>['Botón para filtrar galería','text','Filtrar galería'],
         'calendario_mes'=>['Enlace al mes actual','text','Calendario del mes'],
         'calendario'=>['Título del calendario','text','Calendario'],
+        'agenda'=>['Título de la agenda de eventos','text','Agenda'],
+        'vistas'=>['Nombre del selector de vista de eventos','text','Vista de eventos'],
+        'mes_anterior'=>['Texto para retroceder un mes','text','Mes anterior'],
+        'mes_siguiente'=>['Texto para avanzar un mes','text','Mes siguiente'],
+        'limpiar'=>['Texto para restablecer un catálogo','text','Limpiar filtros'],
         'dia'=>['Nombre accesible de cada día','text','Día'],
         'vacio'=>['Mensaje sin eventos en el mes','paragraph','No hay eventos este mes.'],
     ]);
@@ -282,6 +334,7 @@ function portalRecord(string $slug): array
             $records = array_column(published('portal', limit: count(portalCatalog())), null, 'slug');
         } catch (RuntimeException $error) {
             logEvent('portal_settings_unavailable', ['kind'=>get_class($error)]);
+            header('Cache-Control: private, no-store');
             $records = [];
         }
     }
@@ -383,17 +436,22 @@ function portalReadFields(string $slug, array $source): array
             $values[$key] = portalReadLinks($key, $source);
             continue;
         }
-        $max = match ($type) {'url'=>500, 'paragraph'=>1000, 'html'=>24000, default=>255};
-        $value = field($key, $max, $source);
+        $max = match ($type) {'url'=>500, 'email'=>254, 'tel'=>24, 'date'=>10, 'paragraph'=>1000, 'html'=>24000, default=>255};
+        $value = array_key_exists($key, $source) ? field($key, $max, $source) : $default;
         $choices = portalChoices($type);
         if (($choices && !array_key_exists($value, $choices))
                 || ($type === 'url' && $value !== '' && !portalLink($value))
+                || ($type === 'email' && $value !== '' && !filter_var($value, FILTER_VALIDATE_EMAIL))
+                || ($type === 'tel' && $value !== '' && !validInstitutionPhone($value))
                 || ($type === 'color' && !preg_match('/^#[0-9a-f]{6}$/iD', $value))
                 || ($type === 'order' && (!ctype_digit($value) || (int) $value > 999))
                 || ($type === 'count' && (!ctype_digit($value) || (int) $value < 1 || (int) $value > 48))
                 || ($key === 'titulo' && $default !== '' && bodyText($value) === '')
                 || ($slug === 'marca' && in_array($key, ['nombre','pestana'], true) && bodyText($value) === '')) {
             fail(422, 'Revisa ' . mb_strtolower($label, 'UTF-8') . '.', $key);
+        }
+        if ($type === 'date' && $value !== '') {
+            validateDate($value, $key);
         }
         $values[$key] = match ($type) {'html'=>sanitize($value), 'color'=>strtolower($value), default=>$value};
     }
@@ -420,6 +478,15 @@ function portalValidateColors(array $values): void
         if ($ratio < 4.5) {
             fail(422, 'Elige un color con más contraste para conservar la legibilidad.', $key);
         }
+        if (str_starts_with($key, 'fondo_') || str_starts_with($key, 'panel_')) {
+            foreach ($light ? ['#61738b', '#437ac5'] : ['#7c8da9', '#a6cfff'] as $control) {
+                $foreground = $luminance($control);
+                $ratio = $light ? ($background + .05) / ($foreground + .05) : ($foreground + .05) / ($background + .05);
+                if ($ratio < 3) {
+                    fail(422, 'Elige un fondo que permita distinguir los bordes y el indicador de foco.', $key);
+                }
+            }
+        }
     }
 }
 
@@ -444,7 +511,11 @@ function portalThemeCss(array $colors): string
 
 function portalPage(string $module): array
 {
-    $page = portalValues('pagina-' . $module);
+    $slug = 'pagina-' . $module;
+    $page = portalValues($slug);
+    if (($page['meta'] ?? null) === '') {
+        $page['meta'] = portalCatalog()[$slug]['fields']['meta'][2];
+    }
     if (($page['vacio'] ?? null) === '') {
         $page['vacio'] = portalText('textos','vacio');
     }

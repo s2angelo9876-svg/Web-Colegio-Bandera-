@@ -2,11 +2,12 @@
 
 | Control | Aplicación en PHP | Evidencia |
 | --- | --- | --- |
-| A.5.15–A.5.18 y A.8.5 · Acceso, identidades y autenticación | Roles autorizados en servidor, alta y revocación por CLI, protección del último administrador, Argon2id con conversión en login, sesiones revocables y límites por cuenta e IP. | Matriz de permisos, revocación, expiración, cierre de sesión, conversión de bcrypt y prueba de último administrador. |
+| A.5.15–A.5.18 y A.8.5 · Acceso, identidades y autenticación | Separación entre borradores y acciones que modifican el portal público, alta y revocación por CLI, Argon2id, protección del último administrador, sesiones revocables y límites por cuenta e IP. En producción la administración requiere TOTP y el servidor acepta cada código una sola vez. | Matriz de permisos, pruebas de autenticación, sesión y repetición de códigos en el entorno de prueba. |
 | A.8.9 y A.8.24 · Configuración y criptografía | Variables externas para secretos, tokens aleatorios almacenados como hash, cookie segura en producción, PostgreSQL remoto con verificación TLS y separación del rol de migración. | Configuración de operación, prueba de cookies, comprobación de disponibilidad y parámetros de producción. |
 | A.8.15 y A.8.16 · Registro y monitoreo | Eventos editoriales en la misma transacción que la mutación. Eventos de acceso con fecha e ID de solicitud. Salud del proceso y comprobación separada de PostgreSQL y migraciones. | Aserciones sobre publicación programada única y respuesta 503 al detener el PostgreSQL de pruebas. |
 | A.8.25, A.8.26, A.8.28 y A.8.29 · Desarrollo, requisitos, código y pruebas | PDO preparado, validación contextual, CSRF con comprobación de origen, CSP, sanitización HTML y verificación de medios. Integración automatizada con datos desechables y prueba de actualización. | Flujo `.github/workflows/php.yml` y pruebas de permisos, CSRF, concurrencia, publicación, formatos, descarga y navegador. |
 | A.8.31 · Separación de entornos | Base y credenciales independientes por prueba, uso local de HTTP y configuración de HTTPS en producción. | Arranque reproducible en Docker y prueba del esquema desde cero. |
+| A.8.12 · Prevención de fuga de datos | Respuestas anónimas revalidables mediante ETag. Las revisiones privadas y el panel usan `no-store`. La visibilidad y la publicación se evalúan antes de devolver un 304. | Pruebas de caché con borradores, revisiones publicadas y retiro de contenido. |
 
 ## Riesgos y responsables
 

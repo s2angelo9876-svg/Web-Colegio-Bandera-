@@ -15,6 +15,7 @@ with sync_playwright() as playwright:
     page.goto(origin)
     expect(page.get_by_role("main")).to_have_count(1)
     expect(page.get_by_role("button", name="Menú")).to_have_attribute("aria-expanded", "false")
+    expect(page.get_by_role("link", name="Buscar", exact=True)).to_be_visible()
     page.get_by_role("button", name="Menú").press("Enter")
     page.get_by_role("navigation", name="Principal").get_by_text("Noticias").focus()
     page.keyboard.press("Escape")
@@ -28,10 +29,7 @@ with sync_playwright() as playwright:
         photo = hero.locator(".hero-visual").bounding_box()
         copy = hero.locator(".hero-copy").bounding_box()
         assert photo and copy
-        if width == 390:
-            assert photo["y"] + photo["height"] <= copy["y"] + 1
-        else:
-            assert abs(photo["y"] - copy["y"]) < 1
+        assert abs(photo["y"] - copy["y"]) < 1
         primary = page.get_by_role("navigation", name="Principal")
         if width == 390:
             page.get_by_role("button", name="Menú").press("Enter")
@@ -55,6 +53,15 @@ with sync_playwright() as playwright:
             with page.expect_download() as download:
                 download_fut.click()
             assert download.value.suggested_filename == "fut-solicitud-referencial.pdf"
+
+    page.set_viewport_size({"width": 320, "height": 568})
+    page.goto(origin + "/mesa-partes")
+    button = page.get_by_role("link", name="Descargar FUT", exact=True).bounding_box()
+    assert button and button["y"] + button["height"] <= 568
+    page.get_by_role("link", name="Buscar", exact=True).click()
+    page.get_by_role("searchbox").fill("Formulario Único de Trámite")
+    page.get_by_role("button", name="Buscar").click()
+    expect(page.get_by_role("link", name="Descargar FUT")).to_be_visible()
 
     page.set_viewport_size({"width": 390, "height": 844})
     early = browser.new_page(viewport={"width": 390, "height": 844}, color_scheme="light")
@@ -253,7 +260,18 @@ with sync_playwright() as playwright:
     expect(page.get_by_role("heading", name="Diseño y contenido del portal")).to_be_visible()
     assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
     page.get_by_role("link", name="Menú principal", exact=True).click()
+    page.get_by_label("Nombre accesible de la navegación").fill("Prueba sin guardar")
+    rejected = []
+    def stay_in_editor(dialog):
+        rejected.append(dialog.type)
+        dialog.dismiss()
+    page.once("dialog", stay_in_editor)
+    page.get_by_role("link", name="Diseño y contenido del portal", exact=True).click()
+    assert rejected == ["beforeunload"]
+    expect(page.get_by_label("Nombre accesible de la navegación")).to_have_value("Prueba sin guardar")
+    page.get_by_label("Nombre accesible de la navegación").fill("Principal")
     page.get_by_role("button", name="Añadir enlace").click()
+    assert page.get_by_role("button", name="Guardar borrador").bounding_box()["y"] < 844
     new_link = page.locator("[data-link-row]").last
     expect(new_link.get_by_label("Texto", exact=True)).to_be_focused()
     new_link.get_by_label("Texto", exact=True).fill("Formulario para familias")

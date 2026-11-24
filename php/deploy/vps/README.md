@@ -41,6 +41,14 @@ printf '%s\n' "$COLEGIO_ADMIN_PASSWORD" | docker compose run --rm --no-deps -T m
 unset COLEGIO_ADMIN_PASSWORD
 ```
 
+Activa la verificación en dos pasos en la misma terminal. Agrega la clave de configuración a la app de autenticación, introduce el código que muestra y espera al siguiente código para iniciar sesión.
+
+```bash
+docker compose run --rm --no-deps migrate php bin/console.php mfa-enroll administrador
+```
+
+Para recuperar el acceso, repite el enrolamiento desde una sesión autorizada del VPS. La activación invalida las sesiones anteriores. En un VPS existente ejecuta primero `sh init-secrets.sh` y reconstruye el servicio para que se apliquen el nuevo secreto y la migración.
+
 En Debian o Ubuntu, crea primero una cuenta de operación con `sudo` y una clave SSH. Verifica que puede iniciar sesión en una segunda terminal. En el firewall del proveedor y del sistema conserva el puerto SSH configurado para las redes de administración y permite 80 y 443 para el público. Docker publica únicamente los puertos del servicio `edge`.
 
 Instala la plantilla de OpenSSH desde el VPS y conserva la sesión actual durante el cambio.
@@ -66,7 +74,7 @@ Activa MFA en el proveedor del VPS y en GitHub. Ante acceso sospechoso, preserva
 
 ## Respaldo y actualizaciones
 
-Programa respaldos de PostgreSQL según la retención del colegio. Cifra y conserva una copia fuera del VPS. El volcado incluye publicaciones, archivos, revisiones, cuentas y eventos editoriales.
+Programa respaldos de PostgreSQL según la retención del colegio. Cifra y conserva una copia fuera del VPS. El volcado incluye publicaciones, archivos, revisiones, cuentas y eventos editoriales. Respalda por separado la clave privada `mfa_key`, que permite abrir los secretos TOTP restaurados.
 
 ```bash
 umask 077

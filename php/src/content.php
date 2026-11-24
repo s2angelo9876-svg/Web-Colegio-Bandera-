@@ -33,6 +33,10 @@ function published(?string $module, string $search = '', string $tag = '', ?stri
         $params[] = $module;
     } else {
         $where[] = "c.module NOT IN ('inicio','carrusel','portal')";
+        if (!empty($filters['fut_result'])) {
+            $where[] = "NOT (c.module='institucion' AND c.slug='mesa-partes') AND NOT (c.module='documentos' AND c.slug=?)";
+            $params[] = FUT_DOCUMENT_SLUG;
+        }
     }
     if ($slug !== null) {
         $where[] = 'c.slug=?';
@@ -67,6 +71,11 @@ function published(?string $module, string $search = '', string $tag = '', ?stri
         $where[] = "coalesce(nullif(r.fields->>'tipo',''),'general')=?";
         $params[] = $filters['aviso'];
     }
+    $validity = $filters['vigencia'] ?? '';
+    if ($module === 'comunicados' && $validity !== '') {
+        $operator = $validity === 'vigentes' ? '>=' : '<';
+        $where[] = "coalesce(nullif(r.fields->>'vigencia_fecha',''), '9999-12-31') $operator to_char(now() AT TIME ZONE 'America/Lima','YYYY-MM-DD')";
+    }
     $order = 'c.position,c.id DESC';
     if ($module === 'eventos' && $slug === null) {
         $eventDate = "left(r.fields->>'fecha',10)";
@@ -82,6 +91,9 @@ function published(?string $module, string $search = '', string $tag = '', ?stri
     }
     if (in_array($module, ['noticias','comunicados','documentos'], true)) {
         $order = "$date DESC NULLS LAST,c.id DESC";
+    }
+    if ($module === 'comunicados' && $validity === 'vigentes') {
+        $order = "coalesce(r.fields->>'tipo' = 'urgente', false) DESC,$order";
     }
     return query('SELECT c.module,c.slug,r.*,rm.media_id,m.mime AS media_mime,m.filename AS media_filename,m.width,m.height,
                     m.thumbnail IS NOT NULL AS has_thumbnail,octet_length(m.bytes) AS size_bytes,' . $date . ' AS publication_date
@@ -164,7 +176,7 @@ function saveRevision(string $module, int $id, array $session): array
         if (!in_array($fields['hero_modo'], ['','foto','carrusel'], true)) {
             fail(422, 'Selecciona un modo de portada válido.', 'hero_modo');
         }
-        if ($fields['telefono'] !== '' && !preg_match('/^[+0-9(). -]{5,24}$/D', $fields['telefono'])) {
+        if ($fields['telefono'] !== '' && !validInstitutionPhone($fields['telefono'])) {
             fail(422, 'Revisa el formato del teléfono institucional.', 'telefono');
         }
     }

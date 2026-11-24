@@ -141,11 +141,11 @@ function modules(): array
 {
     return [
         'noticias' => ['Noticias', ['autor' => 'Firma'], 'image'],
-        'comunicados' => ['Comunicados', ['tipo' => 'Tipo'], 'document'],
+        'comunicados' => ['Comunicados', ['tipo' => 'Tipo', 'destinatarios' => 'Destinatarios', 'vigencia_fecha' => 'Vigente hasta'], 'document'],
         'eventos' => ['Eventos', ['fecha' => 'Fecha en Lima', 'hora' => 'Hora en Lima (opcional)', 'lugar' => 'Lugar'], 'image'],
         'galeria' => ['Galería', ['fecha_galeria' => 'Fecha', 'video' => 'Enlace HTTPS al video'], 'image'],
         'documentos' => ['Documentos institucionales', ['categoria' => 'Categoría'], 'pdf'],
-        'docentes' => ['Docentes', ['cargo' => 'Cargo', 'especialidad' => 'Materia o área'], 'image'],
+        'docentes' => ['Docentes', ['cargo' => 'Cargo', 'especialidad' => 'Materia', 'area' => 'Área de enseñanza'], 'image'],
         'administrativos' => ['Administrativos', ['cargo' => 'Cargo', 'area' => 'Área'], 'image'],
         'directivos' => ['Equipo directivo', ['cargo' => 'Cargo', 'especialidad' => 'Materia o área', 'frase' => 'Frase', 'correo' => 'Correo institucional'], 'image'],
         'carrusel' => ['Carrusel', ['enlace' => 'Enlace HTTPS de destino'], 'image'],
@@ -159,6 +159,29 @@ function modules(): array
             'acceso_texto' => 'Texto de acceso rápido', 'acceso_url' => 'Enlace de acceso rápido (HTTPS)'], 'image'],
         'portal' => ['Diseño y contenido del portal', [], 'image'],
     ];
+}
+
+function validInstitutionPhone(string $value): bool
+{
+    return preg_match('/^\+?[0-9(). -]{5,24}$/D', $value) === 1
+        && strlen(preg_replace('/[^0-9]/', '', $value)) >= 5;
+}
+
+function revalidatePublic(string $hash): bool
+{
+    if (in_array('Cache-Control: private, no-store', headers_list(), true)) {
+        return false;
+    }
+    $etag = '"' . $hash . '"';
+    header('Cache-Control: public, no-cache');
+    header('ETag: W/' . $etag);
+    foreach (explode(',', $_SERVER['HTTP_IF_NONE_MATCH'] ?? '') as $candidate) {
+        if (in_array(trim($candidate), ['*', $etag, 'W/' . $etag], true)) {
+            http_response_code(304);
+            return true;
+        }
+    }
+    return false;
 }
 
 require_once __DIR__ . '/portal.php';

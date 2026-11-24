@@ -61,6 +61,9 @@ try {
             });
             logEvent('account_disabled');
             break;
+        case 'mfa-enroll':
+            enrollMfa($argv[2] ?? '');
+            break;
         case 'publish':
             echo publishDue() . " publicaciones procesadas\n";
             break;
@@ -69,7 +72,7 @@ try {
             query('DELETE FROM rate_limits WHERE bucket < floor(extract(epoch FROM now())/900)-1');
             break;
         default:
-            fwrite(STDERR, "Comandos: migrate, account, disable, publish, cleanup\n");
+            fwrite(STDERR, "Comandos: migrate, account, disable, mfa-enroll, publish, cleanup\n");
             exit(1);
     }
 } catch (Throwable $error) {
