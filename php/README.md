@@ -32,7 +32,16 @@ wsl.exe -d Ubuntu --exec /bin/bash php/bin/dev demo
 
 La carga se aplica a una base editorial vacía. Luego puedes editar los registros en el panel y conservar los cambios al reiniciar. Para detener la vista, usa `docker stop colegio-php-demo-web colegio-php-demo-pg`.
 
-Para personalizar la guía pública de Mesa de Partes, publica una página del módulo Institución con el identificador `mesa-partes`. Los canales de atención se toman del contacto publicado en la configuración del inicio.
+## Editar el portal desde el CMS
+
+Con una cuenta de administrador, abre **Diseño y contenido del portal** en el panel (`/admin/portal`). Cada ajuste empieza con los valores que ya usa el sitio. Guarda el borrador, abre **Vista previa** y publica cuando esté listo. Puedes programar su publicación en hora de Lima. **Retirar publicación** vuelve a mostrar los valores predeterminados de ese ajuste.
+
+- **Identidad y navegación.** Cambia el escudo, el icono de la pestaña, el nombre del portal, los colores, la tipografía y los espacios. Añade, agrupa, ordena o quita enlaces del menú y del pie.
+- **Página de inicio.** Edita los títulos, botones, fotos, visibilidad, orden y cantidad de contenido en los bloques. Usa **Configuración del inicio** para el título, el lema, la foto de portada, los pilares, las cifras y el contacto. Las diapositivas y sus enlaces se editan en **Carrusel**.
+- **Páginas públicas.** Edita las cabeceras, fotos, introducciones, enlaces, descripciones para buscadores y mensajes sin resultados. Cada ficha, publicación, foto o PDF se sigue editando en su módulo correspondiente.
+- **Textos y recursos.** Personaliza los paneles de Institución, el retrato de respaldo, las etiquetas de filtros y calendario, los botones comunes y los títulos de páginas de estado.
+
+**Mesa de Partes y FUT** controla el encabezado, la foto, la guía, los textos de descarga y los accesos rápidos. Puedes usar el texto de esa pantalla o editar la ficha de Institución con el identificador `mesa-partes`. Los canales de atención se toman del contacto publicado en la configuración del inicio.
 
 El botón **Descargar FUT** ofrece un modelo referencial editable en PDF. Para ofrecer el formulario del colegio, publica el PDF en Documentos institucionales con el identificador de URL `fut`. La descarga conserva la misma dirección cuando publicas una versión nueva.
 

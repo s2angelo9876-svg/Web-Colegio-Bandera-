@@ -19,6 +19,7 @@ require dirname(__DIR__) . '/src/content.php';
 require dirname(__DIR__) . '/src/media.php';
 require dirname(__DIR__) . '/src/taxonomy.php';
 require dirname(__DIR__) . '/src/views.php';
+require dirname(__DIR__) . '/src/portal-admin.php';
 
 header('Content-Security-Policy: default-src \'self\'; object-src \'none\'; frame-src https://www.youtube-nocookie.com; frame-ancestors \'none\'; base-uri \'none\'; form-action \'self\'');
 header('X-Content-Type-Options: nosniff');
@@ -51,7 +52,7 @@ try {
         fail(413, 'La solicitud supera el tamaño permitido.');
     }
     $protected = $path === '/admin' || str_starts_with($path, '/admin/') || $path === '/salir'
-        || (str_starts_with($path, '/medio/') && isset($_GET['revision']));
+        || ((str_starts_with($path, '/medio/') || $path === '/tema.css') && isset($_GET['revision']));
     $session = $protected ? currentSession() : [];
     if ($path === '/salir' || $path === '/admin/salir') {
         requireMethod($read, false);
@@ -64,7 +65,10 @@ try {
         logEvent('logout', ['account_id' => (int) $session['id']]);
         redirect('/admin/ingresar');
     }
-    if ($path === '/admin/ingresar') {
+    if ($path === '/tema.css') {
+        requireMethod($read, true);
+        portalThemeResponse($session);
+    } elseif ($path === '/admin/ingresar') {
         header('X-Robots-Tag: noindex, nofollow');
         if (!$read) {
             loginAccount($session);
@@ -78,21 +82,7 @@ try {
             sessionCookie($anonymous, time() + INACTIVITY_MINUTES * 60);
             $session = currentSession($anonymous);
         }
-        layout('Ingresar', function () use ($session): void {
-            ?><div class="login-layout">
-              <div class="login-photo" aria-hidden="true"><img src="/images/frontis_colegio.webp" alt="" width="1360" height="1020"></div>
-              <section class="login-panel feature-panel">
-                <div class="quick-icon"><?=uiIcon('lock')?></div>
-                <h1>Ingresar a la administración</h1>
-                <form method="post" class="editor"><?= $session ? token($session) : '' ?>
-                  <label>Usuario <input name="username" autocomplete="username" required></label>
-                  <label>Contraseña <input name="password" type="password" autocomplete="current-password" required></label>
-                  <button class="primary">Ingresar <?=uiIcon('arrow_forward')?></button>
-                </form>
-                <a class="section-link" href="/"><?=uiIcon('arrow_back')?> Volver al portal</a>
-              </section>
-            </div><?php
-        }, current: 'acceso');
+        layout(portalText('acceso','titulo'), fn() => accessView($session), current: 'acceso');
     } elseif ($path === '/admin' || str_starts_with($path, '/admin/')) {
         header('X-Robots-Tag: noindex, nofollow');
         if (!isset($session['id'])) {
@@ -141,24 +131,10 @@ try {
         echo json_encode(['error'=>['code'=>$status,'message'=>$message,'fields'=>(object) $fields],
             'meta'=>['request_id'=>requestId()]], JSON_THROW_ON_ERROR);
     } else {
-        $title = match ($status) {
-            401 => 'Inicia sesión para continuar',
-            403 => 'Acceso restringido',
-            404 => 'Página no encontrada',
-            405 => 'Acción no disponible',
-            429 => 'Inténtalo más tarde',
-            default => 'No se pudo completar la solicitud',
-        };
+        $title = portalErrorTitle($status);
         layout($title, function () use ($status, $message, $path, $title): void {
             $login = str_starts_with($path, '/admin/') && in_array($status, [401,403], true);
-            ?><section class="state-page">
-                <span class="empty-icon"><?=uiIcon($login ? 'lock' : 'info')?></span>
-                <h1><?=e($title)?></h1><p role="alert"><?=e($message)?></p>
-                <a class="button secondary" href="<?= $login ? '/admin/ingresar' : '/' ?>">
-                    <?=uiIcon('arrow_back')?> <?= $login ? 'Ingresar a la administración' : 'Volver al inicio' ?>
-                </a>
-                <?php if ($status >= 500): ?><small>Referencia para soporte <?=e(requestId())?>.</small><?php endif ?>
-            </section><?php
+            publicState($status, $title, $message, $login);
         }, isset($session['id']) ? $session : null);
     }
 }
@@ -221,6 +197,10 @@ function adminRoute(string $path, bool $read, array $user, bool $json): void
     requireAccess($user, $module, $action);
     $base = '/admin/' . $module;
     $label = modules()[$module][0];
+    if ($module === 'portal' && $action === 'list') {
+        layout($label, fn() => portalAdmin(), $user, current: $module);
+        return;
+    }
     if (!$read) {
         throttle('mutate:' . $user['id'], 180);
         csrf($user);
@@ -233,8 +213,13 @@ function adminRoute(string $path, bool $read, array $user, bool $json): void
                 }
                 $row = $id ? editorRow($module, $id) : [];
                 $fields = json_decode($row['fields'] ?? '{}', true);
-                foreach ([...array_keys(modules()[$module][1]), 'alt'] as $key) {
-                    $fields[$key] = is_string($_POST[$key] ?? null) ? $_POST[$key] : '';
+                $slug = $row['slug'] ?? (is_string($_POST['slug'] ?? null) ? $_POST['slug'] : '');
+                $portalFields = $module === 'portal' ? (portalCatalog()[$slug]['fields'] ?? throw $error) : null;
+                foreach ([...array_keys($portalFields ?? modules()[$module][1]), 'alt'] as $key) {
+                    $submitted = $_POST[$key] ?? null;
+                    $fields[$key] = ($portalFields[$key][1] ?? '') === 'links'
+                        ? (is_array($submitted) ? $submitted : [])
+                        : (is_string($submitted) ? $submitted : '');
                 }
                 foreach (['title','slug','summary','body','tags'] as $key) {
                     if (is_string($_POST[$key] ?? null) && ($key !== 'slug' || !$id)) {
@@ -350,9 +335,13 @@ function adminRoute(string $path, bool $read, array $user, bool $json): void
             if (!$data) {
                 fail(404, 'Revisión no encontrada.');
             }
-            $row = $data + ['module' => $module, 'working' => $data['id']];
+            $row = $data + ['module' => $module, 'working' => $data['id'], 'slug' => $row['slug']];
         }
         $revisions = query('SELECT id,created_at FROM revisions WHERE content_id=? ORDER BY id DESC LIMIT 50', [$id])->fetchAll(PDO::FETCH_ASSOC);
+        if ($module === 'portal') {
+            previewPortal($row, $revisions, $base . '/' . $id, $user);
+            return;
+        }
         layout('Vista previa', function () use ($row, $base, $id, $revisions): void {
             ?><div class="preview-bar"><a class="section-link" href="<?=e($base . '/' . $id)?>"><?=uiIcon('arrow_back')?> Volver al editor</a> <span>Vista previa</span></div>
             <details class="revision-list"><summary>Revisiones recientes</summary><ul><?php foreach ($revisions as $entry): ?>
@@ -364,8 +353,36 @@ function adminRoute(string $path, bool $read, array $user, bool $json): void
             }
         }, $user, current: $module);
     } else {
-        $row = $item === 'nuevo' ? [] : editorRow($module, $id);
+        if ($item === 'nuevo' && $module === 'portal') {
+            $key = field('seccion', 120, $_GET);
+            $definition = portalCatalog()[$key] ?? fail(404, 'Sección no encontrada.');
+            $existing = query("SELECT id FROM content WHERE module='portal' AND slug=?", [$key])->fetchColumn();
+            if ($existing) {
+                redirect($base . '/' . $existing);
+            }
+            $row = ['slug'=>$key, 'title'=>$definition['name']];
+        } else {
+            $row = $item === 'nuevo' ? [] : editorRow($module, $id);
+        }
         layout($label, fn() => editForm($module, $id, $row, $user), $user, current: $module);
+    }
+}
+
+function previewPortal(array $row, array $revisions, string $editor, array $user): void
+{
+    $definition = portalCatalog()[$row['slug']] ?? fail(404, 'Sección no encontrada.');
+    if (!empty($row['media_id'])) {
+        $media = mediaInfo((int) $row['media_id']);
+        $row += $media + ['media_mime'=>$media['mime'] ?? ''];
+    }
+    $row['preview_revision'] = (int) $row['working'];
+    portalPreviewContext(compact('row','revisions','editor'));
+    if ($definition['route'] === '/admin/ingresar') {
+        layout(portalText('acceso','titulo'), fn() => accessView([]), current: 'acceso');
+    } elseif ($definition['route'] === '/no-existe') {
+        layout(portalErrorTitle(404), fn() => publicState(404, portalErrorTitle(404), 'Página no encontrada.'));
+    } else {
+        publicRoute($definition['route'], $user);
     }
 }
 
@@ -401,8 +418,9 @@ function publicRoute(string $path, array $session): void
     if ($path === '/') {
         $settings = homeSection(fn() => published('inicio', limit: 1)[0] ?? []);
         $fields = json_decode($settings['fields'] ?? '{}', true);
-        layout('Inicio', fn() => home($settings),
-            description: ($fields['meta_descripcion'] ?? '') ?: 'Portal institucional del Colegio Bandera del Perú.',
+        $cover = portalValues('portada');
+        layout($cover['titulo_pestana'], fn() => home($settings),
+            description: ($fields['meta_descripcion'] ?? '') ?: $cover['descripcion'],
             canonical: $origin ? $origin . '/' : '', current: 'inicio');
         return;
     }
@@ -411,8 +429,9 @@ function publicRoute(string $path, array $session): void
         $settings = homeSection(fn() => published('inicio', limit: 1)[0] ?? []);
         $fut = homeSection(fn() => published('documentos', slug: FUT_DOCUMENT_SLUG, limit: 1))[0] ?? [];
         $contact = json_decode($settings['fields'] ?? '{}', true);
-        layout('Mesa de Partes', fn() => mesaPartes($guide, $contact, ($fut['media_mime'] ?? '') === 'application/pdf'),
-            description: ($guide['summary'] ?? '') ?: 'Presenta documentos y consulta solicitudes por los canales de atención del colegio.',
+        $presentation = portalPage('mesa-partes');
+        layout($presentation['titulo'], fn() => mesaPartes($guide, $contact, ($fut['media_mime'] ?? '') === 'application/pdf'),
+            description: portalRecord('pagina-mesa-partes') ? $presentation['meta'] : (($guide['summary'] ?? '') ?: $presentation['meta']),
             canonical: $origin ? $origin . $path : '', current: 'mesa-partes');
         return;
     }
@@ -431,7 +450,7 @@ function publicRoute(string $path, array $session): void
         echo '<url><loc>' . e($origin . '/') . '</loc></url>';
         echo '<url><loc>' . e($origin . '/mesa-partes') . '</loc></url>';
         $urls = query("SELECT c.module,c.slug,r.created_at FROM content c JOIN revisions r ON r.id=(" . visibleRevision() . ")
-                       WHERE c.deleted_at IS NULL AND c.module NOT IN ('inicio','carrusel')
+                       WHERE c.deleted_at IS NULL AND c.module NOT IN ('inicio','carrusel','portal')
                          AND NOT (c.module='institucion' AND c.slug='mesa-partes') ORDER BY c.id");
         while ($entry = $urls->fetch(PDO::FETCH_ASSOC)) {
             $lastmod = (new DateTimeImmutable($entry['created_at']))->format(DateTimeInterface::ATOM);
@@ -441,48 +460,53 @@ function publicRoute(string $path, array $session): void
         return;
     }
     if ($path === '/tags') {
-        layout('Etiquetas', function (): void {
-            publicHeading('Etiquetas de noticias', ['/noticias'=>'Noticias']);
+        $presentation = portalPage('etiquetas');
+        layout($presentation['titulo'], function () use ($presentation): void {
+            publicHeading($presentation['titulo'], ['/noticias'=>portalPage('noticias')['titulo']], custom: 'pagina-etiquetas');
             $tags = tagCatalog();
             if (!$tags) {
-                emptyState('label', 'Todavía no hay etiquetas publicadas.');
+                emptyState('label', $presentation['vacio']);
                 return;
             } ?>
             <ul class="tag-link-list"><?php foreach ($tags as $tag): ?>
               <li><a class="tag-link" href="/tags/<?=e($tag['slug'])?>"><?=uiIcon('label')?> <?=e($tag['name'])?> <span><?=e($tag['public_count'])?></span></a></li>
             <?php endforeach ?></ul><?php
-        }, canonical: $origin ? $origin . '/tags' : '', current: 'noticias');
+        }, description: $presentation['meta'], canonical: $origin ? $origin . '/tags' : '', current: 'noticias');
         return;
     }
     if (preg_match('~^/tags/([a-z0-9-]{1,80})$~D', $path, $parts)) {
         $tag = query('SELECT name FROM tags WHERE slug=? AND archived_at IS NULL', [$parts[1]])->fetchColumn();
         $page = pageNumber();
-        $rows = $tag === false ? [] : published('noticias', tag: $parts[1], limit: 25, offset: ($page-1)*24);
+        $presentation = portalPage('etiquetas');
+        $limit = (int) $presentation['cantidad'];
+        $rows = $tag === false ? [] : published('noticias', tag: $parts[1], limit: $limit + 1, offset: ($page-1)*$limit);
         if ($tag === false || (!$rows && $page === 1)) {
             fail(404, 'Etiqueta no disponible.');
         }
-        layout((string) $tag, function () use ($tag,$rows,$page,$path): void {
-            publicHeading((string) $tag, ['/noticias'=>'Noticias', '/tags'=>'Etiquetas']);
-            echo '<h2 class="catalog-heading">Noticias etiquetadas</h2>';
-            listCards(array_slice($rows, 0, 24), headingLevel: 3, gridClass: 'news-cards');
-            paginate($path, [], $page, count($rows)>24);
+        layout((string) $tag, function () use ($tag,$rows,$page,$path,$limit,$presentation): void {
+            publicHeading((string) $tag, ['/noticias'=>portalPage('noticias')['titulo'], '/tags'=>$presentation['ruta']], custom: 'pagina-etiquetas');
+            ?><h2 class="catalog-heading"><?=e($presentation['resultados'])?></h2><?php
+            listCards(array_slice($rows, 0, $limit), headingLevel: 3, gridClass: 'news-cards', emptyMessage: $presentation['vacio']);
+            paginate($path, [], $page, count($rows)>$limit);
         }, canonical: $origin ? $origin . $path : '', current: 'noticias');
         return;
     }
     $page = pageNumber();
     if ($path === '/buscar') {
         $search = field('q', 200, $_GET);
-        layout('Buscar', function () use ($search,$page): void {
-            publicHeading('Buscar en el portal');
+        $presentation = portalPage('buscar');
+        layout($presentation['titulo'], function () use ($search,$page,$presentation): void {
+            publicHeading($presentation['titulo'], custom: 'pagina-buscar');
             ?><form method="get" class="catalog-filters">
-            <label class="search-field">Término <input type="search" name="q" value="<?=e($search)?>" maxlength="100" placeholder="Noticias, eventos o documentos" required></label>
-            <button class="primary"><?=uiIcon('search')?> Buscar</button></form>
-            <?php if ($search !== ''): ?><h2 class="catalog-heading">Resultados</h2><?php
-                $rows = published(null, $search, limit: 25, offset: ($page-1)*24);
-                listCards(array_slice($rows, 0, 24), showModule: true, headingLevel: 3);
-                paginate('/buscar', ['q'=>$search], $page, count($rows) > 24);
+            <label class="search-field"><?=e($presentation['termino'])?> <input type="search" name="q" value="<?=e($search)?>" maxlength="200" placeholder="<?=e($presentation['ejemplo'])?>" required></label>
+            <button class="primary"><?=uiIcon('search')?> <?=e($presentation['boton'])?></button></form>
+            <?php if ($search !== ''): ?><h2 class="catalog-heading"><?=e($presentation['resultados'])?></h2><?php
+                $limit = (int) $presentation['cantidad'];
+                $rows = published(null, $search, limit: $limit + 1, offset: ($page-1)*$limit);
+                listCards(array_slice($rows, 0, $limit), showModule: true, headingLevel: 3, emptyMessage: $presentation['vacio']);
+                paginate('/buscar', ['q'=>$search], $page, count($rows) > $limit);
             endif;
-        }, current: 'buscar');
+        }, description: $presentation['meta'], current: 'buscar');
         return;
     }
     if (preg_match('~^/documentos/([a-z0-9-]{1,120})/descargar$~D', $path, $parts)) {
@@ -504,7 +528,7 @@ function publicRoute(string $path, array $session): void
     if (isset($legacy[$path])) {
         redirect($legacy[$path], 301);
     }
-    if (preg_match('~^/([a-z]+)(?:/([a-z0-9-]+))?$~D', $path, $parts) && isset(modules()[$parts[1]])) {
+    if (preg_match('~^/([a-z]+)(?:/([a-z0-9-]+))?$~D', $path, $parts) && $parts[1] !== 'portal' && isset(modules()[$parts[1]])) {
         $module = $parts[1];
         $tag = field('etiqueta', 80, $_GET);
         if (in_array($module, ['inicio','carrusel'], true)) {
@@ -516,32 +540,35 @@ function publicRoute(string $path, array $session): void
             layout($row['title'], function () use ($row,$related): void {
                 detail($row);
                 if ($related) {
-                    echo '<section class="home-section"><div class="section-head"><h2>Noticias relacionadas</h2></div>';
+                    echo '<section class="home-section"><div class="section-head"><h2>' . e(portalText('pagina-noticias','relacionadas')) . '</h2></div>';
                     listCards($related, headingLevel: 3);
                     echo '</section>';
                 }
             }, description: $row['summary'], canonical: $origin ? $origin . $path : '', current: $module);
         } else {
-            $label = modules()[$module][0];
+            $presentation = portalPage($module);
+            $label = $presentation['titulo'];
+            $limit = (int) $presentation['cantidad'];
             $filters = publicFilters($module);
             $search = field('q', 200, $_GET);
-            $rows = published($module, $search, $tag, limit: 25, offset: ($page-1)*24, filters: $filters);
-            layout($label, function () use ($label,$tag,$rows,$module,$page,$filters,$search): void {
+            $rows = published($module, $search, $tag, limit: $limit + 1, offset: ($page-1)*$limit, filters: $filters);
+            layout($label, function () use ($label,$tag,$rows,$module,$page,$filters,$search,$limit,$presentation): void {
                 $staff = in_array($module, ['directivos','docentes'], true);
-                $actions = $module === 'noticias' ? static function (): void {
-                    ?><a class="button secondary" href="/tags"><?=uiIcon('label')?> Ver etiquetas</a><?php
+                $actions = $module === 'noticias' && $presentation['etiquetas'] !== '' ? static function () use ($presentation): void {
+                    ?><a class="button secondary" href="/tags"><?=uiIcon('label')?> <?=e($presentation['etiquetas'])?></a><?php
                 } : null;
-                publicHeading($label, actions: $actions, plain: $module === 'institucion');
+                publicHeading($label, actions: $actions, plain: $module === 'institucion', custom: 'pagina-' . $module);
                 catalogFilters($module, $filters, $search, $tag);
-                if ($tag !== '') echo '<h2 class="catalog-heading">Etiqueta ' . e($tag) . '</h2>';
+                if ($tag !== '') echo '<h2 class="catalog-heading">' . e(portalText('textos','tema')) . ' ' . e($tag) . '</h2>';
+                $items = array_slice($rows, 0, $limit);
                 if ($module === 'eventos' && $filters['mes'] !== '') {
-                    eventCalendar($filters['mes'], array_slice($rows, 0, 24));
+                    eventCalendar($filters['mes'], $items);
                 } elseif ($staff) {
-                    staffDirectory($module, array_slice($rows, 0, 24), $tag === '' ? 2 : 3);
+                    staffDirectory($module, $items, $tag === '' ? 2 : 3);
                 } elseif ($module === 'institucion') {
-                    institutionInformation(array_slice($rows, 0, 24));
+                    institutionInformation($items);
                 } elseif ($module === 'administrativos') {
-                    informationList(array_slice($rows, 0, 24));
+                    informationList($items);
                 } else {
                     $gridClass = match ($module) {
                         'noticias' => 'news-cards',
@@ -549,11 +576,11 @@ function publicRoute(string $path, array $session): void
                         'galeria' => 'gallery-cards',
                         default => '',
                     };
-                    listCards(array_slice($rows, 0, 24), headingLevel: $tag === '' ? 2 : 3, gridClass: $gridClass);
+                    listCards($items, headingLevel: $tag === '' ? 2 : 3, gridClass: $gridClass, emptyMessage: $presentation['vacio']);
                 }
                 paginate('/' . $module, array_filter($filters + ['etiqueta'=>$tag,'q'=>$search], fn($value)=>$value !== ''),
-                    $page, count($rows)>24);
-            }, canonical: $origin && !$search && !$tag && $page === 1 && !array_filter($filters) ? $origin . $path : '', current: $module);
+                    $page, count($rows)>$limit);
+            }, description: $presentation['meta'], canonical: $origin && !$search && !$tag && $page === 1 && !array_filter($filters) ? $origin . $path : '', current: $module);
 
         }
         return;

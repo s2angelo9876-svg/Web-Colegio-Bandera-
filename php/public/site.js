@@ -15,14 +15,18 @@ document.addEventListener('click', (event) => {
 });
 sizeMenu();
 
-const textarea = document.querySelector('#body');
+const textarea = document.querySelector('#body, textarea[data-rich]');
 if (textarea) {
     const editor = document.createElement('div');
     editor.className = 'rich editable';
     editor.contentEditable = 'true';
     editor.setAttribute('role', 'textbox');
     editor.setAttribute('aria-multiline', 'true');
-    editor.setAttribute('aria-label', 'Contenido enriquecido');
+    if (textarea.hasAttribute('aria-labelledby')) {
+        editor.setAttribute('aria-labelledby', textarea.getAttribute('aria-labelledby'));
+    } else {
+        editor.setAttribute('aria-label', 'Contenido enriquecido');
+    }
     if (textarea.hasAttribute('aria-invalid')) {
         editor.setAttribute('aria-invalid', 'true');
         editor.setAttribute('aria-describedby', 'field-error');
@@ -93,7 +97,7 @@ if (textarea) {
     });
     const form = textarea.form;
     textarea.hidden = true;
-    const errorLink = document.querySelector('[data-form-error] a[href="#body"]');
+    const errorLink = document.querySelector('[data-form-error] a[href="#' + textarea.id + '"]');
     errorLink?.addEventListener('click', (event) => {
         event.preventDefault();
         editor.focus();
@@ -191,6 +195,52 @@ if (textarea) {
 
 document.querySelector('[data-form-error]')?.focus();
 
+document.querySelector('[data-portal-editor]')?.addEventListener('input', () => {
+    document.querySelector('#save-status').textContent = 'Cambios pendientes de guardar.';
+    for (const button of document.querySelectorAll('.publication-panel button')) button.disabled = true;
+});
+
+for (const editor of document.querySelectorAll('[data-link-editor]')) {
+    const rows = editor.querySelector('[data-link-rows]');
+    const template = editor.querySelector('[data-link-template]');
+    const add = editor.querySelector('[data-link-add]');
+    let index = rows.children.length;
+    const sync = () => {
+        add.hidden = rows.children.length >= 40;
+        for (const [position, row] of Array.from(rows.children).entries()) {
+            const buttons = row.querySelectorAll('[data-link-move]');
+            buttons[0].hidden = buttons[1].hidden = false;
+            buttons[0].disabled = position === 0;
+            buttons[1].disabled = position === rows.children.length - 1;
+        }
+    };
+    sync();
+    add.addEventListener('click', () => {
+        if (rows.children.length >= 40) return;
+        const row = template.content.firstElementChild.cloneNode(true);
+        for (const input of row.querySelectorAll('[name]')) {
+            input.name = input.name.replace('__INDEX__', String(index));
+        }
+        index += 1;
+        rows.append(row);
+        sync();
+        row.querySelector('input').focus();
+    });
+    rows.addEventListener('click', (event) => {
+        const button = event.target.closest('[data-link-move]');
+        if (!button) return;
+        const row = button.closest('[data-link-row]');
+        const up = button.dataset.linkMove === '-1';
+        const neighbor = up ? row.previousElementSibling : row.nextElementSibling;
+        if (!neighbor) return;
+        if (up) neighbor.before(row);
+        else neighbor.after(row);
+        sync();
+        rows.dispatchEvent(new Event('input', { bubbles: true }));
+        (button.disabled ? row.querySelector('[data-link-move]:not([disabled])') : button)?.focus();
+    });
+}
+
 for (const form of document.querySelectorAll('[data-order-form]')) {
     const list = form.querySelector('ol');
     const buttons = list.querySelectorAll('[data-move]');
@@ -244,7 +294,7 @@ for (const control of document.querySelectorAll('[data-video-id]')) {
         const player = document.createElement('iframe');
         player.className = 'video';
         player.src = 'https://www.youtube-nocookie.com/embed/' + control.dataset.videoId;
-        player.title = 'Reproductor de video de YouTube';
+        player.title = button.dataset.videoTitle;
         player.referrerPolicy = 'strict-origin-when-cross-origin';
         player.allowFullscreen = true;
         control.replaceWith(player);

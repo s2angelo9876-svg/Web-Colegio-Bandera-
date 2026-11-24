@@ -157,5 +157,8 @@ function modules(): array
             ...metricLabels(),
             'red_social' => 'Red social institucional (HTTPS)', 'meta_descripcion' => 'Descripción para buscadores',
             'acceso_texto' => 'Texto de acceso rápido', 'acceso_url' => 'Enlace de acceso rápido (HTTPS)'], 'image'],
+        'portal' => ['Diseño y contenido del portal', [], 'image'],
     ];
 }
+
+require_once __DIR__ . '/portal.php';

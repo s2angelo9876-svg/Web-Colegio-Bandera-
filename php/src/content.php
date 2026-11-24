@@ -32,7 +32,7 @@ function published(?string $module, string $search = '', string $tag = '', ?stri
         $where[] = 'c.module=?';
         $params[] = $module;
     } else {
-        $where[] = "c.module NOT IN ('inicio','carrusel')";
+        $where[] = "c.module NOT IN ('inicio','carrusel','portal')";
     }
     if ($slug !== null) {
         $where[] = 'c.slug=?';
@@ -102,10 +102,11 @@ function editorRow(string $module, int $id): array
 
 function saveRevision(string $module, int $id, array $session): array
 {
-    $title = field('title', 255);
     $slug = field('slug', 120);
-    $summary = field('summary', 1000);
-    $body = sanitize(field('body', 120000));
+    $portal = $module === 'portal' ? (portalCatalog()[$slug] ?? fail(422, 'Selecciona una sección del portal.', 'slug')) : null;
+    $title = $portal ? $portal['name'] : field('title', 255);
+    $summary = $portal ? '' : field('summary', 1000);
+    $body = $portal ? '' : sanitize(field('body', 120000));
     $limit = match ($module) {'comunicados'=>10000,'eventos'=>5000,default=>50000};
     if (mb_strlen(bodyText($body), 'UTF-8') > $limit) {
         fail(422, "El contenido admite hasta $limit caracteres visibles.", 'body');
@@ -125,7 +126,7 @@ function saveRevision(string $module, int $id, array $session): array
         fail(422, 'La versión de edición no es válida. Recarga el formulario.', 'version');
     }
     [, $labels, $kind] = modules()[$module];
-    $fields = [];
+    $fields = $portal ? portalReadFields($slug, $_POST) : [];
     foreach ($labels as $key => $label) {
         $maximum = isUrlField($key) ? 500 : ($key === 'correo' ? 254 : 255);
         $value = field($key, $maximum);
@@ -152,9 +153,11 @@ function saveRevision(string $module, int $id, array $session): array
     if (!empty($fields['hora']) && !preg_match('/^(?:[01][0-9]|2[0-3]):[0-5][0-9]$/D', $fields['hora'])) {
         fail(422, 'Revisa la hora del evento.', 'hora');
     }
-    foreach ($fields as $key=>$value) {
-        if ($value !== '' && ($key === 'fecha_galeria' || str_ends_with($key, '_fecha'))) {
-            validateDate($value, $key);
+    if (!$portal) {
+        foreach ($fields as $key=>$value) {
+            if ($value !== '' && ($key === 'fecha_galeria' || str_ends_with($key, '_fecha'))) {
+                validateDate($value, $key);
+            }
         }
     }
     if ($module === 'inicio') {
@@ -176,7 +179,7 @@ function saveRevision(string $module, int $id, array $session): array
         $canonicalTags[tagSlug($tag)] ??= $tag;
     }
     ksort($canonicalTags, SORT_STRING);
-    $media = upload($kind);
+    $media = !$portal || $portal['image'] !== '' ? upload($kind) : null;
     $removeMedia = ($_POST['remove_media'] ?? '') === '1';
     try {
         return transaction(function () use ($module, $id, $session, $title, $slug, $summary, $body, $fields, $canonicalTags, $media, $removeMedia, $version): array {

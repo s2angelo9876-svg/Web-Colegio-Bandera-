@@ -19,6 +19,10 @@ expect() {
   fi
   checks=$((checks+1))
 }
+expect_visitor() {
+  local jar=/dev/null
+  expect "$@"
+}
 contains() {
   if ! grep -Fq -- "$1" "$response"; then
     echo "Falta texto esperado: $1" >&2
@@ -336,6 +340,114 @@ expect 303 /admin/etiquetas --data-urlencode "_csrf=$csrf" --data 'action=rename
 expect 200 /admin/etiquetas
 contains 'Arte'
 
+expect 200 /admin/portal
+contains 'Diseño y contenido del portal'
+contains 'Mesa de Partes y FUT'
+expect 404 '/admin/portal/nuevo?seccion=inexistente'
+save 422 portal 0 0 'Sección ajena' inexistente
+expect 200 '/admin/portal/nuevo?seccion=pagina-galeria'
+contains 'value="Galería"'
+save 201 portal 0 0 '' pagina-galeria --form-string 'titulo=Archivo de la comunidad' \
+  --form-string 'resumen=Una portada a medida' --form-string 'cantidad=8' \
+  --form-string 'contenido=<p><strong>Crónica de la comunidad</strong></p>' \
+  --form-string 'accion=Ver fotografías' --form-string 'destino=/galeria?tipo=foto' \
+  --form-string 'meta=Galería de la comunidad educativa' --form-string 'alt=Encabezado de la galería' \
+  -F 'media=@public/images/escudo.jpeg'
+gallery_custom=$(id_saved)
+gallery_revision=$(sql "SELECT working FROM content WHERE id=$gallery_custom")
+gallery_media=$(sql "SELECT media_id FROM revision_media WHERE revision_id=$gallery_revision")
+expect 200 /galeria
+absent 'Archivo de la comunidad'
+expect 404 "/medio/$gallery_media"
+expect_visitor 404 "/medio/$gallery_media?revision=$gallery_revision"
+expect 200 "/admin/portal/$gallery_custom/vista"
+contains '<h1>Archivo de la comunidad</h1>'
+contains 'Vista previa del portal'
+contains "/medio/$gallery_media?revision=$gallery_revision"
+contains '<strong>Crónica de la comunidad</strong>'
+expect 200 "/medio/$gallery_media?revision=$gallery_revision"
+mutate portal "$gallery_custom" publish 1
+expect 200 /galeria
+contains '<h1>Archivo de la comunidad</h1>'
+contains 'alt="Encabezado de la galería"'
+contains 'Ver fotografías'
+contains 'content="Galería de la comunidad educativa"'
+absent '?revision='
+expect 200 "/medio/$gallery_media"
+expect 200 /sitemap.xml
+absent '/portal/pagina-galeria'
+expect 404 /portal/pagina-galeria
+save 200 portal "$gallery_custom" 2 '' pagina-galeria --form-string 'titulo=Galería actualizada' \
+  --form-string 'cantidad=8' --form-string 'remove_media=1'
+expect 200 /galeria
+contains 'Archivo de la comunidad'
+expect 200 "/admin/portal/$gallery_custom/vista"
+contains 'Galería actualizada'
+absent 'Encabezado de la galería'
+expect 200 "/admin/portal/$gallery_custom/vista?revision=$gallery_revision"
+contains 'Encabezado de la galería'
+mutate portal "$gallery_custom" unpublish 3 --data-urlencode 'reason=Restaurar la presentación predeterminada'
+expect 200 /galeria
+contains '<h1>Galería</h1>'
+expect 404 "/medio/$gallery_media"
+
+theme_options=(--form-string 'marca=#172943' --form-string 'fondo_claro=#f7f6f3' \
+  --form-string 'panel_claro=#ffffff' --form-string 'fondo_oscuro=#111a28' \
+  --form-string 'panel_oscuro=#182437' --form-string 'fuente=serif' \
+  --form-string 'espaciado=compacto' --form-string 'esquinas=recto')
+save 422 portal 0 0 '' apariencia --form-string 'acento=#fafafa' "${theme_options[@]}"
+contains 'contraste'
+save 201 portal 0 0 '' apariencia --form-string 'acento=#842131' "${theme_options[@]}"
+theme_custom=$(id_saved)
+theme_revision=$(sql "SELECT working FROM content WHERE id=$theme_custom")
+expect 200 /
+absent '/tema.css'
+expect_visitor 404 "/tema.css?revision=$theme_revision"
+expect 200 "/admin/portal/$theme_custom/vista"
+contains "/tema.css?revision=$theme_revision"
+expect 200 "/tema.css?revision=$theme_revision"
+contains '--accent:#842131'
+contains '--font-ui:Georgia, serif'
+grep -Fiq 'Content-Type: text/css' "$headers"
+mutate portal "$theme_custom" publish 1
+expect 200 /
+contains 'href="/tema.css"'
+expect 200 /tema.css
+contains '--accent:#842131'
+mutate portal "$theme_custom" unpublish 2 --data-urlencode 'reason=Restaurar colores de prueba'
+
+save 201 portal 0 0 '' pagina-mesa-partes --form-string 'titulo=Trámites escolares' \
+  --form-string 'resumen=Información para las familias' --form-string 'guia_local=si' \
+  --form-string 'contenido=<p>Atención de solicitudes por Secretaría.</p>' \
+  --form-string 'fut_titulo=Formato de solicitud' --form-string 'fut_accion=Obtener formato' \
+  --form-string 'enlaces[0][label]=Ver otros documentos' --form-string 'enlaces[0][url]=/documentos'
+desk_custom=$(id_saved)
+expect 200 "/admin/portal/$desk_custom/vista"
+contains 'Atención de solicitudes por Secretaría.'
+contains 'href="/mesa-partes/fut"'
+contains 'Obtener formato'
+expect 200 /mesa-partes
+absent 'Trámites escolares'
+mutate portal "$desk_custom" publish 1
+expect 200 /mesa-partes
+contains '<h1>Trámites escolares</h1>'
+contains 'Ver otros documentos'
+contains 'Atención de solicitudes por Secretaría.'
+mutate portal "$desk_custom" unpublish 2 --data-urlencode 'reason=Restaurar la guía publicada'
+expect 200 /mesa-partes
+contains 'Resumen Guía de trámites de prueba'
+
+save 201 portal 0 0 '' bloque-noticias --form-string 'titulo=Actualidad escolar' \
+  --form-string 'visible=no' --form-string 'orden=10' --form-string 'cantidad=3'
+news_block=$(id_saved)
+expect 200 /
+contains 'Noticias recientes'
+mutate portal "$news_block" publish 1
+expect 200 /
+absent 'Noticias recientes'
+contains 'Próximos eventos'
+mutate portal "$news_block" unpublish 2 --data-urlencode 'reason=Restaurar portada de prueba'
+
 # Expiry is simulated inside the disposable database.
 sql "UPDATE sessions SET last_seen=now()-interval '31 minutes' WHERE user_id IS NOT NULL" >/dev/null
 expect 303 /admin
@@ -357,6 +469,9 @@ expect 303 /admin/ingresar --data-urlencode "_csrf=$csrf" --data-urlencode 'user
 expect 200 /admin
 csrf=$(sed -n 's/.*name="_csrf" value="\([a-f0-9]*\)".*/\1/p' "$response" | head -1)
 expect 403 /admin/inicio
+expect 403 /admin/portal
+expect 403 "/admin/portal/$gallery_custom/vista"
+expect 404 "/tema.css?revision=$theme_revision"
 expect 200 /admin/noticias
 mutate noticias "$news" schedule 9 --data-urlencode 'publish_at=2099-12-25T10:00'
 mutate noticias "$news" cancel 10

@@ -2,6 +2,7 @@
 declare(strict_types=1);
 require dirname(__DIR__) . '/src/bootstrap.php';
 require dirname(__DIR__) . '/src/security.php';
+require dirname(__DIR__) . '/src/content.php';
 
 foreach (array_keys(modules()) as $module) {
     foreach (['list','edit','preview','save','publish','unpublish','schedule','cancel','order','trash','restore'] as $action) {
@@ -33,4 +34,25 @@ if (sanitize('<p><strike>Texto</strike></p>') !== '<p><s>Texto</s></p>') {
 }
 if (!validNewPassword(str_repeat('á', 128)) || validNewPassword(str_repeat('á', 129))) {
     throw new RuntimeException('La política de contraseñas debe medir caracteres Unicode.');
+}
+
+foreach (portalCatalog() as $section => $definition) {
+    $fields = portalValues($section, []);
+    $reserved = ['_csrf','version','slug','title','summary','body','tags','media','remove_media','alt'];
+    if (array_intersect($reserved, array_keys($fields))) {
+        throw new RuntimeException("Un campo de $section coincide con uno del formulario editorial.");
+    }
+    if (array_keys(portalReadFields($section, $fields)) !== array_keys($definition['fields'])) {
+        throw new RuntimeException("Campos predeterminados inválidos para $section.");
+    }
+}
+foreach (['/','/eventos?mes=2026-11','#destacados','https://colegio.example/documentos'] as $destination) {
+    if (!portalLink($destination)) {
+        throw new RuntimeException('Se rechazó un enlace válido del portal.');
+    }
+}
+foreach (['//colegio.example','/\colegio.example','http://colegio.example',"/espacio\taquí",'javascript:'] as $destination) {
+    if (portalLink($destination)) {
+        throw new RuntimeException('Se aceptó un enlace con un formato inválido.');
+    }
 }
