@@ -4,7 +4,12 @@ declare(strict_types=1);
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?: '/';
 $method = $_SERVER['REQUEST_METHOD'];
 if (PHP_SAPI === 'cli-server' && getenv('COLEGIO_ENV') !== 'production'
-    && in_array($path, ['/site.css','/navigation.css','/site-start.js','/site.js','/assets/manrope.woff2','/assets/symbols.woff2','/images/escudo.jpeg','/images/frontis_colegio.webp','/images/frontis_colegio-640.webp'], true)
+    && in_array($path, [
+        '/site.css','/navigation.css','/site-start.js','/site.js','/assets/manrope.woff2','/assets/symbols.woff2',
+        '/images/escudo.jpeg','/images/frontis_colegio.webp','/images/frontis_colegio-640.webp',
+        '/images/institucion/identidad.webp','/images/institucion/academica.webp',
+        '/images/institucion/gestion.webp','/images/institucion/tecnologia.webp',
+    ], true)
     && in_array($method, ['GET','HEAD'], true)) {
     return false;
 }
@@ -532,8 +537,10 @@ function publicRoute(string $path, array $session): void
                     eventCalendar($filters['mes'], array_slice($rows, 0, 24));
                 } elseif ($staff) {
                     staffDirectory($module, array_slice($rows, 0, 24), $tag === '' ? 2 : 3);
-                } elseif (in_array($module, ['institucion','administrativos'], true)) {
-                    informationList($module, array_slice($rows, 0, 24));
+                } elseif ($module === 'institucion') {
+                    institutionInformation(array_slice($rows, 0, 24));
+                } elseif ($module === 'administrativos') {
+                    informationList(array_slice($rows, 0, 24));
                 } else {
                     $gridClass = match ($module) {
                         'noticias' => 'news-cards',

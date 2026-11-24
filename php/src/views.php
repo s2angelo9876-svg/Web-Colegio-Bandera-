@@ -223,51 +223,104 @@ function staffDirectory(string $module, array $rows, int $headingLevel): void
     </div><?php
 }
 
-function informationList(string $module, array $rows): void
+function institutionInformation(array $rows): void
 {
+    if (!$rows) {
+        emptyState('search', 'No hay contenido publicado que coincida.');
+        return;
+    }
     $overview = null;
     $groups = [];
-    $sectionIcons = [
-        'Identidad institucional' => 'account_balance', 'Vida académica' => 'school',
-        'Gestión institucional' => 'account_tree', 'Tecnología educativa' => 'web',
-    ];
     foreach ($rows as $row) {
         $fields = json_decode($row['fields'], true) ?? [];
-        if ($module === 'institucion' && $row['slug'] === 'nosotros') {
+        if ($row['slug'] === 'nosotros') {
             $overview = [$row, $fields];
             continue;
         }
-        $section = $module === 'institucion' ? (trim($fields['seccion'] ?? '') ?: 'Información institucional') : '';
+        $section = trim($fields['seccion'] ?? '') ?: 'Información institucional';
         $groups[$section][] = [$row, $fields];
     }
-    ?><div class="information-list">
-      <?php if ($overview): informationEntry($overview[0], $overview[1], overview: true); endif ?>
-      <?php if (!$rows): emptyState('search', 'No hay contenido publicado que coincida.'); endif ?>
-      <div<?= $module === 'institucion' ? ' class="institution-topics"' : '' ?>>
-      <?php foreach ($groups as $section=>$entries): ?>
-        <div class="information-group">
-          <?php if ($section !== ''): ?><h2><?=uiIcon($sectionIcons[$section] ?? 'description')?> <?=e($section)?></h2><?php endif ?>
-          <div class="information-entries">
-            <?php foreach ($entries as [$row, $fields]): informationEntry($row, $fields); endforeach ?>
-          </div>
-        </div>
-      <?php endforeach ?>
-      </div>
+    ?><div class="institution-information">
+      <?php if ($overview): institutionFeature($overview[0]['title'], [$overview], illustrate: false); endif ?>
+      <?php foreach ($groups as $section=>$entries): institutionFeature((string) $section, $entries); endforeach ?>
     </div><?php
 }
 
-function informationEntry(array $row, array $fields, bool $overview = false): void
+function institutionFeature(string $heading, array $entries, bool $illustrate = true): void
 {
+    [$first] = $entries[0];
+    $headingId = 'seccion-' . $first['slug'];
+    $image = array_find($entries, fn(array $entry) => str_starts_with($entry[0]['media_mime'] ?? '', 'image/'));
+    $imageId = (int) ($image[0]['media_id'] ?? 0);
+    $illustration = $image || !$illustrate ? null : match (mb_strtolower($heading, 'UTF-8')) {
+        'identidad institucional' => ['identidad', 'Cuadernos de archivo y una bandera peruana'],
+        'vida académica' => ['academica', 'Materiales para un proyecto de aula sobre una mesa'],
+        'gestión institucional' => ['gestion', 'Materiales de planificación en una oficina escolar'],
+        'tecnología educativa' => ['tecnologia', 'Computadoras y teclados en un aula'],
+        default => null,
+    };
+    ?><section class="institution-feature" aria-labelledby="<?=e($headingId)?>">
+      <div class="institution-card">
+        <h2 id="<?=e($headingId)?>"><?=e($heading)?></h2>
+        <?php if (count($entries) > 1): ?>
+          <fieldset class="institution-topic-picker" aria-labelledby="<?=e($headingId)?>">
+            <div class="institution-topic-options">
+              <?php foreach ($entries as $index=>[$row]):
+                  $id = 'tema-' . $row['slug'];
+                  $contentId = 'contenido-' . $row['slug']; ?>
+                <input class="institution-topic-option" type="radio" name="<?=e($headingId)?>" id="<?=e($id)?>" aria-controls="<?=e($contentId)?>"<?= $index === 0 ? ' checked' : '' ?>>
+                <label id="<?=e($id)?>-nombre" for="<?=e($id)?>"><?=e($row['title'])?></label>
+                <div class="institution-topic-content" id="<?=e($contentId)?>" role="region" aria-labelledby="<?=e($id)?>-nombre">
+                  <?php informationBody($row, informationText($row), shownMedia: $imageId); ?>
+                </div>
+              <?php endforeach ?>
+            </div>
+          </fieldset>
+        <?php else: ?>
+          <?php if ($first['title'] !== $heading): ?><h3><?=e($first['title'])?></h3><?php endif ?>
+          <?php informationBody($first, informationText($first), shownMedia: $imageId); ?>
+        <?php endif ?>
+      </div>
+      <?php if ($image || $illustration): ?><figure class="institution-photo">
+        <?php if ($image):
+            [$row, $fields] = $image;
+            imageTag($row, ($fields['alt'] ?? '') ?: $row['title'], 'institution-image',
+                sizes: '(max-width: 675px) 100vw, (max-width: 1300px) 66vw, 812px');
+        else: ?>
+          <img class="institution-image" src="/images/institucion/<?=e($illustration[0])?>.webp" alt="<?=e($illustration[1])?>" width="616" height="616" loading="lazy">
+          <figcaption>Imagen ilustrativa</figcaption>
+        <?php endif ?>
+      </figure><?php endif ?>
+    </section><?php
+}
+
+function informationList(array $rows): void
+{
+    ?><div class="information-list">
+      <?php if ($rows): ?>
+        <div class="information-entries">
+          <?php foreach ($rows as $row): informationEntry($row); endforeach ?>
+        </div>
+      <?php else: emptyState('search', 'No hay contenido publicado que coincida.'); endif ?>
+    </div><?php
+}
+
+function informationText(array $row): string
+{
+    if (bodyText($row['body']) !== '') {
+        return $row['body'];
+    }
+    return $row['summary'] === '' ? '' : '<p>' . e($row['summary']) . '</p>';
+}
+
+function informationEntry(array $row): void
+{
+    $fields = json_decode($row['fields'], true) ?? [];
     $labels = modules()[$row['module']][1];
-    unset($labels['seccion']);
     $facts = array_filter(array_intersect_key($fields, $labels),
         fn($value) => is_string($value) && trim($value) !== '' && $value !== $row['title']);
-    $body = bodyText($row['body']) !== '' ? $row['body'] : ($row['summary'] !== '' ? '<p>' . e($row['summary']) . '</p>' : '');
+    $body = informationText($row);
 
-    if ($overview) {
-        ?><article class="institution-overview"><?php informationBody($row, $body, $facts, $labels, $row['title']); ?></article><?php
-        return;
-    }
     if ($body === '' && !$facts && !$row['media_id']) {
         ?><p class="information-title"><?=e($row['title'])?></p><?php
         return;
@@ -278,11 +331,10 @@ function informationEntry(array $row, array $fields, bool $overview = false): vo
     </details><?php
 }
 
-function informationBody(array $row, string $body, array $facts, array $labels, string $heading = ''): void
+function informationBody(array $row, string $body, array $facts = [], array $labels = [], int $shownMedia = 0): void
 {
     ?><div class="information-body">
       <div class="information-copy">
-        <?php if ($heading !== ''): ?><h2><?=e($heading)?></h2><?php endif ?>
         <?php if ($body !== ''): ?><div class="rich"><?= $body ?></div><?php endif ?>
         <?php if ($facts): ?><dl class="information-facts">
           <?php foreach ($facts as $key=>$value): ?>
@@ -290,7 +342,7 @@ function informationBody(array $row, string $body, array $facts, array $labels, 
           <?php endforeach ?>
         </dl><?php endif ?>
       </div>
-      <?php if ($row['media_id']): showMedia($row); endif ?>
+      <?php if ($row['media_id'] && (int) $row['media_id'] !== $shownMedia): showMedia($row); endif ?>
     </div><?php
 }
 

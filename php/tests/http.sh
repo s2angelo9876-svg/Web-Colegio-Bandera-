@@ -263,9 +263,12 @@ grep -Fiq 'Location: /institucion/historia' "$headers"
 expect 200 '/institucion/historia'
 contains 'Historia para prueba'
 expect 200 /institucion
-contains '<details class="information-entry" name="informacion">'
+contains '<section class="institution-feature" aria-labelledby="seccion-historia">'
 contains 'Historia para prueba'
 absent 'href="/institucion/historia"'
+expect 200 /images/institucion/identidad.webp
+save 201 institucion 0 0 'Misión de prueba' mision --form-string 'seccion=Identidad institucional'
+mutate institucion "$(id_saved)" publish 1
 save 201 institucion 0 0 'Guía de trámites de prueba' mesa-partes --form-string 'seccion=Gestión institucional'
 guide=$(id_saved)
 expect 200 /mesa-partes
