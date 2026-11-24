@@ -72,6 +72,40 @@ function uiIcon(string $name): string
     return '<span class="icon" aria-hidden="true">' . e($name) . '</span>';
 }
 
+function publicBreadcrumb(array $trail, string $current = ''): void
+{
+    ?><p class="breadcrumb"><?php foreach ($trail as $href=>$label): ?>
+      <a href="<?=e($href)?>"><?=e($label)?></a><?= $href !== array_key_last($trail) || $current !== '' ? uiIcon('chevron_right') : '' ?>
+    <?php endforeach ?><?=e($current)?></p><?php
+}
+
+function publicHeading(string $title, array $trail = ['/'=>'Inicio'], ?callable $actions = null, bool $plain = false): void
+{
+    ?><header class="page-heading public-heading">
+      <?php publicBreadcrumb($trail, $title); ?>
+      <div class="heading-row<?= $plain ? '' : ' feature-panel section-banner' ?>">
+        <h1><?=e($title)?></h1>
+        <?php if ($actions): $actions(); endif ?>
+      </div>
+    </header><?php
+}
+
+function featurePhoto(array $row, array $fields): void
+{
+    ?><figure class="feature-photo">
+      <?php imageTag($row, ($fields['alt'] ?? '') ?: $row['title'], 'feature-image',
+          sizes: '(max-width: 675px) 100vw, (max-width: 920px) 75vw, (max-width: 1300px) 66vw, 812px'); ?>
+    </figure><?php
+}
+
+function featureIllustration(string $name, string $alt): void
+{
+    ?><figure class="feature-photo">
+      <img class="feature-image" src="/images/institucion/<?=e($name)?>.webp" alt="<?=e($alt)?>" width="616" height="616" loading="lazy">
+      <figcaption>Imagen ilustrativa</figcaption>
+    </figure><?php
+}
+
 function brand(string $href): void
 {
     ?><a class="brand" href="<?=e($href)?>">
@@ -259,8 +293,8 @@ function institutionFeature(string $heading, array $entries, bool $illustrate = 
         'tecnología educativa' => ['tecnologia', 'Computadoras y teclados en un aula'],
         default => null,
     };
-    ?><section class="institution-feature" aria-labelledby="<?=e($headingId)?>">
-      <div class="institution-card">
+    ?><section class="public-feature" aria-labelledby="<?=e($headingId)?>">
+      <div class="feature-panel">
         <h2 id="<?=e($headingId)?>"><?=e($heading)?></h2>
         <?php if (count($entries) > 1): ?>
           <fieldset class="institution-topic-picker" aria-labelledby="<?=e($headingId)?>">
@@ -281,16 +315,8 @@ function institutionFeature(string $heading, array $entries, bool $illustrate = 
           <?php informationBody($first, informationText($first), shownMedia: $imageId); ?>
         <?php endif ?>
       </div>
-      <?php if ($image || $illustration): ?><figure class="institution-photo">
-        <?php if ($image):
-            [$row, $fields] = $image;
-            imageTag($row, ($fields['alt'] ?? '') ?: $row['title'], 'institution-image',
-                sizes: '(max-width: 675px) 100vw, (max-width: 1300px) 66vw, 812px');
-        else: ?>
-          <img class="institution-image" src="/images/institucion/<?=e($illustration[0])?>.webp" alt="<?=e($illustration[1])?>" width="616" height="616" loading="lazy">
-          <figcaption>Imagen ilustrativa</figcaption>
-        <?php endif ?>
-      </figure><?php endif ?>
+      <?php if ($image): featurePhoto(...$image);
+      elseif ($illustration): featureIllustration(...$illustration); endif ?>
     </section><?php
 }
 
@@ -348,9 +374,20 @@ function informationBody(array $row, string $body, array $facts = [], array $lab
 
 function detail(array $row, ?int $preview = null): void
 {
-    $fields = json_decode($row['fields'] ?? '{}', true);
-    ?><article class="article">
-    <?php if ($preview === null): ?><p class="breadcrumb"><a href="/">Inicio</a><?=uiIcon('chevron_right')?><a href="/<?=e($row['module'])?>"><?=e(modules()[$row['module']][0])?></a></p><?php endif ?>
+    $fields = json_decode($row['fields'] ?? '{}', true) ?? [];
+    $public = $preview === null;
+    $person = in_array($row['module'], ['docentes','directivos','administrativos'], true);
+    $cover = $public && !$person && str_starts_with($row['media_mime'] ?? '', 'image/');
+    $metadata = array_filter(array_diff_key($fields, array_flip(['alt','fecha','hora'])), fn($value) => $value !== '');
+    $tags = query('SELECT t.name,t.slug FROM revision_tags rt JOIN tags t ON t.name=rt.tag
+                   WHERE rt.revision_id=? AND t.archived_at IS NULL ORDER BY t.name',
+        [$preview ?? $row['id']])->fetchAll(PDO::FETCH_ASSOC);
+    $showBody = $row['body'] !== '' || ($row['media_id'] && !$cover) || $metadata || $tags;
+    ?><article class="<?= $public ? 'public-story' : 'article' ?>">
+    <?php if ($public):
+        publicBreadcrumb(['/'=>'Inicio', '/' . $row['module']=>modules()[$row['module']][0]]); ?>
+        <header class="public-feature story-feature"><div class="feature-panel">
+    <?php endif ?>
     <h1><?=e($row['title'])?></h1>
     <?php if (str_starts_with($row['media_filename'] ?? '', 'perfil-demo-')): ?><p class="staff-directory-note">Nombre y retrato de demostración.</p><?php endif ?>
     <?php if (!empty($row['publication_date']) && in_array($row['module'], ['noticias','comunicados','documentos'], true)): ?>
@@ -358,9 +395,15 @@ function detail(array $row, ?int $preview = null): void
     <?php endif ?>
     <?php if (!empty($fields['fecha'])): ?><p><?=e(eventDateLabel($fields))?></p><?php endif ?>
     <?php if ($row['summary']): ?><p class="lead"><?=e($row['summary'])?></p><?php endif ?>
-    <?php if ($row['media_id']): showMedia($row, $preview); endif ?>
-    <div class="rich"><?= $row['body'] ?></div>
-    <?php if ($fields): ?><dl><?php foreach ($fields as $key => $value): if (in_array($key, ['alt','fecha','hora'], true) || $value === '') continue; ?>
+    <?php if ($public): ?></div>
+      <?php if ($cover): featurePhoto($row, $fields); endif ?>
+      </header>
+      <?php if ($showBody): ?><div class="article story-body<?= $person ? ' portrait-story' : '' ?>"><?php endif ?>
+    <?php endif ?>
+    <?php if (!$public || $showBody): ?>
+    <?php if ($row['media_id'] && !$cover): showMedia($row, $preview); endif ?>
+    <?php if ($row['body'] !== ''): ?><div class="rich"><?= $row['body'] ?></div><?php endif ?>
+    <?php if ($metadata): ?><dl><?php foreach ($metadata as $key => $value): ?>
     <dt><?=e(modules()[$row['module']][1][$key] ?? $key)?></dt>
     <dd><?php if (in_array($key, ['video','enlace'], true)): ?><a href="<?=e($value)?>"><?= $key === 'video' ? 'Ver video en su origen' : 'Abrir enlace' ?></a>
     <?php if ($key === 'video' && ($id = youtubeId($value)) !== null): ?>
@@ -368,25 +411,37 @@ function detail(array $row, ?int $preview = null): void
     <?php endif ?>
     <?php else: ?><?=e(match ($key) {'fecha_galeria'=>limaDisplay($value),'tipo'=>communicationTypes()[$value] ?? 'General',default=>$value})?><?php endif ?></dd>
     <?php endforeach ?></dl><?php endif ?>
-    <?php $tags = query('SELECT t.name,t.slug FROM revision_tags rt JOIN tags t ON t.name=rt.tag
-                         WHERE rt.revision_id=? AND t.archived_at IS NULL ORDER BY t.name',
-        [$preview ?? $row['id']])->fetchAll(PDO::FETCH_ASSOC); ?>
     <?php if ($tags): ?><p>Etiquetas
       <?php foreach ($tags as $tag): ?>
         <?php if ($preview === null): ?><a class="tag" href="/tags/<?=e($tag['slug'])?>"><?=e($tag['name'])?></a>
         <?php else: ?><span class="tag"><?=e($tag['name'])?></span><?php endif ?>
       <?php endforeach ?>
     </p><?php endif ?>
+    <?php if ($public): ?></div><?php endif ?>
+    <?php endif ?>
     </article><?php
 }
 
-function mesaPartes(?array $guide, array $contact): void
+function mesaPartes(?array $guide, array $contact, bool $futPublished): void
 {
-    ?><article class="article">
-      <p class="breadcrumb"><a href="/">Inicio</a><?=uiIcon('chevron_right')?> Mesa de Partes</p>
-      <h1>Mesa de Partes</h1>
-      <p class="lead"><?=e(($guide['summary'] ?? '') ?: 'Orientación para presentar documentos y consultar solicitudes al colegio.')?></p>
-      <?php if ($guide && $guide['media_id']): showMedia($guide); endif ?>
+    $cover = str_starts_with($guide['media_mime'] ?? '', 'image/');
+    ?><article class="public-story">
+      <?php publicBreadcrumb(['/'=>'Inicio'], 'Mesa de Partes'); ?>
+      <header class="public-feature story-feature">
+        <div class="feature-panel">
+          <h1>Mesa de Partes</h1>
+          <p class="lead"><?=e(($guide['summary'] ?? '') ?: 'Orientación para presentar documentos y consultar solicitudes al colegio.')?></p>
+          <div class="fut-access">
+            <h2>Formulario Único de Trámite</h2>
+            <p><?= $futPublished ? 'Completa el formulario y preséntalo por el canal de atención indicado.' : 'Modelo referencial editable. Puedes completarlo en tu lector de PDF.' ?></p>
+            <a class="button" href="/mesa-partes/fut"><?=uiIcon('download')?> Descargar FUT</a>
+          </div>
+        </div>
+        <?php if ($cover): featurePhoto($guide, json_decode($guide['fields'], true) ?? []);
+        else: featureIllustration('gestion', 'Materiales de planificación en una oficina escolar'); endif ?>
+      </header>
+      <div class="article story-body">
+      <?php if (!empty($guide['media_id']) && !$cover): showMedia($guide); endif ?>
       <div class="rich">
       <?php if ($guide): ?>
         <?= $guide['body'] ?>
@@ -406,6 +461,7 @@ function mesaPartes(?array $guide, array $contact): void
         <a class="button secondary" href="/administrativos"><?=uiIcon('groups')?> Directorio administrativo</a>
       </div>
       <?php institutionalContact($contact, 'Canales de atención'); ?>
+      </div>
     </article><?php
 }
 

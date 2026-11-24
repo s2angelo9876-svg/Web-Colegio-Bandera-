@@ -34,6 +34,8 @@ La carga se aplica a una base editorial vacía. Luego puedes editar los registro
 
 Para personalizar la guía pública de Mesa de Partes, publica una página del módulo Institución con el identificador `mesa-partes`. Los canales de atención se toman del contacto publicado en la configuración del inicio.
 
+El botón **Descargar FUT** ofrece un modelo referencial editable en PDF. Para ofrecer el formulario del colegio, publica el PDF en Documentos institucionales con el identificador de URL `fut`. La descarga conserva la misma dirección cuando publicas una versión nueva.
+
 ## Operación
 
 El despliegue preparado para un VPS Linux incluye Caddy, PHP-FPM y PostgreSQL por socket local. [Arranque, SSH y restauración](deploy/vps/README.md)

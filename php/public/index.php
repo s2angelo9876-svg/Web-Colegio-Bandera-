@@ -81,7 +81,7 @@ try {
         layout('Ingresar', function () use ($session): void {
             ?><div class="login-layout">
               <div class="login-photo" aria-hidden="true"><img src="/images/frontis_colegio.webp" alt="" width="1360" height="1020"></div>
-              <section class="login-panel">
+              <section class="login-panel feature-panel">
                 <div class="quick-icon"><?=uiIcon('lock')?></div>
                 <h1>Ingresar a la administración</h1>
                 <form method="post" class="editor"><?= $session ? token($session) : '' ?>
@@ -409,11 +409,15 @@ function publicRoute(string $path, array $session): void
     if ($path === '/mesa-partes') {
         $guide = homeSection(fn() => published('institucion', slug: 'mesa-partes')[0] ?? []);
         $settings = homeSection(fn() => published('inicio', limit: 1)[0] ?? []);
+        $fut = homeSection(fn() => published('documentos', slug: FUT_DOCUMENT_SLUG, limit: 1))[0] ?? [];
         $contact = json_decode($settings['fields'] ?? '{}', true);
-        layout('Mesa de Partes', fn() => mesaPartes($guide, $contact),
+        layout('Mesa de Partes', fn() => mesaPartes($guide, $contact, ($fut['media_mime'] ?? '') === 'application/pdf'),
             description: ($guide['summary'] ?? '') ?: 'Presenta documentos y consulta solicitudes por los canales de atención del colegio.',
             canonical: $origin ? $origin . $path : '', current: 'mesa-partes');
         return;
+    }
+    if ($path === '/mesa-partes/fut') {
+        downloadFut();
     }
     if ($path === '/robots.txt') {
         header('Content-Type: text/plain; charset=utf-8');
@@ -438,11 +442,8 @@ function publicRoute(string $path, array $session): void
     }
     if ($path === '/tags') {
         layout('Etiquetas', function (): void {
-            ?><div class="page-heading public-heading">
-                <p class="breadcrumb"><a href="/noticias">Noticias</a><?=uiIcon('chevron_right')?> Etiquetas</p>
-                <h1>Etiquetas de noticias</h1>
-            </div>
-            <?php $tags = tagCatalog();
+            publicHeading('Etiquetas de noticias', ['/noticias'=>'Noticias']);
+            $tags = tagCatalog();
             if (!$tags) {
                 emptyState('label', 'Todavía no hay etiquetas publicadas.');
                 return;
@@ -461,8 +462,9 @@ function publicRoute(string $path, array $session): void
             fail(404, 'Etiqueta no disponible.');
         }
         layout((string) $tag, function () use ($tag,$rows,$page,$path): void {
-            echo '<h1>' . e($tag) . '</h1><h2>Noticias etiquetadas</h2>';
-            listCards(array_slice($rows, 0, 24), headingLevel: 3);
+            publicHeading((string) $tag, ['/noticias'=>'Noticias', '/tags'=>'Etiquetas']);
+            echo '<h2 class="catalog-heading">Noticias etiquetadas</h2>';
+            listCards(array_slice($rows, 0, 24), headingLevel: 3, gridClass: 'news-cards');
             paginate($path, [], $page, count($rows)>24);
         }, canonical: $origin ? $origin . $path : '', current: 'noticias');
         return;
@@ -471,11 +473,11 @@ function publicRoute(string $path, array $session): void
     if ($path === '/buscar') {
         $search = field('q', 200, $_GET);
         layout('Buscar', function () use ($search,$page): void {
-            ?><div class="page-heading public-heading"><p class="breadcrumb"><a href="/">Inicio</a><?=uiIcon('chevron_right')?> Buscar</p>
-            <h1>Buscar en el portal</h1></div><form method="get" class="catalog-filters">
+            publicHeading('Buscar en el portal');
+            ?><form method="get" class="catalog-filters">
             <label class="search-field">Término <input type="search" name="q" value="<?=e($search)?>" maxlength="100" placeholder="Noticias, eventos o documentos" required></label>
             <button class="primary"><?=uiIcon('search')?> Buscar</button></form>
-            <?php if ($search !== ''): ?><h2>Resultados</h2><?php
+            <?php if ($search !== ''): ?><h2 class="catalog-heading">Resultados</h2><?php
                 $rows = published(null, $search, limit: 25, offset: ($page-1)*24);
                 listCards(array_slice($rows, 0, 24), showModule: true, headingLevel: 3);
                 paginate('/buscar', ['q'=>$search], $page, count($rows) > 24);
@@ -526,11 +528,10 @@ function publicRoute(string $path, array $session): void
             $rows = published($module, $search, $tag, limit: 25, offset: ($page-1)*24, filters: $filters);
             layout($label, function () use ($label,$tag,$rows,$module,$page,$filters,$search): void {
                 $staff = in_array($module, ['directivos','docentes'], true);
-                ?><div class="page-heading public-heading<?= $staff ? ' compact-heading' : '' ?>">
-                    <p class="breadcrumb"><a href="/">Inicio</a><?=uiIcon('chevron_right')?> <?=e($label)?></p>
-                    <div class="heading-row"><h1><?=e($label)?></h1>
-                    <?php if ($module === 'noticias'): ?><a class="button secondary" href="/tags"><?=uiIcon('label')?> Ver etiquetas</a><?php endif ?></div>
-                </div><?php
+                $actions = $module === 'noticias' ? static function (): void {
+                    ?><a class="button secondary" href="/tags"><?=uiIcon('label')?> Ver etiquetas</a><?php
+                } : null;
+                publicHeading($label, actions: $actions, plain: $module === 'institucion');
                 catalogFilters($module, $filters, $search, $tag);
                 if ($tag !== '') echo '<h2 class="catalog-heading">Etiqueta ' . e($tag) . '</h2>';
                 if ($module === 'eventos' && $filters['mes'] !== '') {

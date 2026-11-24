@@ -52,6 +52,12 @@ contains '<loc>https://colegio.example/mesa-partes</loc>'
 expect 200 /mesa-partes
 contains '<h1>Mesa de Partes</h1>'
 contains 'Presentar una solicitud'
+contains 'href="/mesa-partes/fut"'
+contains 'Modelo referencial editable'
+expect 200 /mesa-partes/fut
+grep -Fiq 'Content-Type: application/pdf' "$headers"
+grep -Fiq 'Content-Disposition: attachment; filename="fut-solicitud-referencial.pdf"' "$headers"
+cmp public/forms/fut-referencial.pdf "$response"
 expect 301 /institucion/mesa-partes
 grep -Fiq 'Location: /mesa-partes' "$headers"
 expect 404 /no-existe
@@ -263,7 +269,7 @@ grep -Fiq 'Location: /institucion/historia' "$headers"
 expect 200 '/institucion/historia'
 contains 'Historia para prueba'
 expect 200 /institucion
-contains '<section class="institution-feature" aria-labelledby="seccion-historia">'
+contains '<section class="public-feature" aria-labelledby="seccion-historia">'
 contains 'Historia para prueba'
 absent 'href="/institucion/historia"'
 expect 200 /images/institucion/identidad.webp
@@ -276,6 +282,20 @@ absent 'Resumen Guía de trámites de prueba'
 mutate institucion "$guide" publish 1
 expect 200 /mesa-partes
 contains 'Resumen Guía de trámites de prueba'
+save 201 documentos 0 0 'FUT de prueba' fut --form-string 'categoria=Trámites' -F "media=@$state/example.pdf"
+fut=$(id_saved)
+expect 200 /mesa-partes/fut
+cmp public/forms/fut-referencial.pdf "$response"
+mutate documentos "$fut" publish 1
+expect 200 /mesa-partes/fut
+grep -Fiq 'Content-Disposition: attachment; filename="fut-solicitud.pdf"' "$headers"
+cmp "$state/example.pdf" "$response"
+expect 200 /mesa-partes
+absent 'Modelo referencial editable'
+mutate documentos "$fut" unpublish 2 --data-urlencode 'reason=Retiro del FUT de prueba'
+expect 200 /mesa-partes/fut
+cmp public/forms/fut-referencial.pdf "$response"
+checks=$((checks+6))
 expect 200 /sitemap.xml
 absent '/institucion/mesa-partes</loc>'
 [[ $(sql "SELECT count(*) FROM editorial_events WHERE content_id=$news AND action='publish-due'") == 1 ]]

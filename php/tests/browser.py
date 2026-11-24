@@ -49,6 +49,12 @@ with sync_playwright() as playwright:
         assert page.evaluate("document.documentElement.scrollWidth <= window.innerWidth")
         primary.get_by_role("link", name="Mesa de Partes", exact=True).click()
         expect(page.get_by_role("heading", name="Mesa de Partes", exact=True)).to_be_visible()
+        download_fut = page.get_by_role("link", name="Descargar FUT", exact=True)
+        expect(download_fut).to_be_visible()
+        if width == 390:
+            with page.expect_download() as download:
+                download_fut.click()
+            assert download.value.suggested_filename == "fut-solicitud-referencial.pdf"
 
     page.set_viewport_size({"width": 390, "height": 844})
     early = browser.new_page(viewport={"width": 390, "height": 844}, color_scheme="light")

@@ -46,6 +46,8 @@ Use white on red. The pressed red is `#A31E2D`. Use `#FCEBEE` in light mode and 
 
 Use a content width of 1216 px with 16–48 px gutters. Run the campus photograph across the full desktop hero and place the left-aligned title, motto and primary action over a navy gradient. Stack the photo above a navy text panel on phones. Follow the hero with the shortcuts and place recent news beside the agenda and notices on wide screens. In Institución, use the same photo and navy panel composition for the introduction and the topic groups. Provide a keyboard-accessible selector inside groups with multiple topics.
 
+Use the navy panel for public catalog headings and article introductions. Pair an article's introduction with its published photo when available. Put the FUT download beside the introduction on Mesa de Partes.
+
 Use CSS Grid for structural columns. Prefer a large lead story with smaller adjacent items to a row of identical feature cards. Leave structural gaps of 16–32 px and section gaps of 40–68 px. Use a navy sidebar around 240 px wide for the desktop CMS. Group administration modules by publication, institution and site configuration. Below 768 px, stack reading, shortcuts and editing sections into a single column. At widths up to 920 px, collapse the navigation into a labeled button and provide an accessible disclosure for CMS modules. Keep touch targets at least 44 px tall, and size empty or wide states without horizontal scrolling.
 
 ## 6. Motion & Interaction

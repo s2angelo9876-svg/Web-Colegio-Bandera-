@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+const FUT_DOCUMENT_SLUG = 'fut';
+
 const PHOTO_MIB = 10;
 const PDF_MIB = 15;
 
@@ -159,7 +161,7 @@ function serveMedia(int $id, ?int $revision, array $session, bool $thumbnail): n
     sendMedia($media);
 }
 
-function downloadDocument(string $slug): never
+function publishedDocumentMedia(string $slug): ?array
 {
     $sql = "SELECT m.mime,m.filename,m.bytes AS payload FROM content c
             JOIN revision_media rm ON rm.revision_id=(" . visibleRevision() . ")
@@ -169,17 +171,36 @@ function downloadDocument(string $slug): never
     if (!$media && ctype_digit($slug) && strlen($slug) <= 18) {
         $media = query($sql . ' AND c.id=?', [$slug])->fetch(PDO::FETCH_ASSOC);
     }
-    if (!$media) {
+    return $media ?: null;
+}
+
+function downloadDocument(string $slug): never
+{
+    $media = publishedDocumentMedia($slug);
+    if ($media === null) {
         fail(404, 'Documento no disponible.');
     }
     sendMedia($media);
 }
 
-function sendMedia(array $media): never
+function downloadFut(): never
+{
+    $media = publishedDocumentMedia(FUT_DOCUMENT_SLUG);
+    if ($media !== null) {
+        sendMedia($media, 'fut-solicitud.pdf');
+    }
+    $path = dirname(__DIR__) . '/public/forms/fut-referencial.pdf';
+    if (!is_readable($path) || !($stream = fopen($path, 'rb'))) {
+        fail(503, 'El formulario no está disponible temporalmente.');
+    }
+    sendMedia(['mime'=>'application/pdf', 'payload'=>$stream], 'fut-solicitud-referencial.pdf');
+}
+
+function sendMedia(array $media, string $pdfFilename = 'archivo.pdf'): never
 {
     header('Content-Type: ' . $media['mime']);
     if ($media['mime'] === 'application/pdf') {
-        header('Content-Disposition: attachment; filename="archivo.pdf"');
+        header('Content-Disposition: attachment; filename="' . $pdfFilename . '"');
     }
     if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'HEAD') {
         if (is_resource($media['payload'])) {
