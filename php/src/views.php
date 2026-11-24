@@ -112,14 +112,14 @@ function publicHeading(string $title, array $trail = ['/'=>'Inicio'], ?callable 
     </header><?php
 }
 
-function portalImage(string $slug, string $class, bool $decorative = false, bool $hero = false, ?string $sizes = null): bool
+function portalImage(string $slug, string $class, bool $hero = false, ?string $sizes = null): bool
 {
     $row = portalRecord($slug);
     if (empty($row['media_id'])) {
         return false;
     }
     $fields = json_decode($row['fields'], true) ?? [];
-    imageTag($row, $decorative ? '' : ($fields['alt'] ?? ''), $class, $row['preview_revision'] ?? null, $hero, $sizes);
+    imageTag($row, $fields['alt'] ?? '', $class, $row['preview_revision'] ?? null, $hero, $sizes);
     return true;
 }
 
@@ -127,7 +127,7 @@ function accessView(array $session): void
 {
     $settings = portalValues('acceso');
     ?><div class="login-layout">
-      <div class="login-photo" aria-hidden="true"><?php if (!portalImage('acceso', 'login-image', decorative: true)): ?><img src="/images/frontis_colegio.webp" alt="" width="1360" height="1020"><?php endif ?></div>
+      <div class="login-photo"><?php if (!portalImage('acceso', 'login-image')): ?><img src="/images/frontis_colegio.webp" alt="" width="1360" height="1020"><?php endif ?></div>
       <section class="login-panel feature-panel">
         <div class="quick-icon"><?=uiIcon('lock')?></div>
         <h1><?=e($settings['titulo'])?></h1>
@@ -178,7 +178,7 @@ function brand(string $href): void
 {
     $brand = portalValues('marca');
     ?><a class="brand" href="<?=e($href)?>">
-      <span class="brand-mark"><?php if (!portalImage('marca', 'brand-image', decorative: true)): ?><img src="/images/escudo.jpeg" alt="" width="34" height="46"><?php endif ?></span>
+      <span class="brand-mark"><?php if (!portalImage('marca', 'brand-image')): ?><img src="/images/escudo.jpeg" alt="" width="34" height="46"><?php endif ?></span>
       <span class="brand-name"><strong><?=e($brand['nombre'])?></strong><?php if ($brand['subtitulo'] !== ''): ?><small><?=e($brand['subtitulo'])?></small><?php endif ?></span>
     </a><?php
 }

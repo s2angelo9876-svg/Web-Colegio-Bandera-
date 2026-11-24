@@ -133,7 +133,7 @@ function portalCatalog(): array
         'resumen'=>['Introducción visible','paragraph',''],
         'contenido'=>['Texto adicional','html',''],
         'meta'=>['Descripción para buscadores','paragraph',''],
-        'vacio'=>['Mensaje sin resultados','paragraph','No hay contenido publicado que coincida.'],
+        'vacio'=>['Mensaje sin resultados (deja vacío para usar el mensaje general)','paragraph',''],
         'cantidad'=>['Resultados por página','count','24'],
         ...$action('', ''),
     ];
@@ -146,6 +146,7 @@ function portalCatalog(): array
             $catalog['pagina-' . $module]['fields']['etiqueta_' . $key] = ["Etiqueta pública de $caption", 'text', $caption];
         }
     }
+    unset($catalog['pagina-inicio']['fields']['cantidad']);
     $catalog['pagina-noticias']['fields']['etiquetas'] = ['Texto del botón de etiquetas','text','Ver etiquetas'];
     $catalog['pagina-noticias']['fields']['relacionadas'] = ['Título de las noticias relacionadas','text','Noticias relacionadas'];
     $catalog['pagina-directivos']['fields']['vacio'][2] = 'No hay perfiles del equipo directivo publicados.';
@@ -443,7 +444,11 @@ function portalThemeCss(array $colors): string
 
 function portalPage(string $module): array
 {
-    return portalValues('pagina-' . $module);
+    $page = portalValues('pagina-' . $module);
+    if (($page['vacio'] ?? null) === '') {
+        $page['vacio'] = portalText('textos','vacio');
+    }
+    return $page;
 }
 
 function portalFactLabels(string $module): array

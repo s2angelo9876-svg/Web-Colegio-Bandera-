@@ -391,6 +391,42 @@ expect 200 /galeria
 contains '<h1>Galería</h1>'
 expect 404 "/medio/$gallery_media"
 
+save 201 portal 0 0 '' textos --form-string 'vacio=Prueba del mensaje general sin resultados'
+empty_custom=$(id_saved)
+mutate portal "$empty_custom" publish 1
+expect 200 '/galeria?q=ConsultaSinCoincidencias'
+contains 'Prueba del mensaje general sin resultados'
+expect 200 '/docentes?q=ConsultaSinCoincidencias'
+contains 'No hay docentes publicados.'
+mutate portal "$empty_custom" unpublish 2 --data-urlencode 'reason=Restaurar el mensaje general'
+expect 200 '/galeria?q=ConsultaSinCoincidencias'
+contains 'No hay contenido publicado que coincida.'
+
+save 201 portal 0 0 '' marca --form-string 'nombre=Bandera del Perú' \
+  --form-string 'pestana=I.E. Bandera del Perú' --form-string 'alt=Escudo institucional de prueba' \
+  -F 'media=@public/images/escudo.jpeg'
+logo_custom=$(id_saved)
+expect 200 "/admin/portal/$logo_custom/vista"
+contains 'alt="Escudo institucional de prueba"'
+mutate portal "$logo_custom" publish 1
+expect 200 /
+contains 'alt="Escudo institucional de prueba"'
+mutate portal "$logo_custom" unpublish 2 --data-urlencode 'reason=Restaurar la identidad de prueba'
+
+save 201 portal 0 0 '' acceso --form-string 'titulo=Ingresar a la administración' \
+  --form-string 'alt=Fachada del colegio al ingreso' -F 'media=@public/images/escudo.jpeg'
+login_custom=$(id_saved)
+expect 200 "/admin/portal/$login_custom/vista"
+contains 'alt="Fachada del colegio al ingreso"'
+mutate portal "$login_custom" publish 1
+expect_visitor 200 /admin/ingresar
+contains 'alt="Fachada del colegio al ingreso"'
+mutate portal "$login_custom" unpublish 2 --data-urlencode 'reason=Restaurar la imagen de acceso'
+expect 200 '/admin/portal/nuevo?seccion=icono'
+absent 'name="alt"'
+expect 200 '/admin/portal/nuevo?seccion=pagina-inicio'
+absent 'name="cantidad"'
+
 theme_options=(--form-string 'marca=#172943' --form-string 'fondo_claro=#f7f6f3' \
   --form-string 'panel_claro=#ffffff' --form-string 'fondo_oscuro=#111a28' \
   --form-string 'panel_oscuro=#182437' --form-string 'fuente=serif' \

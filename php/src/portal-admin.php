@@ -91,7 +91,7 @@ function portalEditorFields(array $definition, array $row, ?string $invalid): vo
       <?php if (!empty($row['media_id']) && !empty($row['working'])): ?>
         <img class="portal-asset-preview" alt="" src="/medio/<?=e($row['media_id'])?>?revision=<?=e($row['working'])?>">
       <?php endif ?>
-      <label>Descripción de la imagen <input id="alt" name="alt" maxlength="200" value="<?=e($stored['alt'] ?? '')?>"<?=invalidAttr($invalid,'alt')?>></label>
+      <?php if ($slug !== 'icono'): ?><label>Descripción de la imagen <input id="alt" name="alt" maxlength="200" value="<?=e($stored['alt'] ?? '')?>"<?=invalidAttr($invalid,'alt')?>></label><?php endif ?>
       <label class="file-field">Subir imagen (hasta <?=PHOTO_MIB?> MiB)
         <input id="media" type="file" name="media" accept="image/jpeg,image/png,image/webp"<?=invalidAttr($invalid,'media')?>></label>
       <?php if (!empty($row['media_id'])): ?><label class="check-field"><input type="checkbox" name="remove_media" value="1"<?= !empty($row['remove_media']) ? ' checked' : '' ?>> Quitar imagen personalizada</label><?php endif ?>

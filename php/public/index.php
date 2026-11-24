@@ -548,7 +548,7 @@ function publicRoute(string $path, array $session): void
         } else {
             $presentation = portalPage($module);
             $label = $presentation['titulo'];
-            $limit = (int) $presentation['cantidad'];
+            $limit = (int) ($presentation['cantidad'] ?? 24);
             $filters = publicFilters($module);
             $search = field('q', 200, $_GET);
             $rows = published($module, $search, $tag, limit: $limit + 1, offset: ($page-1)*$limit, filters: $filters);
