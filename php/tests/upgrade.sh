@@ -20,11 +20,26 @@ INSERT INTO media (mime,filename,bytes) VALUES ('image/png','previo.png',decode(
 INSERT INTO revision_media VALUES (1,1);
 SQL
 ip=$(docker inspect --format '{{.NetworkSettings.Networks.bridge.IPAddress}}' "$database")
-docker exec -e "COLEGIO_DSN=pgsql:host=$ip;dbname=colegio_upgrade;connect_timeout=3" "$web" php bin/console.php migrate
+upgrade=(docker exec -i -e "COLEGIO_DSN=pgsql:host=$ip;dbname=colegio_upgrade;connect_timeout=3" "$web")
+login_status() {
+  "${upgrade[@]}" php <<'PHP'
+<?php
+$_SERVER['REQUEST_URI'] = '/admin/ingresar';
+$_SERVER['REQUEST_METHOD'] = 'GET';
+$_SERVER['HTTP_ACCEPT'] = 'application/json';
+ob_start();
+require 'public/index.php';
+ob_end_clean();
+echo http_response_code() ?: 200;
+PHP
+}
+[[ $(login_status) == 503 ]]
+"${upgrade[@]}" php bin/console.php migrate
+[[ $(login_status) == 200 ]]
 migration_result=$(docker exec "$database" psql -U postgres -d colegio_upgrade -Atqc   "SELECT (SELECT count(*) FROM tags)=1 AND (SELECT count(*) FROM revision_tags)=2
    AND (SELECT published=1 AND working=2 AND published_at IS NOT NULL FROM content WHERE id=1)
    AND (SELECT encode(bytes,'hex')='010203' FROM media WHERE id=1)
    AND (SELECT mfa_secret IS NULL AND mfa_last_step IS NULL FROM accounts WHERE id=1)
    AND (SELECT NOT mfa_verified FROM sessions WHERE token_hash='sesion-previa')")
 [[ "$migration_result" == t ]]
-echo 'Actualización 001/002 → 004 verificada con revisiones, etiquetas, medios y sesiones previas.'
+echo 'Actualización 001/002 → 004 verificada con datos previos y acceso al panel.'

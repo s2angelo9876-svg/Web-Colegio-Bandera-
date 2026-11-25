@@ -83,6 +83,8 @@ with sync_playwright() as playwright:
     early.close()
 
     navigation = browser.new_page(reduced_motion="no-preference")
+    navigation_errors = []
+    navigation.on("pageerror", lambda error: navigation_errors.append(str(error)))
     navigation.add_init_script("""addEventListener('pagereveal', ({viewTransition}) => {
         const root = document.documentElement;
         if (viewTransition) {
@@ -103,6 +105,11 @@ with sync_playwright() as playwright:
         links.get_by_role("link", name="Noticias", exact=True).click()
         expect(navigation.locator("html")).to_have_attribute("data-reveal", "instant")
         expect(navigation.get_by_role("heading", name="Noticias", exact=True)).to_be_visible()
+        navigation.emulate_media(reduced_motion="no-preference")
+        links.locator(".access-link").click()
+        expect(navigation.get_by_role("heading", name="Ingresar a la administración")).to_be_visible()
+        expect(navigation.locator("html")).to_have_attribute("data-reveal", "instant")
+        assert not navigation_errors, navigation_errors
     navigation.close()
 
     page.goto(origin + "/admin")

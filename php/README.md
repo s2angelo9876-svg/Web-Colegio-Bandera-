@@ -12,7 +12,7 @@ php/bin/dev test
 COLEGIO_BROWSER_TESTS=1 php/bin/dev test
 ```
 
-El script requiere Docker, Bash, OpenSSL y curl. La prueba de navegador usa Playwright para Python y Chromium instalado. Se puede señalar un binario con `COLEGIO_CHROMIUM`. La suite comprueba el esquema nuevo, la actualización 001/002 → 003 y la respuesta ante la caída de PostgreSQL. La modalidad de pruebas crea y elimina sus propios contenedores y su base sintética. El servicio de desarrollo usa el puerto 4170 y la prueba usa el 4171. El script imprime la ubicación del archivo local de credenciales con permisos restrictivos. La cuenta inicial es `admin`.
+El script requiere Docker, Bash, OpenSSL y curl. La prueba de navegador usa Playwright para Python y Chromium instalado. Se puede señalar un binario con `COLEGIO_CHROMIUM`. La suite comprueba el esquema nuevo, la actualización 001/002 → 004 y la respuesta ante la caída de PostgreSQL. La modalidad de pruebas crea y elimina sus propios contenedores y su base sintética. El servicio de desarrollo usa el puerto 4170 y la prueba usa el 4171. El script imprime la ubicación del archivo local de credenciales con permisos restrictivos. La cuenta inicial es `admin`.
 
 Para detener el entorno de desarrollo y conservar los datos en Docker:
 
@@ -31,6 +31,14 @@ wsl.exe -d Ubuntu --exec /bin/bash php/bin/dev demo
 ```
 
 La carga se aplica a una base editorial vacía. Luego puedes editar los registros en el panel y conservar los cambios al reiniciar. Para detener la vista, usa `docker stop colegio-php-demo-web colegio-php-demo-pg`.
+
+Si el panel pide actualizar la base después de descargar una versión nueva, ejecuta el comando de arranque que usaste para iniciar el portal. Si la demo ya está corriendo, puedes aplicar las migraciones en ese mismo contenedor desde PowerShell.
+
+```powershell
+wsl.exe -d Ubuntu --exec docker exec colegio-php-demo-web php bin/console.php migrate
+```
+
+Para el entorno normal en el puerto 4170, usa el contenedor `colegio-php-web`.
 
 ## Editar el portal desde el CMS
 

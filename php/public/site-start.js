@@ -64,6 +64,16 @@
         restoreTheme();
         closeNavigation();
     });
+    window.addEventListener('pageswap', ({activation, viewTransition}) => {
+        const destination = activation?.entry?.url;
+        if (!destination || !viewTransition) return;
+        const {pathname} = new URL(destination);
+        if (pathname === '/admin' || pathname.startsWith('/admin/') || pathname === '/login' || pathname === '/salir') {
+            // The panel opts out, so stop the transition before its page is revealed.
+            viewTransition.ready.catch(() => {});
+            viewTransition.skipTransition();
+        }
+    });
 
     document.addEventListener('click', event => {
         if (event.target.closest?.('[data-theme-toggle]')) {

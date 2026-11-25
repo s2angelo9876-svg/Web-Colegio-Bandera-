@@ -306,6 +306,7 @@ function portalCatalog(): array
         'e405'=>['Título de acción no disponible','text','Acción no disponible'],
         'e429'=>['Título de límite de intentos','text','Inténtalo más tarde'],
         'e500'=>['Título de errores del portal','text','No se pudo completar la solicitud'],
+        'e503'=>['Título para el portal en mantenimiento','text','Servicio temporalmente no disponible'],
         'volver'=>['Texto para volver al inicio','text','Volver al inicio'],
         'ingresar'=>['Texto de acceso a la administración','text','Ingresar a la administración'],
         'referencia'=>['Texto previo al código de soporte','text','Referencia para soporte'],
@@ -586,5 +587,5 @@ function portalStartsAt(string $href, string $current): bool
 
 function portalErrorTitle(int $status): string
 {
-    return portalText('estados', in_array($status, [401,403,404,405,429], true) ? 'e' . $status : 'e500');
+    return portalText('estados', in_array($status, [401,403,404,405,429,503], true) ? 'e' . $status : 'e500');
 }

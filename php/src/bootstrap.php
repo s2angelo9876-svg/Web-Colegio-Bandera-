@@ -40,6 +40,19 @@ function migrationNames(): array
     return array_map('basename', glob(dirname(__DIR__) . '/migrations/*.sql'));
 }
 
+function databaseSchemaReady(): bool
+{
+    try {
+        $applied = query('SELECT name FROM schema_migrations')->fetchAll(PDO::FETCH_COLUMN);
+    } catch (PDOException $error) {
+        if ($error->getCode() === '42P01') {
+            return false;
+        }
+        throw $error;
+    }
+    return !array_diff(migrationNames(), $applied);
+}
+
 function query(string $sql, array $params = []): PDOStatement
 {
     $statement = db()->prepare($sql);

@@ -53,6 +53,12 @@ try {
     }
     $protected = $path === '/admin' || str_starts_with($path, '/admin/') || $path === '/salir'
         || ((str_starts_with($path, '/medio/') || $path === '/tema.css') && isset($_GET['revision']));
+    if ($protected) {
+        header('X-Robots-Tag: noindex, nofollow');
+        if (!databaseSchemaReady()) {
+            fail(503, 'Actualiza la base de datos del portal para volver a acceder al panel.');
+        }
+    }
     $session = $protected ? currentSession() : [];
     if ($path === '/salir' || $path === '/admin/salir') {
         requireMethod($read, false);
@@ -70,7 +76,6 @@ try {
         portalThemeResponse($session);
         if (!$protected) revalidatePublic(hash('sha256', ob_get_contents()));
     } elseif ($path === '/admin/ingresar') {
-        header('X-Robots-Tag: noindex, nofollow');
         if (!$read) {
             loginAccount($session);
         }
@@ -85,7 +90,6 @@ try {
         }
         layout(portalText('acceso','titulo'), fn() => accessView($session), current: 'acceso');
     } elseif ($path === '/admin' || str_starts_with($path, '/admin/')) {
-        header('X-Robots-Tag: noindex, nofollow');
         if (!isset($session['id'])) {
             if ($read && !$json) {
                 redirect('/admin/ingresar');
@@ -139,7 +143,7 @@ try {
         layout($title, function () use ($status, $message, $path, $title): void {
             $login = str_starts_with($path, '/admin/') && in_array($status, [401,403], true);
             publicState($status, $title, $message, $login);
-        }, isset($session['id']) ? $session : null);
+        }, isset($session['id']) ? $session : null, current: ($protected ?? false) ? 'acceso' : '');
     }
 }
 
@@ -148,8 +152,7 @@ function health(bool $checkDatabase, string $method): never
     $ready = true;
     if ($checkDatabase) {
         try {
-            $applied = query('SELECT name FROM schema_migrations')->fetchAll(PDO::FETCH_COLUMN);
-            $ready = !array_diff(migrationNames(), $applied)
+            $ready = databaseSchemaReady()
                 && (getenv('COLEGIO_ENV') !== 'production' || configuredOrigin() !== '');
         } catch (Throwable $error) {
             $ready = false;
